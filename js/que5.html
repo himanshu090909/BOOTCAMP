@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+	<title></title>
+<script type="text/javascript">
+	
+	var list = [
+		{
+			name : 'himanshu',
+			age : '25',
+			dob : '4 feb',
+			salary : '5000000'
+		},
+		{
+			name : 'bhansali',
+			age : '25',
+			dob : '4 feb',
+			salary : '500'
+		},
+		{
+			name : 'Aman',
+			age : '24',
+			dob : '14 feb',
+			salary : '10000'
+		},
+
+		{
+			name : 'Amrita',
+			age : '19',
+			dob : '24 feb',
+			salary : '10000'
+		}
+	];
+	//showing the list of objects
+	console.log(list);
+	document.write("<u>showing the list of objects</u>");
+	document.write("<br>");
+    for(var key in list)
+    {
+    	document.write("name: "+list[key].name+" salary: "+list[key].salary+" age: "+list[key].age);
+    	document.write("<br>");
+
+    }	
+
+     // showing the list of objects having salary greater than 5000
+	let filteredData = list.filter((e)=> e.salary > 5000);
+    document.write("<br>");
+    
+    document.write("<br>");
+    
+    document.write("<br>");
+    
+    document.write("<br>");
+    
+    document.write("<u>showing the list of objects having salary greater than 5000</u>"); 
+    document.write("<br>");
+	console.log(filteredData);
+      for(var key in filteredData)
+    {
+    	document.write(" name: "+filteredData[key].name+" salary: "+filteredData[key].salary+" age: "+filteredData[key].age);
+    	document.write("<br>");
+
+    }	
+
+   document.write("<br>");
+    document.write("<br>");
+    document.write("<br>");
+    document.write("<br>");
+ 
+    document.write("<u>employees having age between 0 and 20</u>");
+    document.write("<br>");
+    let grpage=list.filter((t)=> (t.age<=20&&t.age>0));
+
+      for(var key in grpage)
+    {
+    	document.write(" name: "+grpage[key].name+" salary: "+grpage[key].salary+" age: "+grpage[key].age);
+    	document.write("<br>");
+
+    }	
+       document.write("<br>");
+    document.write("<br>");
+    document.write("<br>");
+    document.write("<br>");
+ 
+    document.write("<u>employees having age between 20 and 40</u>");
+    document.write("<br>");
+    
+    let grpages=list.filter((t)=> (t.age>20&&t.age<=40));
+
+      for(var key in grpage)
+    {
+    	document.write(" name: "+grpages[key].name+" salary: "+grpages[key].salary+" age: "+grpages[key].age);
+    	document.write("<br>");
+
+    }
+
+    document.write("<br>");
+    document.write("<br>");
+    document.write("<br>");
+    document.write("<br>");
+     
+    document.write("<u>fetch employees with salary less than 1000 and age greater than 20. Then give them an increment 5 times their salary.</u>");     	
+    document.write("<br>");
+ 
+          let four=list.filter((t)=> (t.age>20&&t.salary<1000));
+
+          for(var key in four)
+    {
+    	document.write(" name: "+four[key].name+" salary: "+(four[key].salary)*5+" age: "+four[key].age);
+    	document.write("<br>");
+
+    }
+
+</script>
+
+</head>
+<body>
+
+</body>
+</html>
