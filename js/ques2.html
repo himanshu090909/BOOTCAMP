@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>pallindrome</title>
+	<script type="text/javascript">
+		function pall() {
+			var str=document.getElementById('st').value;
+			var j=str.length-1;
+			var i=0;
+			while(i<j){
+				if(str.charAt(i)!=str.charAt(j)){
+					window.alert("String "+str+" is not pallindrome");
+				}
+				else{
+					window.alert("String "+str+" is pallindrome");
+				}
+				i++;
+				j--;
+			}
+			// body...
+		}
+	</script>
+</head>
+<body>
+	Enter String:<input type="text" id="st">
+	<br><button onclick="pall()">check</button>
+</body>
+</html>

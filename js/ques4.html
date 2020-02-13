@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<script type="text/javascript">
+	
+ 
+            document.write("<br>");
+ 
+   			const obj1 = { val1:'himanshu',val2:'bhansali'};
+			console.log(obj1);
+			document.write("values of object 1 created");
+			   document.write("<br>");
+ 
+			document.write(obj1.val1);
+			document.write("<br>");
+			document.write(obj1.val2);
+            
+            document.write("<br>");
+
+            document.write("<br>");
+            document.write("<br>");
+            document.write("<br>");
+            document.write("<br>");
+            const obj2 = JSON.parse(JSON.stringify(obj1));
+            console.log(obj2);
+			document.write("values of object 2 created");
+            document.write("<br>");
+ 
+			document.write(obj2.val1);
+			document.write("<br>");
+			document.write(obj2.val2);
+			
+            document.write("<br>");
+
+            document.write("<br>");
+            document.write("<br>");
+            document.write("<br>");
+            document.write("<br>");
+ 
+              document.write("modifications done in copied object");
+ 
+			obj2.val2="verma";
+
+
+ 
+            document.write("<br>");
+
+            document.write("<br>");
+            document.write("<br>");
+            document.write("<br>");
+            document.write("<br>");
+            document.write("<br>");
+			document.write("values of object 1 created");
+			   document.write("<br>");
+ 
+			document.write(obj1.val1);
+			document.write("<br>");
+			document.write(obj1.val2);
+
+            document.write("<br>");
+            
+            document.write("<br>");
+            document.write("<br>");
+            document.write("<br>");
+            document.write("<br>");
+            document.write("<br>");
+			document.write("values of object 2 created");
+   document.write("<br>");
+ 
+			document.write(obj2.val1);
+			document.write("<br>");
+			document.write(obj2.val2);
+			
+               document.write("<br>");
+
+	
+	</script>
+
+</head>
+<body>
+
+</body>
+</html>
