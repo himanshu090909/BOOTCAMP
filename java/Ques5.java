@@ -18,7 +18,7 @@ public class Ques5
                     {
                         if(b[k]==a[i])
                         {
-                            b[k]=-1;
+                            b[k]=-0;
                         }
                     }
                     break;
