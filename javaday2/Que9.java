@@ -9,7 +9,7 @@ abstract class Furniture {
     abstract public void stressTest();
     abstract public void fireTest();
 }
-class Wood{
+class Wood extends Furniture{
 
     Wood() {
         System.out.println("Wooden Chairs and Tables with properties:");
@@ -21,7 +21,7 @@ class Wood{
         System.out.println("Fails fire test");
     }
 }
-class Metal{
+class Metal extends Furniture{
 
     Metal(){
         System.out.println("Metal Chairs and Tables with properties:");
