@@ -1,7 +1,7 @@
 
 ////Write a program to demonstrate wait and notify methods.
 
-package com.javaMultithreading;
+package com.tothenew;
 
 public class Q5 {
     public static void main(String[] args) {

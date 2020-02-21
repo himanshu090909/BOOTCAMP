@@ -1,7 +1,7 @@
 
 ////Write a program to demonstrate the use of semaphore
 
-package com.javaMultithreading;
+package com.tothenew;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;

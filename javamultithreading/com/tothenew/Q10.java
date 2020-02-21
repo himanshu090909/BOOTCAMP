@@ -1,7 +1,7 @@
 
 ////Write a program which creates deadlock between 2 threads
 
-package com.javaMultithreading;
+package com.tothenew;
 
 public class Q10 {
     final Object lock = new Object();

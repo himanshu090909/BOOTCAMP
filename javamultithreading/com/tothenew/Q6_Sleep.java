@@ -1,7 +1,7 @@
 
 ////Write a program to demonstrate sleep and join methods.
 
-package com.javaMultithreading;
+package com.tothenew;
 
 public class Q6_Sleep {
     public static void main(String[] args) {

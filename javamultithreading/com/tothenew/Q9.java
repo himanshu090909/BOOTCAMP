@@ -1,7 +1,7 @@
 
 ////Write a program to demonstrate the use of CountDownLatch
 
-package com.javaMultithreading;
+package com.tothenew;
 
 import java.util.concurrent.CountDownLatch;
 

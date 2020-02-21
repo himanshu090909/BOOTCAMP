@@ -1,7 +1,7 @@
 
 ////Write a program to create a thread using Thread class and Runnable interface each.
 
-package com.javaMultithreading;
+package com.tothenew;
 
 class MyThread extends Thread
 {

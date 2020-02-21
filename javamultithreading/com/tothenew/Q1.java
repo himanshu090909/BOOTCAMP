@@ -1,7 +1,7 @@
 
 ////Write a program do to demonstrate the use of volatile keyword.
 
-package com.javaMultithreading;
+package com.tothenew;
 
 public class Q1 {
     private static volatile int my = 0;

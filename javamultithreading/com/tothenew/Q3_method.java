@@ -1,7 +1,7 @@
 
 ////Write a program using synchronization block and synchronization method
 
-package com.javaMultithreading;
+package com.tothenew;
 
 public class Q3_method {
     public static int i=0;
