@@ -1,24 +1,28 @@
 
-//// Write a program to demonstrate sleep and join methods.
-
-
+////// Write a program to demonstrate sleep and join methods.
 package com.tothenew;
 
 public class Q6_JOIN {
-    public static void main(String[] args) throws InterruptedException {
-        joinClass jc = new joinClass();
-        jc.start();
-        jc.join(1000);//control will be given to main thread after jc has completed its execution
-        System.out.println("joins after 1000ms");
-        System.out.println("this threads name :" + jc.getName());
-
-    }
-}
-
-class joinClass extends Thread {
-    @Override
-    public void run() {
-        joinClass jc1 = new joinClass();
-        System.out.println("Current thread: " + jc1.getName());
+    public static void main(String[] args) {
+        Thread t1 = new Thread() {
+            public void run() {
+                for (int i = 0; i < 10; i++) {
+                    System.out.println(i);
+                    try {
+                        Thread.sleep(2000);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        };
+        t1.start();
+        try {
+            t1.join();     //if we dont use join then control will be give to main thread while t1 has not completed its task
+                           //so when we use join then main will wait for t1 to complete and then "in main" will get printed
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        System.out.println("in main");
     }
 }

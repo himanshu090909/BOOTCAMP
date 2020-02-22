@@ -3,37 +3,45 @@
 
 package com.tothenew;
 
-public class Q3_block {
-    public static int i=0;
-    public static void main(String[] args) {
-        Block obj=new Block();
-        TBlock t1=new TBlock(obj);
-        TBlock t2=new TBlock(obj);
-        t1.start();
-        t2.start();
 
-    }
-}
-class Block {
-    void Synching(){
+class Counters
+{
+    int number;
+
+    public void increment()
+    {
         synchronized (this) {
-            for(Q3_block.i=0; Q3_block.i<10; Q3_block.i++){
-                System.out.println("i= "+ Q3_block.i);
-            }
-            try {
-                Thread.sleep(400);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            number++;
         }
     }
+
 }
-class TBlock extends Thread{
-    Block sync;
-    TBlock(Block sync){
-        this.sync=sync;
-    }
-    public void run(){
-        sync.Synching();
+public class Q3_block
+{
+    public static void main(String[] args) throws Exception{
+        Counters c = new Counters();
+        Thread t1 = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                for (int i=0;i<500;i++)
+                {
+                    c.increment();
+                }
+            }
+        });
+        Thread t2 = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                for(int i=0;i<500;i++)
+                {
+                    c.increment();
+                }
+            }
+        });
+        t1.start();
+        t2.start();
+        t1.join();
+        t2.join();
+        System.out.println("value of number is "+c.number);
     }
 }
