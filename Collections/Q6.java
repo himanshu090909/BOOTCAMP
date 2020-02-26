@@ -6,15 +6,15 @@ import java.util.Comparator;
 
 public class Q6 {
     public static void main(String[] args) {
-        ArrayList<Employee> ar = new ArrayList<Employee>();
-        ar.add(new Employee("himanshu", 20.0, 70.0));
-        ar.add(new Employee("bhansali", 25.0, 61.0));
-        ar.add(new Employee("azeem", 9.0, 88.0));
-        ar.add(new Employee("gagan", 23.0, 75.0));
-        ar.add(new Employee("aman", 22.0, 64.0));
-        ar.add(new Employee("gaurav", 21.0, 75.0));
-        ar.add(new Employee("suraj", 23.0, 89.0));
-        Collections.sort(ar, new CompareBySalary());
+        ArrayList<Student> ar = new ArrayList<Student>();
+        ar.add(new Student("himanshu", 20.0, 70.0));
+        ar.add(new Student("bhansali", 25.0, 61.0));
+        ar.add(new Student("azeem", 9.0, 88.0));
+        ar.add(new Student("gagan", 23.0, 75.0));
+        ar.add(new Student("aman", 22.0, 64.0));
+        ar.add(new Student("gaurav", 21.0, 75.0));
+        ar.add(new Student("suraj", 23.0, 89.0));
+        Collections.sort(ar, new CompareByScore());
         for (int i = 0; i < ar.size(); i++) {
             System.out.println(ar.get(i));
         }
