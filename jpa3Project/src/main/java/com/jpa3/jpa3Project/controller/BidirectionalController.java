@@ -1,5 +1,6 @@
 package com.jpa3.jpa3Project.controller;
 
+import com.jpa3.jpa3Project.dao.BidirectionalDao;
 import com.jpa3.jpa3Project.entities.AuthorBidirectional;
 import com.jpa3.jpa3Project.entities.AuthorUnidirectional;
 import com.jpa3.jpa3Project.entities.BookBidirectional;
@@ -16,20 +17,12 @@ public class BidirectionalController {
     @Autowired
     AuthorBidirectionalRepository authorBidirectionalRepository;
 
+    @Autowired
+    BidirectionalDao bidirectionalDao;
+
     @GetMapping("/bidirectional")
     public void createSampleData() {
-        AuthorBidirectional authorBidirectional = new AuthorBidirectional();
-        authorBidirectional.setName("himanshu");
-        BookBidirectional bookBidirectional = new BookBidirectional();
-        bookBidirectional.setBookName("harry potter");
-        BookBidirectional bookBidirectional1 = new BookBidirectional();
-        bookBidirectional1.setBookName("dfghj");
-        HashSet<BookBidirectional> bookBidirectionals = new HashSet<>();
-        bookBidirectionals.add(bookBidirectional);
-        bookBidirectionals.add(bookBidirectional1);
-        bookBidirectional.setAuthorBidirectional(authorBidirectional);
-        bookBidirectional1.setAuthorBidirectional(authorBidirectional);
-        authorBidirectional.setBookBidirectionals(bookBidirectionals);
+        AuthorBidirectional authorBidirectional = bidirectionalDao.createData();
         authorBidirectionalRepository.save(authorBidirectional);
     }
 

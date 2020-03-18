@@ -1,5 +1,6 @@
 package com.jpa3.jpa3Project.controller;
 
+import com.jpa3.jpa3Project.dao.ManyToManyDao;
 import com.jpa3.jpa3Project.entities.*;
 import com.jpa3.jpa3Project.repositories.AuthorManyToManyRepository;
 
@@ -14,26 +15,13 @@ public class ManyToManyController {
     @Autowired
     AuthorManyToManyRepository authorManyToManyRepository;
 
+    @Autowired
+    ManyToManyDao manyToManyDao;
+
     @GetMapping("/manytomany")
-    public void createSampleData() {
-        AuthorManyToMany authorManyToMany = new AuthorManyToMany();
-        authorManyToMany.setName("himanshu");
-        BookManyToMany bookManyToMany = new BookManyToMany();
-        bookManyToMany.setBookName("dfghj");
-        BookManyToMany bookManyToMany1 = new BookManyToMany();
-        bookManyToMany1.setBookName("fghj");
-        HashSet<BookManyToMany> bookManyToManyHashSet = new HashSet<>();
-        bookManyToManyHashSet.add(bookManyToMany);
-        bookManyToManyHashSet.add(bookManyToMany1);
-        authorManyToMany.setBookManyToManySet(bookManyToManyHashSet);
-        AuthorManyToMany authorManyToMany1 = new AuthorManyToMany();
-        authorManyToMany1.setName("ankit");
-        HashSet<AuthorManyToMany> authorManyToManyHashSet = new HashSet<>();
-        authorManyToManyHashSet.add(authorManyToMany);
-        authorManyToManyHashSet.add(authorManyToMany1);
-        bookManyToMany.setAuthorManyToManySet(authorManyToManyHashSet);
-        authorManyToManyRepository.save(authorManyToMany);
-        authorManyToManyRepository.save(authorManyToMany1);
+    public void createSampleData()
+    {
+        manyToManyDao.createData();
     }
 
 }
