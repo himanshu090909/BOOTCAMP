@@ -72,6 +72,10 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
                 .antMatchers("/OrderOneProductFromCart/{cartId}/{paymentMethod}/{AddressId}").hasAnyRole("CUSTOMER")
                 .antMatchers("/OrderWholeCart/{AddressId}").hasAnyRole("CUSTOMER")
                 .antMatchers("/editEmail/{token}").hasAnyRole("CUSTOMER")
+                .antMatchers("/viewProfile").hasAnyRole("CUSTOMER")
+                .antMatchers("/updateProfile").hasAnyRole("CUSTOMER")
+                .antMatchers("/uploadProfilePic").hasAnyRole("CUSTOMER")
+                .antMatchers("/viewProfileImage").hasAnyRole("CUSTOMER")
 
 
                 //admin and customer accessible uri
