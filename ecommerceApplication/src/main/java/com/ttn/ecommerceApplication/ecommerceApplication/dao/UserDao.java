@@ -184,8 +184,6 @@ public class UserDao {
 
     public void viewProfile()
     {
-        String username = getCurrentUser.getUser();
-        User user1 = userRepository.findByUsername(username);
 
 
     }
