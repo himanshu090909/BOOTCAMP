@@ -1,0 +1,10 @@
+package com.ttn.ecommerceApplication.ecommerceApplication.repository;
+
+import com.ttn.ecommerceApplication.ecommerceApplication.entities.CategoryMetadataFieldValues;
+import com.ttn.ecommerceApplication.ecommerceApplication.entities.CategoryMetadataFieldValuesId;
+import org.springframework.data.repository.PagingAndSortingRepository;
+
+public interface CategoryMetadataFieldValuesRepository extends PagingAndSortingRepository<CategoryMetadataFieldValues, CategoryMetadataFieldValuesId>
+{
+
+}
