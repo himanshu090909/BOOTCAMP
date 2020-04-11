@@ -182,11 +182,7 @@ public class UserDao {
         return "success";
     }
 
-    public void viewProfile()
-    {
 
-
-    }
 
 
 

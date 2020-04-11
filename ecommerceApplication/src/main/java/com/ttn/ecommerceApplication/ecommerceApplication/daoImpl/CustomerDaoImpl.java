@@ -2,6 +2,8 @@
 package com.ttn.ecommerceApplication.ecommerceApplication.daoImpl;
 
 import com.ttn.ecommerceApplication.ecommerceApplication.dao.CustomerDao;
+import com.ttn.ecommerceApplication.ecommerceApplication.dto.CustomerDTO;
+import com.ttn.ecommerceApplication.ecommerceApplication.dto.ProfileDTO;
 import com.ttn.ecommerceApplication.ecommerceApplication.entities.*;
 import com.ttn.ecommerceApplication.ecommerceApplication.enums.FromStatus;
 import com.ttn.ecommerceApplication.ecommerceApplication.enums.ToStatus;
@@ -10,6 +12,7 @@ import com.ttn.ecommerceApplication.ecommerceApplication.exceptionHandling.Patte
 import com.ttn.ecommerceApplication.ecommerceApplication.exceptionHandling.UserNotFoundException;
 import com.ttn.ecommerceApplication.ecommerceApplication.repository.*;
 import com.ttn.ecommerceApplication.ecommerceApplication.utilities.GetCurrentUser;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -30,6 +33,9 @@ public class CustomerDaoImpl implements CustomerDao {
 
     @Autowired
     AddressRepository addressRepository;
+
+    @Autowired
+    ModelMapper modelMapper;
 
     @Autowired
     UserRepository userRepository;
@@ -57,17 +63,21 @@ public class CustomerDaoImpl implements CustomerDao {
         }
     }
 
-    public String editContact(Customer customer) {
-        if (customer.getContactNo().matches("(\\+91|0)[0-9]{10}")) {
+    public String editContact(Customer customer)
+    {
+        if (customer.getContactNo().matches("(\\+91|0)[0-9]{10}"))
+        {
             String user = getCurrentUser.getUser();
             Customer user1 = customerRepository.findByUsername(user);
             user1.setContactNo(customer.getContactNo());
             user1.setModifiedBy(user);
             customerRepository.save(user1);
             return "success";
-        } else {
-            throw new PatternMismatchException("Contact number should start with +91 or 0 and length should be 10");
         }
+        else
+            {
+             throw new PatternMismatchException("Contact number should start with +91 or 0 and length should be 10");
+            }
     }
 
     public List<Object[]> getAddresses() {
@@ -79,6 +89,45 @@ public class CustomerDaoImpl implements CustomerDao {
             throw new UserNotFoundException("no addresses found for this user");
         }
         return list;
+    }
+
+    @Override
+    public List<Object[]> viewProfile()
+    {
+        String username = getCurrentUser.getUser();
+        Customer customer = customerRepository.findByUsername(username);
+        return customerRepository.viewProfile(customer.getId());
+    }
+
+    @Override
+    public String updateProfile(ProfileDTO customer)
+    {
+         String username = getCurrentUser.getUser();
+         Customer customer1 = customerRepository.findByUsername(username);
+         if (customer.getFirstName()!=null)
+             customer1.setFirstName(customer.getFirstName());
+         if (customer.getMiddleName()!=null)
+             customer1.setMiddleName(customer.getMiddleName());
+         if (customer.getLastName()!=null)
+             customer1.setLastName(customer.getLastName());
+         if (customer.getContactNo()!=null)
+         {
+             if (customer.getContactNo().matches("(\\+91|0)[0-9]{10}"))
+             {
+                 customer1.setContactNo(customer.getContactNo());
+             }
+             else
+             {
+                 throw new PatternMismatchException("Contact number should start with +91 or 0 and length should be 10");
+             }
+         }
+         if (customer.isActive()==false)
+         {
+             customer1.setActive(false);
+             customer1.setEnabled(false);
+         }
+         customerRepository.save(customer1);
+         return "success";
     }
 
     @Override

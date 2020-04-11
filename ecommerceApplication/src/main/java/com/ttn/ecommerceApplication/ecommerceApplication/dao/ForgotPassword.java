@@ -14,7 +14,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class ForgotPassword {
+public class ForgotPassword
+{
     @Autowired
     UserRepository userRepository;
 

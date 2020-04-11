@@ -21,4 +21,7 @@ public interface CustomerRepository extends CrudRepository<Customer,Long> {
     @Transactional
     @Query(value = "insert into customer values(?1,?2)",nativeQuery = true)
     void insertIntoCustomer(String contactNo,Long id);
+
+    @Query("select firstName,middleName,lastName,isActive,contactNo from Customer where id=:id")
+    List<Object[]> viewProfile(@Param(value = "id") Long id);
 }

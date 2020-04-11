@@ -1,6 +1,7 @@
 package com.ttn.ecommerceApplication.ecommerceApplication.controller;
 
 import com.ttn.ecommerceApplication.ecommerceApplication.dao.UploadDao;
+import com.ttn.ecommerceApplication.ecommerceApplication.entities.Customer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,18 +15,16 @@ public class UploadController
 {
     @Autowired
     UploadDao uploadDao;
-
     @PostMapping("/upload")
-    public ResponseEntity<Object> uploadFile(@RequestParam("file") MultipartFile file) throws IOException
+    public ResponseEntity<Object> uploadFile(@RequestParam("file") MultipartFile file, Customer customer) throws IOException
     {
-        return   uploadDao.uploadSingleImage(file);
+        return uploadDao.uploadSingleImage(file,customer);
     }
     @PostMapping("/uploadsm")
     public ResponseEntity<Object> uploadFiles(@RequestParam("files") MultipartFile[] files) throws IOException
     {
         return uploadDao.uploadMultipleFiles(files);
     }
-
     @GetMapping("/download/{fileName:.+}")
     public ResponseEntity downloadFileFromLocal(@PathVariable String fileName, HttpServletRequest request) throws IOException
     {

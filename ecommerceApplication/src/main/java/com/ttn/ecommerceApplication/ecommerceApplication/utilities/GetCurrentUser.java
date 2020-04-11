@@ -8,7 +8,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class GetCurrentUser
 {
-    public String getUser() {
+    public String getUser()
+    {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username;
         User user = null;

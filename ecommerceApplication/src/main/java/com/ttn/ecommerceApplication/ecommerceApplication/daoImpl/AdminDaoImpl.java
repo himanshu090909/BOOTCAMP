@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+
 public class AdminDaoImpl implements AdminDao
 {
     private JavaMailSender javaMailSender;
@@ -170,7 +171,6 @@ public class AdminDaoImpl implements AdminDao
             System.out.println("user with this id is not present");
             throw new RuntimeException();
         }
-
     }
 
     public List<Object[]> getAllProducts()
