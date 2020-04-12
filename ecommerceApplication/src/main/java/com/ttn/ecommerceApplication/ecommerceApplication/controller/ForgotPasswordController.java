@@ -1,6 +1,6 @@
 package com.ttn.ecommerceApplication.ecommerceApplication.controller;
 
-import com.ttn.ecommerceApplication.ecommerceApplication.dao.ForgotPassword;
+import com.ttn.ecommerceApplication.ecommerceApplication.dao.ForgotPasswordDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,7 +13,7 @@ import javax.validation.Valid;
 public class ForgotPasswordController
 {
     @Autowired
-    ForgotPassword forgotPassword;
+    ForgotPasswordDao forgotPassword;
 
     @PostMapping("/forgotPassword/{email_id}")
     public void setForgotPasswordHandler(@PathVariable(name = "email_id") String email_id)

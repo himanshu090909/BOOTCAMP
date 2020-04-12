@@ -2,7 +2,8 @@ package com.ttn.ecommerceApplication.ecommerceApplication.enums;
 
 import java.io.Serializable;
 
-public enum FromStatus implements Serializable {
+public enum FromStatus implements Serializable
+{
     CANCELLED,ORDER_PLACED,ORDER_REJECTED,
     ORDER_CONFIRMED,ORDER_SHIPPED,DELIVERED,
     RETURN_REQUESTED,
@@ -13,7 +14,5 @@ public enum FromStatus implements Serializable {
 
     FromStatus() {
     }
-
-
 }
 

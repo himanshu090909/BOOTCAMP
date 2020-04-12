@@ -248,6 +248,12 @@ public class User {
         isActive = active;
     }
 
+    public boolean getisActive()
+    {
+        return isActive;
+    }
+
+
     public Set<Address> getAddresses() {
         return addresses;
     }
