@@ -92,6 +92,7 @@ public class CategoryDaoImpl implements CategoryDao
 
 
 
+/*
 
     public List<Object[]> getFilteringDetails(Long category_id)
     {
@@ -121,6 +122,7 @@ public class CategoryDaoImpl implements CategoryDao
 
         return list;
     }
+*/
     }
 
 
