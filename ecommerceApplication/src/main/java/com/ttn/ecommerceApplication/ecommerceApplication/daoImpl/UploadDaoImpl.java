@@ -2,6 +2,7 @@ package com.ttn.ecommerceApplication.ecommerceApplication.daoImpl;
 
 import com.ttn.ecommerceApplication.ecommerceApplication.dao.UploadDao;
 import com.ttn.ecommerceApplication.ecommerceApplication.entities.Customer;
+import com.ttn.ecommerceApplication.ecommerceApplication.entities.ProductVariation;
 import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -11,7 +12,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import sun.awt.image.ImageWatched;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
@@ -46,9 +46,53 @@ public class UploadDaoImpl implements UploadDao
         fout.write(file.getBytes());
         fout.close();
         Optional<String> ext = getExtensionByStringHandling(convertfile.getName());
+        int count=0;
+        File dir = new File(fileBasePath);
+
         if (ext.isPresent())
         {
-            Files.move(path, path.resolveSibling(customer.getId()+"."+ext.get()));
+            if (dir.isDirectory())
+            {
+              File[] files = dir.listFiles();
+              for (File file1 : files)
+              {
+                  String value = customer.getId().toString();
+                  System.out.println("value is" + value);
+                  System.out.println(file1.getName());
+                  if (file1.getName().startsWith(value)) {
+                      count++;
+                      System.out.println(count);
+                  }
+              }
+                      System.out.println("count  is"+count);
+                      String value1 = customer.getId().toString();
+                      value1 = value1+count;
+                      Files.move(path, path.resolveSibling(value1+"."+ext.get()));
+
+            }
+                 }
+
+        else
+        {
+            throw new RuntimeException();
+        }
+        return new ResponseEntity<>("file added", HttpStatus.OK);
+    }
+
+    public ResponseEntity<Object> uploadSingleImageForProductVariation(MultipartFile file, ProductVariation productVariation) throws IOException
+    {
+        File convertfile = new File("/home/himanshu/BOOTCAMP/ecommerceApplication/src/main/resources/productVariation/images"+file.getOriginalFilename());
+        convertfile.createNewFile();
+        String fileBasePath = "/home/himanshu/BOOTCAMP/ecommerceApplication/src/main/resources/productVariation/";
+        Path path = Paths.get(fileBasePath + convertfile.getName());
+        FileOutputStream fout = new FileOutputStream(convertfile);
+        System.out.println(convertfile.getAbsolutePath());
+        fout.write(file.getBytes());
+        fout.close();
+        Optional<String> ext = getExtensionByStringHandling(convertfile.getName());
+        if (ext.isPresent())
+        {
+            Files.move(path, path.resolveSibling(productVariation.getId()+"."+ext.get()));
         }
         else
         {
@@ -56,6 +100,7 @@ public class UploadDaoImpl implements UploadDao
         }
         return new ResponseEntity<>("file added", HttpStatus.OK);
     }
+
 
     @Override
     public ResponseEntity<Object> uploadMultipleFiles(MultipartFile[] files) throws IOException {
