@@ -23,6 +23,8 @@ public class Product
      private String productname;
      private String description;
 
+     private boolean isActive;
+
     @Column(name = "createdDate")
     @CreatedDate
     private LocalDateTime createdOn;
@@ -36,6 +38,8 @@ public class Product
 
     @LastModifiedBy
     private String modifiedBy;
+
+
 
     public LocalDateTime getCreatedOn() {
         return createdOn;
@@ -107,7 +111,7 @@ public class Product
      private boolean isReturnable;
      private String brand;
 
-     private boolean isActive;
+
 
     public Product(String productname, String brand) {
         this.productname = productname;

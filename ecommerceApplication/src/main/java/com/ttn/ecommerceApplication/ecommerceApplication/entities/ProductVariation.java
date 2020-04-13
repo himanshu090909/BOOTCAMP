@@ -8,6 +8,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+import javax.validation.constraints.Positive;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -98,6 +99,7 @@ public class ProductVariation
     }
 
 
+    @Positive
     @Column(nullable = false)
     Integer quantity_available;
     @Column(nullable = false)
