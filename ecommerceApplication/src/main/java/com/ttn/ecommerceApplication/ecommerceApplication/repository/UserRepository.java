@@ -20,6 +20,9 @@ public interface UserRepository extends CrudRepository<User,Long> {
     @Query(value = "select id,username,email from user where id in(select user_id from user_role where role_id in(select id from role where role='ROLE_CUSTOMER'))",nativeQuery = true)
     List<Object[]> findCustomers();
 
+    @Query(value = "select id from user where id in(select user_id from user_role where role_id in(select id from role where role='ROLE_ADMIN'))",nativeQuery = true)
+    Long findAdmin();
+
     @Query(value = "select id,username,email from user where id in(select user_id from user_role where role_id in(select id from role where role='ROLE_SELLER'))",nativeQuery = true)
     List<Object[]> findSellers();
 
@@ -27,6 +30,8 @@ public interface UserRepository extends CrudRepository<User,Long> {
     @Modifying
     @Query(value = "update User u set u.isDeleted = true, u.isAccountNonExpired = false , u.isEnabled= false where u.id =:id ")
     public void deleteUser(@Param("id") Long  id);
+
+
 
 
 
