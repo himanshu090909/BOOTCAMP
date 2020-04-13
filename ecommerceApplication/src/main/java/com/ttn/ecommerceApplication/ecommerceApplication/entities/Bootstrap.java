@@ -490,6 +490,30 @@ public class Bootstrap implements ApplicationRunner {
         categoryMetadataFieldValuesRepository.save(categoryMetadataFieldValues);
 
 
+        CategoryMetadataField categoryMetadataField1 = new CategoryMetadataField();
+        categoryMetadataField1.setName("COLOUR");
+        categoryMetadataFieldRepository.save(categoryMetadataField1);
+
+        CategoryMetadataFieldValuesId categoryMetadataFieldValuesId1= new CategoryMetadataFieldValuesId();
+        categoryMetadataFieldValuesId1.setCid(category4.getId());
+        categoryMetadataFieldValuesId1.setMid(categoryMetadataField1.getId());
+
+
+        CategoryMetadataFieldValues categoryMetadataFieldValues2= new CategoryMetadataFieldValues();
+        categoryMetadataFieldValues2.setFieldValues("BLACK,BLUE");
+        categoryMetadataFieldValues2.setCategoryMetadataFieldValuesId(categoryMetadataFieldValuesId1);
+        categoryMetadataFieldValues2.setCategoryMetadataField(categoryMetadataField1);
+        categoryMetadataFieldValues2.setCategory(category4);
+
+        Set<CategoryMetadataFieldValues> categoryMetadataFieldValues3 = new HashSet<>();
+        categoryMetadataFieldValues3.add(categoryMetadataFieldValues2);
+        category4.setCategoryMetadataFieldValues(categoryMetadataFieldValues3);
+
+        categoryMetadataFieldValuesRepository.save(categoryMetadataFieldValues2);
+
+
+
+
 
 
 

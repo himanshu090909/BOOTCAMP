@@ -58,6 +58,7 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
                 .antMatchers("/lock/{user_id}").hasAnyRole("ADMIN")
                 .antMatchers("/unlock/{user_id}").hasAnyRole("ADMIN")
                 .antMatchers("/getAllProducts").hasAnyRole("ADMIN")
+                .antMatchers("/addMainCategory/{Category_name}").hasAnyRole("ADMIN")
 
                 //only customer accessible uri
                 .antMatchers("/placeOrder/{productVariationId}/{quantity}/{paymentMethod}/{AddressId}").hasAnyRole("CUSTOMER")
@@ -123,6 +124,7 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
                 .antMatchers("/verify/{u}").anonymous()
                 .antMatchers("/forgotPassword/{email_id}").anonymous()
                 .antMatchers("/setPassword/{token}/{password}").anonymous()
+                .antMatchers("/filtering").anonymous()
 
 
 

@@ -1,6 +1,7 @@
 package com.ttn.ecommerceApplication.ecommerceApplication.controller;
 
 import com.ttn.ecommerceApplication.ecommerceApplication.dao.CustomerDao;
+import com.ttn.ecommerceApplication.ecommerceApplication.dao.ProductDao;
 import com.ttn.ecommerceApplication.ecommerceApplication.dao.UploadDao;;
 import com.ttn.ecommerceApplication.ecommerceApplication.dto.ProfileDTO;
 import com.ttn.ecommerceApplication.ecommerceApplication.entities.Customer;
@@ -31,6 +32,9 @@ public class CustomerController
 
      @Autowired
      UploadDao  uploadDao;
+
+     @Autowired
+     ProductDao productDao;
 
      @GetMapping("/detailsOfCustomer")
      public List<Object[]> getDetails()
@@ -90,4 +94,11 @@ public class CustomerController
      {
         return customerDao.updateProfile(customer);
      }
+
+     @GetMapping("/viewProduct/{product_id}")
+     public List<Object[]> viewProduct(@PathVariable Long product_id)
+     {
+          return productDao.viewProduct(product_id);
+     }
+
 }

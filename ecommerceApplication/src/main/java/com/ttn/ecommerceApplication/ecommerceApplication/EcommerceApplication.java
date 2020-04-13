@@ -63,6 +63,7 @@ public class EcommerceApplication
 	public static void main(String[] args) {
 
 		SpringApplication.run(EcommerceApplication.class, args);
+		System.out.println(System.getProperty("user.dir"));
 		/*Twilio.init("AC6e3f007b213a141efb5bc835721b967a", "78d1d18160a31aef65fe843f10632e1b");
 
 		Message message = Message.creator(new PhoneNumber("+917530902834"),

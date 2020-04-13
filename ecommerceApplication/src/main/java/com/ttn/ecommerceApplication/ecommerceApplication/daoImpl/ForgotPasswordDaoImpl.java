@@ -68,7 +68,8 @@ public class ForgotPasswordDaoImpl implements ForgotPasswordDao
             if (token1.isExpired()) {
                 notificationService.sendNotificaitoin(userRepository.findByUsername(token1.getName()));
                 tokenRepository.delete(token1);
-            } else {
+            }
+            else {
                 User user2 = userRepository.findByUsername(token1.getName());
                 user2.setPassword(new BCryptPasswordEncoder().encode(password));
                 userRepository.save(user2);

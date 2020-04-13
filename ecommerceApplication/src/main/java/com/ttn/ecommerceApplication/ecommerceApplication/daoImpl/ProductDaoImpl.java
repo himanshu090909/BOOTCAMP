@@ -142,5 +142,10 @@ public class ProductDaoImpl implements ProductDao {
 
     }
 
+    @Override
+    public List<Object[]> viewProduct(Long product_id) {
+        return null;
+    }
+
 
 }

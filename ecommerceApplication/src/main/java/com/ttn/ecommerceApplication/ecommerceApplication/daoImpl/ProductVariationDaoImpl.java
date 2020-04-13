@@ -64,17 +64,18 @@ public class ProductVariationDaoImpl implements ProductVariationDao
         Product product1 = product.get();
         String seller= getCurrentUser.getUser();
         Seller seller1= sellerRepository.findByUsername(seller);
-        if ((product1.getSeller().getUsername()).equals(seller1.getUsername())) {
+        if ((product1.getSeller().getUsername()).equals(seller1.getUsername()))
+        {
             productVariation.setProduct(product1);
             System.out.println(productVariation.getInfoAttributes());
             String  info = objectMapper.writeValueAsString(productVariation.getInfoAttributes());
             productVariation.setInfoJson(info);
             productVariationRepository.save(productVariation);
         }
-
-        else {
+        else
+            {
             throw new NullException("you can't add any product variation to this product");
-        }
+            }
     }
 
     @Override

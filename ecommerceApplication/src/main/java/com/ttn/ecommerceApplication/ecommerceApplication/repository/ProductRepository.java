@@ -53,6 +53,10 @@ public interface ProductRepository extends CrudRepository<Product,Long>
     @Query(value = "update product_variation set is_active = false where product_id =:product_id",nativeQuery = true)
     public void setActiveStatusOfProductAndProductVariation(@Param(value = "product_id") Long product_id);
 
+    @Query(value = "select brand from product where category_id=:category_id",nativeQuery = true)
+    List<Object[]> getBrands(@Param("category_id") Long category_id);
+
+
 
 
 }

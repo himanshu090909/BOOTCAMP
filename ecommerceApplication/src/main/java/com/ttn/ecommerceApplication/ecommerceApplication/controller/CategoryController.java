@@ -7,6 +7,7 @@ import com.ttn.ecommerceApplication.ecommerceApplication.repository.CategoryRepo
 import com.ttn.ecommerceApplication.ecommerceApplication.repository.ProductRepository;
 import com.ttn.ecommerceApplication.ecommerceApplication.repository.ProductVariationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -53,9 +54,21 @@ public class CategoryController {
         return "subcategory added successfully";
     }
 
+    @PostMapping("/addMainCategory/{Category_name}")
+    public ResponseEntity addMainCategory(@PathVariable(name = "Category_name") String  Category_name)
+    {
+        return categoryDao.addMainCategory(Category_name);
+    }
+
     @GetMapping("/getSubcategories")
     public List<Object[]> getSubcategories() {
         List<Object[]> objects = categoryDao.getSubcategory();
         return objects;
+    }
+
+    @GetMapping("/filtering")
+    public List<Object[]> a()
+    {
+       return categoryDao.getFilteringDetails(6L);
     }
 }

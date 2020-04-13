@@ -27,4 +27,7 @@ public interface CategoryRepository extends CrudRepository<Category,Long>
     @Transactional
     @Query(value = "insert into category(name,parent_id) values(?1,?2)",nativeQuery = true)
     void insertNewSubCategory(String name,Long id);
+
+    @Query(value = "select exists(select * from product where category_id=:category_id)",nativeQuery = true)
+    int checkIfLeaf(@Param("category_id") Long category_id);
 }

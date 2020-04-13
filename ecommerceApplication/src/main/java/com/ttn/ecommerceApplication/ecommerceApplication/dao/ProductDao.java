@@ -18,4 +18,5 @@ public interface ProductDao
      public void editProduct(Product product, String productName);
      public void setStatus(String ProductName);
 
+    List<Object[]> viewProduct(Long product_id);
 }
