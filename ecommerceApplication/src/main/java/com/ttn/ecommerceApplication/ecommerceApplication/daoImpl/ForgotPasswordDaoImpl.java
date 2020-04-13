@@ -76,5 +76,6 @@ public class ForgotPasswordDaoImpl implements ForgotPasswordDao
                 tokenRepository.delete(token1);
             }
         }
+
     }
 }
