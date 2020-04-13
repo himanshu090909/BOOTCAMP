@@ -12,4 +12,7 @@ public interface CategoryMetadataFieldRepository extends PagingAndSortingReposit
 
     @Query(value = "select name from category_metadata_field where id = :id",nativeQuery = true)
     List<Object[]> getMetadataField(@Param("id") Long id);
+
+    @Query(value = "select name from category_metadata_field where id = :id",nativeQuery = true)
+    public String getNameOfMetadata(@Param("id") Long id);
 }

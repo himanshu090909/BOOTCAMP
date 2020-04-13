@@ -30,4 +30,5 @@ public interface CategoryRepository extends CrudRepository<Category,Long>
 
     @Query(value = "select exists(select * from product where category_id=:category_id)",nativeQuery = true)
     int checkIfLeaf(@Param("category_id") Long category_id);
+
 }

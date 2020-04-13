@@ -20,6 +20,9 @@ public interface ProductRepository extends CrudRepository<Product,Long>
 
     List<Object[]> findByProductname(String productName);
 
+    @Query(value = "select category_id from product where id=:id",nativeQuery = true)
+    long getCategoryId(@Param("id")long id);
+
     @Query(value = "select brand,description,is_active,is_cancellable,productname from product",nativeQuery = true)
     public List<Object[]> getAllProducts();
 
@@ -56,7 +59,7 @@ public interface ProductRepository extends CrudRepository<Product,Long>
     @Query(value = "select brand from product where category_id=:category_id",nativeQuery = true)
     List<Object[]> getBrands(@Param("category_id") Long category_id);
 
-
-
-
+    @Query(value = "select productname from category  join product  on" +
+            " product.category_id = category.id where product.id = ?1",nativeQuery = true)
+    List<Object[]> getSingleProduct(Long id);
 }
