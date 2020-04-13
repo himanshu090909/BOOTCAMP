@@ -2,18 +2,18 @@ package com.ttn.ecommerceApplication.ecommerceApplication.daoImpl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ttn.ecommerceApplication.ecommerceApplication.dao.ProductVariationDao;
+import com.ttn.ecommerceApplication.ecommerceApplication.entities.CategoryMetadataField;
 import com.ttn.ecommerceApplication.ecommerceApplication.entities.Product;
 import com.ttn.ecommerceApplication.ecommerceApplication.entities.ProductVariation;
 import com.ttn.ecommerceApplication.ecommerceApplication.entities.Seller;
+import com.ttn.ecommerceApplication.ecommerceApplication.exceptionHandling.NotFoundException;
 import com.ttn.ecommerceApplication.ecommerceApplication.exceptionHandling.NullException;
-import com.ttn.ecommerceApplication.ecommerceApplication.repository.ProductRepository;
-import com.ttn.ecommerceApplication.ecommerceApplication.repository.ProductVariationRepository;
-import com.ttn.ecommerceApplication.ecommerceApplication.repository.SellerRepository;
+import com.ttn.ecommerceApplication.ecommerceApplication.repository.*;
 import com.ttn.ecommerceApplication.ecommerceApplication.utilities.GetCurrentUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class ProductVariationDaoImpl implements ProductVariationDao
@@ -33,6 +33,12 @@ public class ProductVariationDaoImpl implements ProductVariationDao
 
     @Autowired
     SellerRepository sellerRepository;
+
+    @Autowired
+    CategoryMetadataFieldValuesRepository categoryMetadataFieldValuesRepository;
+
+    @Autowired
+    CategoryMetadataFieldRepository categoryMetadataFieldRepository;
 
     @Override
     public void makeProductVariationNotAvailable(ProductVariation productVariation)
@@ -58,25 +64,6 @@ public class ProductVariationDaoImpl implements ProductVariationDao
         productVariationRepository.save(productVariation);
     }
 
-    @Override
-    public void addNewProductVariation(ProductVariation productVariation, String productName) throws JsonProcessingException {
-        Optional<Product> product = productRepository.findById(productRepository.findProduct(productName));
-        Product product1 = product.get();
-        String seller= getCurrentUser.getUser();
-        Seller seller1= sellerRepository.findByUsername(seller);
-        if ((product1.getSeller().getUsername()).equals(seller1.getUsername()))
-        {
-            productVariation.setProduct(product1);
-            System.out.println(productVariation.getInfoAttributes());
-            String  info = objectMapper.writeValueAsString(productVariation.getInfoAttributes());
-            productVariation.setInfoJson(info);
-            productVariationRepository.save(productVariation);
-        }
-        else
-            {
-            throw new NullException("you can't add any product variation to this product");
-            }
-    }
 
     @Override
     public String removeProductVariation(Long productVariationId) {
@@ -112,5 +99,68 @@ public class ProductVariationDaoImpl implements ProductVariationDao
         } else {
             throw new NullPointerException("You do not have this product to sell");
         }
+    }
+
+    public void addNewProductVariation(ProductVariation productVariation, String productName) throws JsonProcessingException {
+        Product product1 = productRepository.findById(productRepository.findProduct(productName)).get();
+        if (product1.equals(null))
+        {
+            throw new NotFoundException("The product name provided is wrong as this product is not available");
+        }
+        else {
+            Map<String, String> stringMap = new HashMap<>();
+            String seller = getCurrentUser.getUser();
+            Seller seller1 = sellerRepository.findByUsername(seller);
+            Map<String, Object> map = productVariation.getInfoAttributes();
+
+            if ((product1.getSeller().getUsername()).equals(seller1.getUsername())) {
+                productVariation.setProduct(product1);
+                Long categoryId = productRepository.getCategoryId(product1.getID());
+                List<Long> metadataIds = categoryMetadataFieldValuesRepository.getMetadataId(categoryId);
+
+                for (long l : metadataIds) {
+
+                    String metadata = categoryMetadataFieldRepository.getNameOfMetadata(l);
+                    String metadataValues = categoryMetadataFieldValuesRepository.getFieldValuesForCompositeKey(categoryId, l);
+                    stringMap.put(metadata, metadataValues);
+
+                }
+
+                int count=0;
+
+                for (String key : map.keySet()) {
+                    if (stringMap.containsKey(key)) {
+                        String str = stringMap.get(key);
+                        Object obj = map.get(key);
+                        String[] strings = str.split(",");
+                        List<String> list = Arrays.asList(strings);
+                        if (list.contains(obj)) {
+                            count++;
+                        }
+
+                    }
+                }
+
+                if (count == map.size())
+                {
+                    String info = objectMapper.writeValueAsString(productVariation.getInfoAttributes());
+                    productVariation.setInfoJson(info);
+                    productVariationRepository.save(productVariation);
+                }
+
+                else{
+                    throw new NotFoundException("Field values are not provided correctly");
+                }
+
+            }
+
+
+            else {
+                throw  new NullException("you can't add any product variation to this product");
+            }
+
+
+        }
+
     }
 }
