@@ -3,7 +3,6 @@ package com.ttn.ecommerceApplication.ecommerceApplication.daoImpl;
 import com.ttn.ecommerceApplication.ecommerceApplication.dao.UploadDao;
 import com.ttn.ecommerceApplication.ecommerceApplication.entities.Customer;
 import com.ttn.ecommerceApplication.ecommerceApplication.entities.ProductVariation;
-import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
@@ -17,8 +16,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-
-
 import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -60,11 +57,9 @@ public class UploadDaoImpl implements UploadDao {
                         System.out.println(count);
                     }
                 }
-                System.out.println("count  is" + count);
                 String value1 = productVariation.getId().toString();
                 value1 = value1 + count;
                 Files.move(path, path.resolveSibling(value1 + "." + ext.get()));
-
             }
         } else {
             throw new RuntimeException();
@@ -103,7 +98,6 @@ public class UploadDaoImpl implements UploadDao {
         return new ResponseEntity<>("file added", HttpStatus.OK);
     }
 
-
     @Override
     public ResponseEntity<Object> uploadMultipleFiles(MultipartFile[] files) throws IOException {
         for (MultipartFile multipartFile : files) {
@@ -117,10 +111,9 @@ public class UploadDaoImpl implements UploadDao {
         return new ResponseEntity<>("file added", HttpStatus.OK);
     }
 
-
     @Override
     public ResponseEntity downloadImage(String fileName, HttpServletRequest request) throws IOException {
-        String fileBasePath = firstPath+"/src/main/resources/productVariation/";
+        String fileBasePath = firstPath+"/src/main/resources/users/";
         File dir = new File(fileBasePath);
         Resource resource = null;
         String contentType = null;
