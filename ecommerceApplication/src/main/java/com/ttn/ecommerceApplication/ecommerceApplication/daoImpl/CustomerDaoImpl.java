@@ -2,16 +2,16 @@
 package com.ttn.ecommerceApplication.ecommerceApplication.daoImpl;
 
 import com.ttn.ecommerceApplication.ecommerceApplication.dao.CustomerDao;
+import com.ttn.ecommerceApplication.ecommerceApplication.dao.ProductDao;
 import com.ttn.ecommerceApplication.ecommerceApplication.dto.CustomerDTO;
 import com.ttn.ecommerceApplication.ecommerceApplication.dto.ProfileDTO;
 import com.ttn.ecommerceApplication.ecommerceApplication.entities.*;
 import com.ttn.ecommerceApplication.ecommerceApplication.enums.FromStatus;
 import com.ttn.ecommerceApplication.ecommerceApplication.enums.ToStatus;
-import com.ttn.ecommerceApplication.ecommerceApplication.exceptionHandling.NullException;
-import com.ttn.ecommerceApplication.ecommerceApplication.exceptionHandling.PatternMismatchException;
-import com.ttn.ecommerceApplication.ecommerceApplication.exceptionHandling.UserNotFoundException;
+import com.ttn.ecommerceApplication.ecommerceApplication.exceptionHandling.*;
 import com.ttn.ecommerceApplication.ecommerceApplication.repository.*;
 import com.ttn.ecommerceApplication.ecommerceApplication.utilities.GetCurrentUser;
+import org.graalvm.compiler.core.common.type.ArithmeticOpTable;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -29,10 +29,19 @@ public class CustomerDaoImpl implements CustomerDao {
     GetCurrentUser getCurrentUser;
 
     @Autowired
+    CategoryRepository categoryRepository;
+
+    @Autowired
     CustomerRepository customerRepository;
 
     @Autowired
+    ProductVariationRepository  productVariationRepository;
+
+    @Autowired
     AddressRepository addressRepository;
+
+    @Autowired
+    ProductRepository productRepository;
 
     @Autowired
     ModelMapper modelMapper;
@@ -128,6 +137,49 @@ public class CustomerDaoImpl implements CustomerDao {
          }
          customerRepository.save(customer1);
          return "success";
+    }
+
+    @Override
+    public List<Object[]> viewProduct(Long id) {
+        Optional<Product> product1 = productRepository.findById(id);
+        if (product1.isPresent())
+        {
+            if (product1.get().isActive()==true)
+            {
+                List<Object[]> list = productVariationRepository.getProductVariation(id);
+                if (list.isEmpty())
+                {
+                    throw new NotFoundException("product variations not available for this product");
+                }
+                else {
+                    return productRepository.getSingleProduct(id);
+                }
+            }
+            else
+            {
+                throw new NotFoundException("product is not present or is currently not active");
+            }
+        }
+        else
+        {
+            throw new NotFoundException("prooduct with this id is not present");
+        }
+
+    }
+
+    @Override
+    public List<Object[]> viewProducts(Long categoryId) {
+        Optional<Category> category = categoryRepository.findById(categoryId);
+        if (category.isPresent())
+        {
+
+        }
+        else
+        {
+
+        }
+            return null;
+
     }
 
     @Override

@@ -18,6 +18,8 @@ public interface CustomerDao
     List<Object[]> getAddresses();
     public List<Object[]> viewProfile();
     public String updateProfile(ProfileDTO customer);
+    public List<Object[]> viewProduct(Long id);
+    public List<Object[]> viewProducts(Long categoryId);
 
 }
 

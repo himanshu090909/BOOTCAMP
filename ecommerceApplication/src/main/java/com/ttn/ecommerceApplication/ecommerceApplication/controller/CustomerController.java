@@ -69,11 +69,13 @@ public class CustomerController
      {
         return customerDao.cancelOrder(orderStatusId);
      }
+
      @GetMapping("/viewProfile")
      public List<Object[]> viewProfile(HttpServletRequest request) throws IOException
      {
           return customerDao.viewProfile();
      }
+
      @PostMapping("/uploadProfilePic")
      public ResponseEntity<Object> uploadFile(@RequestParam("file") MultipartFile file) throws IOException
      {
@@ -81,6 +83,7 @@ public class CustomerController
           Customer customer = customerRepository.findByUsername(username);
           return uploadDao.uploadSingleImage(file,customer);
      }
+
      @GetMapping("/viewProfileImage")
      public ResponseEntity<Object> viewProfileImage(HttpServletRequest request) throws IOException {
           String username = getCurrentUser.getUser();
@@ -89,6 +92,7 @@ public class CustomerController
           System.out.println(filename);
           return uploadDao.downloadImage(filename,request);
      }
+
      @PutMapping("/updateProfile")
      public String updateProfile(@RequestBody ProfileDTO customer)
      {
@@ -98,7 +102,9 @@ public class CustomerController
      @GetMapping("/viewProduct/{product_id}")
      public List<Object[]> viewProduct(@PathVariable Long product_id)
      {
-          return productDao.viewProduct(product_id);
+          return customerDao.viewProduct(product_id);
      }
+
+
 
 }

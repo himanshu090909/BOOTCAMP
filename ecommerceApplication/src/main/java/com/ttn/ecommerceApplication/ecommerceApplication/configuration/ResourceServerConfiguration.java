@@ -77,6 +77,7 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
                 .antMatchers("/updateProfile").hasAnyRole("CUSTOMER")
                 .antMatchers("/uploadProfilePic").hasAnyRole("CUSTOMER")
                 .antMatchers("/viewProfileImage").hasAnyRole("CUSTOMER")
+                .antMatchers("/viewProduct/{product_id}").hasAnyRole("CUSTOMER")
 
 
                 //admin and customer accessible uri
@@ -125,6 +126,8 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
                 .antMatchers("/forgotPassword/{email_id}").anonymous()
                 .antMatchers("/setPassword/{token}/{password}").anonymous()
                 .antMatchers("/filtering").anonymous()
+                .antMatchers("/uploadVariationPic/{id}").anonymous()
+                .antMatchers("/viewSingleProduct/{id}").anonymous()
 
 
 

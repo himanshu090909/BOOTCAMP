@@ -59,6 +59,12 @@ public class ProductController
        productDao.setStatus(productName);
        return "success";
     }
+
+    @GetMapping("/viewSingleProduct/{id}")
+    public List<Object[]> viewSingleProduct(@PathVariable Long id)
+    {
+        return productRepository.getSingleProduct(id);
+    }
 }
 
 
