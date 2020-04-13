@@ -3,14 +3,19 @@ package com.ttn.ecommerceApplication.ecommerceApplication.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ttn.ecommerceApplication.ecommerceApplication.dao.ProductDao;
 import com.ttn.ecommerceApplication.ecommerceApplication.dao.ProductVariationDao;
+import com.ttn.ecommerceApplication.ecommerceApplication.daoImpl.UploadDaoImpl;
 import com.ttn.ecommerceApplication.ecommerceApplication.entities.ProductVariation;
 import com.ttn.ecommerceApplication.ecommerceApplication.repository.ProductRepository;
 import com.ttn.ecommerceApplication.ecommerceApplication.repository.ProductVariationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 public class ProjectVariationController
@@ -25,7 +30,10 @@ public class ProjectVariationController
     ProductVariationDao productVariationDao;
 
     @Autowired
-    ProductRepository productRepository;;
+    ProductRepository productRepository;
+
+    @Autowired
+    UploadDaoImpl uploadDao;
 
 
     @GetMapping("/getProductVariation/{u}")
@@ -60,5 +68,24 @@ public class ProjectVariationController
     public String  deleteProductVariation(@PathVariable Long productVariationId) {
         return productVariationDao.removeProductVariation(productVariationId);
     }
+
+    @PostMapping("/uploadVariationPic/{id}")
+    public ResponseEntity<Object> uploadFile(@RequestParam("file") MultipartFile file,@PathVariable Long id) throws IOException
+    {
+        Optional<ProductVariation> productVariation = productVariationRepository.findById(id);
+        if (productVariation.isPresent())
+        {
+           return    uploadDao.uploadSingleImageForProductVariation(file,productVariation.get());
+        }
+        else
+        {
+            throw new RuntimeException();
+        }
+    }
+
+
+
+
+
 
 }
