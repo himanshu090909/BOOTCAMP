@@ -1,5 +1,6 @@
 package com.ttn.ecommerceApplication.ecommerceApplication.dao;
 
+import com.ttn.ecommerceApplication.ecommerceApplication.dto.ProductDTO;
 import com.ttn.ecommerceApplication.ecommerceApplication.entities.Category;
 import com.ttn.ecommerceApplication.ecommerceApplication.entities.Product;
 
@@ -12,11 +13,16 @@ public interface ProductDao
 
      void save(Product product);
 
-     public void addProduct(Product product,String category);
-     public List<Object[]> getProductDetails();
-     public void deleteProduct( String productName);
-     public void editProduct(Product product, String productName);
-     public void setStatus(String ProductName);
+     public List<Object[]> viewSingleProduct(Long productId);
 
-    List<Object[]> viewProduct(Long product_id);
+     public List<Object[]> getProductDetails();
+     public void deleteProduct( Long productId);
+     public void editProduct(ProductDTO product, Long id) throws IllegalAccessException;
+     public void setStatus(String ProductName);
+     public void addNewProduct(ProductDTO product, Long category);
+
+     public void addProduct(Product product, Long categoryid);
+
+
+     List<Object[]> viewProduct(Long product_id);
 }
