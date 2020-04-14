@@ -93,6 +93,7 @@ public class UserDaoImpl implements UserDao
         userRepository.save(user);
         return "success";
     }
+
     public String editUsername(UserDTO user)
     {
         User user1 = userRepository.findByUsername(user.getUsername());
@@ -116,7 +117,6 @@ public class UserDaoImpl implements UserDao
         User user1 = modelMapper.map(user,User.class);
         String username = getCurrentUser.getUser();
         user1.setUsername(username);
-        System.out.println(user1.getEmail());
         notificationService.sendNotificaitoin(user1);
         return "success";
     }
@@ -137,14 +137,13 @@ public class UserDaoImpl implements UserDao
                 User user1 = modelMapper.map(user,User.class);
                 String username = getCurrentUser.getUser();
                 user1.setUsername(username);
-                System.out.println(user1.getEmail());
                 notificationService.sendNotificaitoin(user1);
                 tokenRepository.delete(token1);
                 throw new TokenNotFoundException("token is expired check mail for new token");
             } else {
                 System.out.println("saving");
                 User user2 = userRepository.findByUsername(token1.getName());
-                user2.setEmail(user.getEmail());
+                user2.setUsername(user.getUsername());
                 user2.setModifiedBy(user2.getUsername());
                 userRepository.save(user2);
                 tokenRepository.delete(token1);
@@ -164,7 +163,7 @@ public class UserDaoImpl implements UserDao
                 user1.setModifiedBy(username);
                 userRepository.save(user1);
                 SimpleMailMessage mail = new SimpleMailMessage();
-                mail.setTo(user1.getEmail());
+                mail.setTo(user1.getUsername());
                 mail.setFrom("hs631443@gmail.com");
                 mail.setSubject("password changed status");
                 mail.setText("your password has been successfully changed");

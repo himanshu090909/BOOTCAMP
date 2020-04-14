@@ -78,7 +78,7 @@ public class RegistrationDaoImpl implements RegistrationDao
             userRepository.save(seller1);
             if (userRepository.existsById(seller1.getId())) {
                 SimpleMailMessage mail = new SimpleMailMessage();
-                mail.setTo(seller.getEmail());
+                mail.setTo(seller.getUsername());
                 mail.setFrom("bhatipinki056@gmail.com");
                 mail.setSubject("Regarding account activation");
                 mail.setText("you account has been created you can access it once admin verifies it");

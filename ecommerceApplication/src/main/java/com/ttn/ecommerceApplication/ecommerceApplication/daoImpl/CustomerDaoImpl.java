@@ -172,10 +172,19 @@ public class CustomerDaoImpl implements CustomerDao {
         Optional<Category> category = categoryRepository.findById(categoryId);
         if (category.isPresent())
         {
+            int result = categoryRepository.checkIfLeaf(categoryId);
+            if (result==1)
+            {
 
+            }
+            else
+            {
+                throw new NotFoundException("Category is not a leaf category");
+            }
         }
         else
         {
+            throw new NotFoundException("category with this id is not present");
 
         }
             return null;

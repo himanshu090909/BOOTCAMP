@@ -35,11 +35,26 @@ public class NotificationService {
     public void sendNotificaitoin(User user) throws MailException {
         System.out.println("Sending email...");
         SimpleMailMessage mail = new SimpleMailMessage();
-        mail.setTo(user.getEmail());
+        mail.setTo(user.getUsername());
         mail.setFrom("hs631443@gmail.com");
         mail.setSubject("Spring Boot is awesome nahi hai!");
         String uu = tokenDao.getToken(user);
         mail.setText(uu);
+        javaMailSender.send(mail);
+        System.out.println("Email Sent!");
+    }
+
+    @Async
+    public void sendToAdmin(User user,String text) throws MailException
+    {
+
+        System.out.println("hii");
+        System.out.println("Sending email...");
+        SimpleMailMessage mail = new SimpleMailMessage();
+        mail.setTo(user.getUsername());
+        mail.setFrom("hs631443@gmail.com");
+        mail.setSubject("Please activate the product");
+        mail.setText(text);
         javaMailSender.send(mail);
         System.out.println("Email Sent!");
     }

@@ -50,7 +50,7 @@ public class AdminDaoImpl implements AdminDao
                 user1.setEnabled(true);
                 System.out.println("Sending email for account activation");
                 SimpleMailMessage mail = new SimpleMailMessage();
-                mail.setTo(user1.getEmail());
+                mail.setTo(user1.getUsername());
                 mail.setFrom("hs631443@gmail.com");
                 mail.setSubject("Regarding account activation");
                 mail.setText("your account has been activated by admin you can now login");
@@ -87,7 +87,7 @@ public class AdminDaoImpl implements AdminDao
                 userRepository.save(user1);
                 System.out.println("Sending email...");
                 SimpleMailMessage mail = new SimpleMailMessage();
-                mail.setTo(user1.getEmail());
+                mail.setTo(user1.getUsername());
                 mail.setFrom("hs631443@gmail.com");
                 mail.setSubject("Regarding account deactivation");
                 mail.setText("your account has been deactivated by admin you can not login now");
@@ -122,7 +122,7 @@ public class AdminDaoImpl implements AdminDao
                 userRepository.save(user1);
                 System.out.println("Sending email...");
                 SimpleMailMessage mail = new SimpleMailMessage();
-                mail.setTo(user1.getEmail());
+                mail.setTo(user1.getUsername());
                 mail.setFrom("hs631443@gmail.com");
                 mail.setSubject("Regarding account status");
                 mail.setText("your account has been locked by admin you can not login now");
@@ -157,7 +157,7 @@ public class AdminDaoImpl implements AdminDao
                 userRepository.save(user1);
                 System.out.println("Sending email...");
                 SimpleMailMessage mail = new SimpleMailMessage();
-                mail.setTo(user1.getEmail());
+                mail.setTo(user1.getUsername());
                 mail.setFrom("hs631443@gmail.com");
                 mail.setSubject("Regarding account status");
                 mail.setText("your account has been unlocked by admin you can login now");

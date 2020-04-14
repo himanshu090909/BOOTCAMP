@@ -39,14 +39,14 @@ public class ForgotPasswordDaoImpl implements ForgotPasswordDao
 
     @Async
     public void forgotPassword(String email_id) {
-        User user = userRepository.findByEmail(email_id);
+        User user = userRepository.findByUsername(email_id);
         if (user == null) {
             System.out.println("no user found with this email id");
             throw new RuntimeException();
         } else {
             System.out.println("Sending email...");
             SimpleMailMessage mail = new SimpleMailMessage();
-            mail.setTo(user.getEmail());
+            mail.setTo(user.getUsername());
             mail.setFrom("hs631443@gmail.com");
             mail.setSubject("Regarding forgot password");
             String uu = tokenDao.getToken(user);
