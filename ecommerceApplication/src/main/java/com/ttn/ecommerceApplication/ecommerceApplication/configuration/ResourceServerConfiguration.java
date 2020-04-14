@@ -92,13 +92,16 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
                 .antMatchers("/getCustomerAccount").hasAnyRole("SELLER")
                 .antMatchers("/addProduct/{category}").hasAnyRole("SELLER")
                 .antMatchers("/getProducts").hasAnyRole("SELLER")
-                .antMatchers("/deleteProduct/{productName}").hasAnyRole("SELLER")
-                .antMatchers("/editProduct/{productName}").hasAnyRole("SELLER")
+                .antMatchers("/deleteProduct/{productsId}").hasAnyRole("SELLER")
+                .antMatchers("/editProduct/{id}").hasAnyRole("SELLER")
                 .antMatchers("/setActiveStatus/{productName}").hasAnyRole("SELLER")
                 .antMatchers("/addProductVariations/{productName}").hasAnyRole("SELLER")
                 .antMatchers("/editProductVariations/{productVariationId}").hasAnyRole("SELLER")
                 .antMatchers("/deleteProductVariation/{productVariationId}").hasAnyRole("SELLER")
                 .antMatchers("/setStatus/{productVariationId}/{orderStatusId}").hasAnyRole("SELLER")
+                .antMatchers("/viewSingleProduct/{productId}").hasAnyRole("SELLER")
+                .antMatchers("/viewSingleProductVariation/{productVariationId}").hasAnyRole("SELLER")
+                .antMatchers("/getAllProductVariations/{productId}").hasAnyRole("SELLER")
 
                 //seller accessible uri
                 .antMatchers("/detailsOfSeller").hasAnyRole("ADMIN,SELLER")
@@ -127,12 +130,11 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
                 .antMatchers("/setPassword/{token}/{password}").anonymous()
                 .antMatchers("/filtering").anonymous()
                 .antMatchers("/uploadVariationPic/{id}").anonymous()
-                .antMatchers("/viewSingleProduct/{id}").anonymous()
 
 
 
 
-
+                .antMatchers("dp/{id}").hasAnyRole("SELLER")
 
 
 
