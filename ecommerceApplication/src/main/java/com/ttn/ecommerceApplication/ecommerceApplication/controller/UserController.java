@@ -94,6 +94,7 @@ public class UserController {
     {
         return userDao.editEmail(user);
     }
+
     @Lazy
     @PutMapping("/editEmail/{token}")
     public String SetNewEmail(@RequestBody UserDTO user,@PathVariable String token)
