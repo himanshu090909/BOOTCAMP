@@ -10,14 +10,9 @@ import java.time.LocalDateTime;
 @Component
 public class CustomerDTO {
 
-
-    @Column(nullable=false, unique=true)
-    @NotEmpty
-    @Email(message="invalid_email")
-    private String email;
-
     @Column(nullable=false,unique = true)
     @NotBlank(message = "Enter the UserName")
+    @Email(message="invalid_email")
     private String username;
 
 
@@ -42,16 +37,6 @@ public class CustomerDTO {
 
     @Pattern(regexp = "(\\+91|0)[0-9]{10}")
     private String contactNo;
-
-
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
 
     public String getUsername() {
         return username;

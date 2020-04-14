@@ -14,7 +14,8 @@ public interface CustomerRepository extends CrudRepository<Customer,Long> {
 
 
     Customer findByUsername(String username);
-    @Query(value = "select username,email,first_name,last_name,contact_no from user join customer on user.id=customer.id where username=:username",nativeQuery = true)
+
+    @Query(value = "select username,first_name,last_name,contact_no from user join customer on user.id=customer.id where username=:username",nativeQuery = true)
     List<Object[]> getDetails(@Param(value = "username") String username);
 
     @Modifying

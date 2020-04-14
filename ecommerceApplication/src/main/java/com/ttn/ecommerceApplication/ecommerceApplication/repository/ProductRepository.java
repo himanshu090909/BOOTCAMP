@@ -14,8 +14,8 @@ public interface ProductRepository extends CrudRepository<Product,Long>
     @Query(value = "select brand,description,productname from product where category_id in (select id from category where name=:name)",nativeQuery = true)
     List<Object[]> getProducts(@Param("name") String name );
 
-    @Query(value =  "select productname,description,brand" +
-            " from product  where seller_user_id=:seller_user_id",nativeQuery = true)
+    @Query(value =  "select productname,description,brand,name" +
+            " from product join category on product.category_id=category.id where seller_user_id=:seller_user_id and is_active=true",nativeQuery = true)
     List<Object[]> getProductss(@Param(value = "seller_user_id") Long id);
 
     List<Object[]> findByProductname(String productName);
@@ -31,7 +31,7 @@ public interface ProductRepository extends CrudRepository<Product,Long>
 
     @Transactional
     @Modifying
-    @Query(value = "delete from product  where id=:id and productname=:productname",nativeQuery = true)
+    @Query(value = "delete from product where id=:id and productname=:productname",nativeQuery = true)
     public void deleteProduct(@Param(value = "id") Long id, @Param(value = "productname") String productname);
 
     @Transactional
@@ -59,7 +59,10 @@ public interface ProductRepository extends CrudRepository<Product,Long>
     @Query(value = "select brand from product where category_id=:category_id",nativeQuery = true)
     List<Object[]> getBrands(@Param("category_id") Long category_id);
 
-    @Query(value = "select productname from category  join product  on" +
+    @Query(value = "select productname,brand,name,description from category  join product  on" +
             " product.category_id = category.id where product.id = ?1",nativeQuery = true)
     List<Object[]> getSingleProduct(Long id);
+
+    @Query(value = "select productname,brand,description from product where is_active=true",nativeQuery = true)
+    List<Object[]> getAllNonDeletedproducts();
 }

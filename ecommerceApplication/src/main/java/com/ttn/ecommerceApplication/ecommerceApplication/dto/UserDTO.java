@@ -8,13 +8,10 @@ import javax.validation.constraints.*;
 @Component
 public class UserDTO {
 
-    @Column(nullable=false, unique=true)
-    @NotEmpty
-    @Email(message="invalid_email")
-    private String email;
 
     @Column(nullable=false,unique = true)
     @NotBlank(message = "Enter the UserName")
+    @Email(message="invalid_email")
     private String username;
 
 
@@ -37,13 +34,6 @@ public class UserDTO {
 
     private String confirmPassword;
 
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
 
     public String getUsername() {
         return username;

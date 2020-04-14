@@ -20,6 +20,7 @@ public class Product
      @JoinColumn(name = "SELLER_USER_ID")
      private Seller seller;
 
+     @Column(nullable = false,unique = true)
      private String productname;
      private String description;
 

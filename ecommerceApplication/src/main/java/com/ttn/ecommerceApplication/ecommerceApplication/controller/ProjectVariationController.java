@@ -7,6 +7,7 @@ import com.ttn.ecommerceApplication.ecommerceApplication.daoImpl.UploadDaoImpl;
 import com.ttn.ecommerceApplication.ecommerceApplication.entities.ProductVariation;
 import com.ttn.ecommerceApplication.ecommerceApplication.repository.ProductRepository;
 import com.ttn.ecommerceApplication.ecommerceApplication.repository.ProductVariationRepository;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -43,23 +44,23 @@ public class ProjectVariationController
         return productVariationRepository.getProductVariation(id);
     }
 
-    @GetMapping("/getAllProductVariations/{productName}")
+  /*  @GetMapping("/getAllProductVariations/{productName}")
     public List<Object[]> getAllProductVariations(@PathVariable String productName) {
         Long id = productRepository.findProduct(productName);
         List<Object[]> productVariations = productVariationRepository.getProductVariations(id);
         return productVariations;
 
-    }
+    }*/
 
-    @PostMapping("/addProductVariations/{productName}")
-    public void addNewProductVariation(@Valid @RequestBody ProductVariation productVariation, @PathVariable String productName) throws JsonProcessingException {
+    @PostMapping("/addProductVariations/{productId}")
+    public void addNewProductVariation(@Valid @RequestBody ProductVariation productVariation, @PathVariable Long productId) throws JsonProcessingException {
 
-        productVariationDao.addNewProductVariation(productVariation, productName);
+        productVariationDao.addNewProductVariation(productVariation, productId);
 
     }
 
     @PostMapping("/editProductVariations/{productVariationId}")
-    public void updateProductVariation(@RequestBody ProductVariation productVariation, @PathVariable Long productVariationId) {
+    public void updateProductVariation(@RequestBody ProductVariation productVariation, @PathVariable Long productVariationId) throws JsonProcessingException {
 
         productVariationDao.editProductVariation(productVariation,productVariationId);
     }
@@ -82,6 +83,19 @@ public class ProjectVariationController
             throw new RuntimeException();
         }
     }
+
+    @ApiOperation("This URI is for seller to get a single product variation associated to a product which he owns")
+    @GetMapping("/viewSingleProductVariation/{productVariationId}")
+    public List<Object[]> getSingleProductVariation(@PathVariable Long productVariationId)
+    {
+        return productVariationDao.getSingleProductVariation(productVariationId);
+    }
+
+    @GetMapping("/getAllProductVariations/{productId}")
+    public List<Object[]> getAllProductVariations(@PathVariable Long productId) {
+        return productVariationDao.getAllProductVariations(productId);
+    }
+
 
 
 

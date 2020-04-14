@@ -14,16 +14,13 @@ public interface UserRepository extends CrudRepository<User,Long> {
 
     User findByUsername(String username);
 
-    User findByEmail(String email);
-
-
-    @Query(value = "select id,username,email from user where id in(select user_id from user_role where role_id in(select id from role where role='ROLE_CUSTOMER'))",nativeQuery = true)
+    @Query(value = "select id,username from user where id in(select user_id from user_role where role_id in(select id from role where role='ROLE_CUSTOMER'))",nativeQuery = true)
     List<Object[]> findCustomers();
 
     @Query(value = "select id from user where id in(select user_id from user_role where role_id in(select id from role where role='ROLE_ADMIN'))",nativeQuery = true)
     Long findAdmin();
 
-    @Query(value = "select id,username,email from user where id in(select user_id from user_role where role_id in(select id from role where role='ROLE_SELLER'))",nativeQuery = true)
+    @Query(value = "select id,username from user where id in(select user_id from user_role where role_id in(select id from role where role='ROLE_SELLER'))",nativeQuery = true)
     List<Object[]> findSellers();
 
     @Transactional

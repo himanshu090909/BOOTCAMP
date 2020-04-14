@@ -1,7 +1,6 @@
 package com.ttn.ecommerceApplication.ecommerceApplication.entities;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ttn.ecommerceApplication.ecommerceApplication.repository.*;
-import net.bytebuddy.asm.Advice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -42,12 +41,11 @@ public class Bootstrap implements ApplicationRunner {
         Customer user = new Customer();
         user.setFirstName("himanshu");
         user.setLastName("bhansali");
-        user.setEmail("himanshu@gmail.com");
         user.setEnabled(true);
         user.setActive(true);
         user.setContactNo("09711247133");
         user.setPassword(passwordEncoder.encode("admin"));
-        user.setUsername("admin");
+        user.setUsername("admin@gmail.com");
         Role role = new Role();
         role.setRole("ROLE_ADMIN");
         users.add(user);
@@ -72,12 +70,11 @@ public class Bootstrap implements ApplicationRunner {
         Customer user1 = new Customer();
         user1.setFirstName("customer");
         user1.setLastName("customer");
-        user1.setEmail("himanshubhansali96@gmail.com");
         user1.setEnabled(true);
         user1.setActive(true);
         user1.setContactNo("09711247133");
         user1.setPassword(passwordEncoder.encode("customer"));
-        user1.setUsername("customer");
+        user1.setUsername("customer@gmail.com");
         Role role5 = new Role();
         role5.setRole("ROLE_CUSTOMER");
         userSet.add(user1);
@@ -294,7 +291,6 @@ public class Bootstrap implements ApplicationRunner {
         seller.setFirstName("Priti");
         seller.setLastName("Bhati");
         seller.addRoles(role1);
-        seller.setEmail("priti@gmail.com");
         seller.setCreatedBy("Priti");
         seller.setEnabled(true);
         seller.setActive(true);
@@ -302,7 +298,7 @@ public class Bootstrap implements ApplicationRunner {
         seller.setCompanyContactNo("+919843928645");
         seller.setCompanyName("Tommy Hilfiger");
         seller.setPassword(passwordEncoder.encode("admins"));
-        seller.setUsername("admins");
+        seller.setUsername("admins@gmail.com");
         Set<Address> addressSet= new HashSet<>();
         Address address1= new Address();
         address1.setAddressLine("sadar");
@@ -318,10 +314,9 @@ public class Bootstrap implements ApplicationRunner {
         seller1.setFirstName("Himanshu");
         seller1.setLastName("Bhansali");
         seller1.setCreatedBy("Himanshu");
-        seller1.setUsername("Himanshu123");
+        seller1.setUsername("Himanshu123@gmail.com");
         seller1.addRoles(role1);
         seller1.setPassword(passwordEncoder.encode("Sel1@ler"));
-        seller1.setEmail("himanshub@gmail.com");
         seller1.setCompanyContactNo("+917564392867");
         seller1.setCompanyName("Zara");
         seller1.setGstNo("27AAACS8677K2ZO");
@@ -330,12 +325,11 @@ public class Bootstrap implements ApplicationRunner {
 
         seller2.setFirstName("Ankit");
         seller2.setLastName("Sagar");
-        seller2.setUsername("ankit123");
+        seller2.setUsername("ankit123@gmail.com");
         seller2.setCreatedBy("Ankit");
         seller2.setGstNo("27AAACS9577K2ZO");
         seller2.addRoles(role1);
         seller2.setPassword(passwordEncoder.encode("Seller@2"));
-        seller2.setEmail("ankit@gmail.com");
         seller2.setCompanyContactNo("+919876543212");
         seller2.setCompanyName("Armani");
         seller2.setEnabled(true);
@@ -343,12 +337,11 @@ public class Bootstrap implements ApplicationRunner {
 
         seller3.setFirstName("Shivam");
         seller3.setLastName("Sharma");
-        seller3.setUsername("shivam123");
+        seller3.setUsername("shivam123@gmail.com");
         seller3.setCreatedBy("Shivam");
         seller3.setGstNo("27AAACS8578K2ZO");
         seller3.addRoles(role1);
         seller3.setPassword(passwordEncoder.encode("Seller@3"));
-        seller3.setEmail("shivam@gmail.com");
         seller3.setCompanyContactNo("+918964392869");
         seller3.setCompanyName("Prada");
         seller3.setEnabled(true);
