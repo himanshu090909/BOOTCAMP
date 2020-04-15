@@ -23,7 +23,7 @@ public interface ProductRepository extends CrudRepository<Product,Long>
     @Query(value = "select category_id from product where id=:id",nativeQuery = true)
     long getCategoryId(@Param("id")long id);
 
-    @Query(value = "select brand,description,is_active,is_cancellable,productname from product",nativeQuery = true)
+    @Query(value = "select brand,description,is_cancellable,productname,name from product join category on product.category_id=category.id where product.is_active=true",nativeQuery = true)
     public List<Object[]> getAllProducts();
 
     @Query("select id from Product where productname =:productname")
@@ -65,4 +65,8 @@ public interface ProductRepository extends CrudRepository<Product,Long>
 
     @Query(value = "select productname,brand,description from product where is_active=true",nativeQuery = true)
     List<Object[]> getAllNonDeletedproducts();
+
+    @Query(value = "select * from product where category_id=:category_id",nativeQuery = true)
+    List<Product> getProducts(@Param("category_id") Long category_id);
+
 }

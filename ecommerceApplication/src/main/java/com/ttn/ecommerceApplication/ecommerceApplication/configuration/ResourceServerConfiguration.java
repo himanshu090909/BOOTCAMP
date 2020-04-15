@@ -54,11 +54,16 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
                 .antMatchers("/deactivate/{user_id}").hasAnyRole("ADMIN")
                 .antMatchers("/allCustomers").hasAnyRole("ADMIN")
                 .antMatchers("/allSellers").hasAnyRole("ADMIN")
-                .antMatchers("/addNewCategory/{parent_category}").hasAnyRole("ADMIN")
+                .antMatchers("/addNewCategory/{parent_category_id}").hasAnyRole("ADMIN")
                 .antMatchers("/lock/{user_id}").hasAnyRole("ADMIN")
                 .antMatchers("/unlock/{user_id}").hasAnyRole("ADMIN")
                 .antMatchers("/getAllProducts").hasAnyRole("ADMIN")
-                .antMatchers("/addMainCategory/{Category_name}").hasAnyRole("ADMIN")
+                .antMatchers("/addNewCategory").hasAnyRole("ADMIN")
+                .antMatchers("/viewACategory/{id}").hasAnyRole("ADMIN")
+                .antMatchers("/updateCategory/{categoryId}").hasAnyRole("ADMIN")
+                .antMatchers("/addMetadataValues/{categoryId}/{metadataId}").hasAnyRole("ADMIN")
+                .antMatchers("/updateMetadataValues/{categoryId}/{metadataId}").hasAnyRole("ADMIN")
+
 
                 //only customer accessible uri
                 .antMatchers("/placeOrder/{productVariationId}/{quantity}/{paymentMethod}/{AddressId}").hasAnyRole("CUSTOMER")
@@ -78,6 +83,8 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
                 .antMatchers("/uploadProfilePic").hasAnyRole("CUSTOMER")
                 .antMatchers("/viewProfileImage").hasAnyRole("CUSTOMER")
                 .antMatchers("/viewProduct/{product_id}").hasAnyRole("CUSTOMER")
+                .antMatchers("/viewAllProductsForCustomer/{category_id}").hasAnyRole("CUSTOMER")
+                .antMatchers("/viewSimilarProduct/{product_id}").hasAnyRole("CUSTOMER")
 
 
                 //admin and customer accessible uri
@@ -138,7 +145,10 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
 
 
 
-
+                .antMatchers("/addCategoryMetadataField").hasAnyRole("ADMIN")
+                .antMatchers("/viewCategoryMetadataField").hasAnyRole("ADMIN")
+                .antMatchers("/deleteCategoryMetadataField/{id}").hasAnyRole("ADMIN")
+                .antMatchers("/viewCategoriesForSeller").hasAnyRole("SELLER")
 
 
 

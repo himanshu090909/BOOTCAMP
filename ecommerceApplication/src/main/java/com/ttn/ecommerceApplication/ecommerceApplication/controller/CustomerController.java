@@ -71,7 +71,7 @@ public class CustomerController
      }
 
      @GetMapping("/viewProfile")
-     public List<Object[]> viewProfile(HttpServletRequest request) throws IOException
+     public ProfileDTO viewProfile(HttpServletRequest request) throws IOException
      {
           return customerDao.viewProfile();
      }
@@ -105,6 +105,17 @@ public class CustomerController
           return customerDao.viewProduct(product_id);
      }
 
+     @GetMapping("/viewAllProductsForCustomer/{category_id}")
+     public List<Object[]> viewAllProductsForCustomer(@PathVariable Long category_id)
+     {
+          return customerDao.viewProducts(category_id);
+     }
+
+     @GetMapping("/viewSimilarProduct/{product_id}")
+     public List<Object[]> viewSimilarProduct(@PathVariable Long product_id)
+     {
+          return customerDao.viewSimilarProducts(product_id);
+     }
 
 
 }

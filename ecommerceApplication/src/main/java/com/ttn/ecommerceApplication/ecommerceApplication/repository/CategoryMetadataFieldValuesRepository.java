@@ -21,6 +21,11 @@ public interface CategoryMetadataFieldValuesRepository extends PagingAndSortingR
             "category_id=:category_id and category_metadata_id=:category_metadata_id",nativeQuery = true)
     public String getFieldValuesForCompositeKey(@Param(value = "category_id")Long category_id,
                                                 @Param(value = "category_metadata_id") Long category_metadata_id);
+
+    @Query(value = "select * from category_metadata_field_values where " +
+            "category_id=:category_id and category_metadata_id=:category_metadata_id ",nativeQuery = true)
+    public CategoryMetadataFieldValues getFieldValues(@Param(value = "category_id")Long category_id,
+                                                      @Param(value = "category_metadata_id") Long category_metadata_id);
 }
 
 

@@ -16,10 +16,12 @@ public interface CustomerDao
     public String  cancelOrder(Long orderStatusId);
     String editContact(Customer customer);
     List<Object[]> getAddresses();
-    public List<Object[]> viewProfile();
+    public ProfileDTO viewProfile();
     public String updateProfile(ProfileDTO customer);
     public List<Object[]> viewProduct(Long id);
     public List<Object[]> viewProducts(Long categoryId);
+    public List<Object[]> viewSimilarProducts(Long productId);
+
 
 }
 

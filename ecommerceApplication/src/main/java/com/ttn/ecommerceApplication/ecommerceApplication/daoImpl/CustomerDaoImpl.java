@@ -17,10 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Component
 public class CustomerDaoImpl implements CustomerDao {
@@ -101,11 +98,17 @@ public class CustomerDaoImpl implements CustomerDao {
     }
 
     @Override
-    public List<Object[]> viewProfile()
+    public ProfileDTO viewProfile()
     {
         String username = getCurrentUser.getUser();
         Customer customer = customerRepository.findByUsername(username);
-        return customerRepository.viewProfile(customer.getId());
+        ProfileDTO profileDTO = new ProfileDTO();
+        profileDTO.setFirstName(customer.getFirstName());
+        profileDTO.setLastName(customer.getLastName());
+        profileDTO.setContactNo(customer.getContactNo());
+        profileDTO.setMiddleName(customer.getMiddleName());
+        profileDTO.setActive(customer.getisActive());
+        return profileDTO;
     }
 
     @Override
@@ -142,19 +145,23 @@ public class CustomerDaoImpl implements CustomerDao {
     @Override
     public List<Object[]> viewProduct(Long id) {
         Optional<Product> product1 = productRepository.findById(id);
+        List<Object[]> list1 = new ArrayList<>();
         if (product1.isPresent())
         {
             if (product1.get().isActive()==true)
             {
-                List<Object[]> list = productVariationRepository.getProductVariation(id);
+                List<Object[]> list = productVariationRepository.getProductVariations(id);
                 if (list.isEmpty())
                 {
                     throw new NotFoundException("product variations not available for this product");
                 }
-                else {
-                    return productRepository.getSingleProduct(id);
-                }
-            }
+                else
+                    {
+                     list1.addAll(productRepository.getSingleProduct(id));
+                     list1.addAll(list);
+                     return list1;
+                    }
+             }
             else
             {
                 throw new NotFoundException("product is not present or is currently not active");
@@ -164,18 +171,26 @@ public class CustomerDaoImpl implements CustomerDao {
         {
             throw new NotFoundException("prooduct with this id is not present");
         }
-
     }
 
     @Override
     public List<Object[]> viewProducts(Long categoryId) {
         Optional<Category> category = categoryRepository.findById(categoryId);
+        List<Object[]> list1 = new ArrayList<>();
         if (category.isPresent())
         {
             int result = categoryRepository.checkIfLeaf(categoryId);
             if (result==1)
             {
-
+                  List<Product> list = productRepository.getProducts(categoryId);
+                  for (Product product : list)
+                  {
+                      if (!productVariationRepository.getProductVariations(product.getID()).isEmpty()&&product.isActive()==true)
+                      {
+                          list1.addAll(productRepository.getSingleProduct(product.getID()));
+                      }
+                  }
+                  return list1;
             }
             else
             {
@@ -187,9 +202,35 @@ public class CustomerDaoImpl implements CustomerDao {
             throw new NotFoundException("category with this id is not present");
 
         }
-            return null;
+
 
     }
+
+    public List<Object[]> viewSimilarProducts(Long productId)
+    {
+        Optional<Product> product = productRepository.findById(productId);
+        List<Object[]> list1 = new ArrayList<>();
+        if (product.isPresent()&&product.get().isActive()==true)
+        {
+            Long category_id = productRepository.getCategoryId(productId);
+            List<Product> products = productRepository.getProducts(category_id);
+            for (Product product1 : products)
+            {
+                if (product1.getBrand().equals(product.get().getBrand())&&product1.isActive()==true)
+                {
+                    list1.addAll(productRepository.getSingleProduct(product1.getID()));
+                }
+            }
+            return list1;
+        }
+        else
+        {
+            throw new NotFoundException("product with this is not present");
+        }
+
+    }
+
+
 
     @Override
     public String cancelOrder(Long orderStatusId) {
@@ -249,4 +290,6 @@ public class CustomerDaoImpl implements CustomerDao {
             throw new NullException("all the fields are mandatory");
         }
     }
+
+
 }

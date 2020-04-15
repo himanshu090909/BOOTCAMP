@@ -160,7 +160,7 @@ public class Bootstrap implements ApplicationRunner {
         product2.setCancellable(true);
         product2.setReturnable(true);
 
-        Product product3 = new Product("Regular Fit", "Armani");
+        Product product3 = new Product("Regular Fit", "Calvin Klein");
         product3.setDescription("This is a very nice regular fit jeans");
         product3.setActive(true);
         product3.setCancellable(true);

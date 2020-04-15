@@ -22,6 +22,6 @@ public interface SellerRepository extends CrudRepository<Seller,Long>
     @Query(value = "insert into seller values(?1,?2,?3,?4)",nativeQuery = true)
     void insertIntoSeller(String companyContactNo,String companyName,String gstNo,Long id);
 
-    @Query(value = "select name from category where parent_id not in (select id from category where parent_id is null)", nativeQuery = true)
+    @Query(value = "select name,id from category where parent_id not in (select id from category where parent_id is null)", nativeQuery = true)
     public List<Object[]> getSubcategory();
 }

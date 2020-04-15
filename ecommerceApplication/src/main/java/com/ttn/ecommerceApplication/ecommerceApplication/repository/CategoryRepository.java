@@ -20,6 +20,9 @@ public interface CategoryRepository extends CrudRepository<Category,Long>
     @Query(value = "select name from category where parent_id in(select id from category where name=:name)",nativeQuery = true)
     List<Object[]> getSubCategory(@Param("name") String name);
 
+    @Query(value = "select name from category where parent_id in(select id from category where id=:id)",nativeQuery = true)
+    List<Object[]> getSubCategoryOfCategory(@Param("id") Long id);
+
     @Query(value = "select id from category where name=:name",nativeQuery = true)
     Long getIdOfParentCategory(@Param("name") String name);
 
@@ -28,7 +31,13 @@ public interface CategoryRepository extends CrudRepository<Category,Long>
     @Query(value = "insert into category(name,parent_id) values(?1,?2)",nativeQuery = true)
     void insertNewSubCategory(String name,Long id);
 
-    @Query(value = "select exists(select * from product where category_id=:category_id)",nativeQuery = true)
-    int checkIfLeaf(@Param("category_id") Long category_id);
+    @Query(value = "select exists(select * from category where parent_id=:parent_id)",nativeQuery = true)
+    int checkIfLeaf(@Param("parent_id") Long parent_id);
+
+    @Query(value = "select parent_id from category where id=:id",nativeQuery = true)
+    Long getIdOfParent(@Param("id") Long id);
+
+    @Query(value = "select name from category where id=:id",nativeQuery = true)
+    Object[] getNameOfCategory(@Param("id") Long id);
 
 }

@@ -12,7 +12,7 @@ public class CategoryMetadataFieldValues implements Serializable
     private CategoryMetadataFieldValuesId categoryMetadataFieldValuesId;
 
 
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false,cascade = CascadeType.ALL)
     @JoinColumn(name = "category_metadata_id",insertable = false,updatable = false,nullable = false)
 
     private CategoryMetadataField categoryMetadataField;
@@ -33,6 +33,7 @@ public class CategoryMetadataFieldValues implements Serializable
     }    
 
 
+    @Column(nullable = false)
     String fieldValues;
 
     public CategoryMetadataFieldValuesId getCategoryMetadataFieldValuesId() {
