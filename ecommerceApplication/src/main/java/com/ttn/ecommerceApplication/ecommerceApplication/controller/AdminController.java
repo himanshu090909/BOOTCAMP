@@ -1,6 +1,9 @@
 package com.ttn.ecommerceApplication.ecommerceApplication.controller;
 
 import com.ttn.ecommerceApplication.ecommerceApplication.dao.AdminDao;
+import com.ttn.ecommerceApplication.ecommerceApplication.dto.RegisteredCustomerDto;
+import com.ttn.ecommerceApplication.ecommerceApplication.dto.RegisteredCustomersDTO;
+import com.ttn.ecommerceApplication.ecommerceApplication.dto.RegisteredSellersDTO;
 import com.ttn.ecommerceApplication.ecommerceApplication.exceptionHandling.UserNotFoundException;
 import com.ttn.ecommerceApplication.ecommerceApplication.repository.UserRepository;
 import io.swagger.annotations.ApiOperation;
@@ -56,18 +59,21 @@ public class AdminController
 
     @ApiOperation(value = "uri in which admin can view all the registered customers")
     @GetMapping("/allCustomers")
-    public List<Object[]> getAllCustomers() {
-        List<Object[]> objects = userRepository.findCustomers();
-        if (objects.isEmpty()) { throw new UserNotFoundException("There are no active customers present"); }
-        return objects;
+    public List<RegisteredCustomersDTO> getAllCustomers(@RequestParam(name = "pageNo", required = true, defaultValue = "0") Integer pageNo,
+                                                          @RequestParam(name = "pageSize", required = true, defaultValue = "10") Integer pageSize,
+                                                          @RequestParam(name = "sortBy", defaultValue = "id") String sortBy)
+    {
+       return adminDao.getAllRegisteredCustomers(pageNo, pageSize, sortBy);
     }
 
     @ApiOperation(value = "uri in which admin can view all the registered sellers")
     @GetMapping("/allSellers")
-    public List<Object[]> getAllSellers() {
-        List<Object[]> objects = userRepository.findSellers();
-        if (objects.isEmpty()) { throw new UserNotFoundException("There are no active sellers present"); }
-        return objects;
-    }
+    public List<RegisteredSellersDTO> getAllSellers(@RequestParam(name = "pageNo", required = true, defaultValue = "0") Integer pageNo,
+                                                    @RequestParam(name = "pageSize", required = true, defaultValue = "10") Integer pageSize,
+                                                    @RequestParam(name = "sortBy", defaultValue = "id") String sortBy)
+    {
+        return adminDao.getAllRegisteredSellers(pageNo, pageSize, sortBy);
+
+           }
 
 }

@@ -8,6 +8,7 @@ import com.ttn.ecommerceApplication.ecommerceApplication.utilities.NotificationS
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
@@ -22,6 +23,8 @@ public interface RegistrationDao
 {
     public String createCustomer(CustomerDTO customer);
     public String createSeller(SellerDTO seller);
+    public ResponseEntity resendActivationLink(String emailId);
+
 
 
 

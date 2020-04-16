@@ -1,11 +1,10 @@
 package com.ttn.ecommerceApplication.ecommerceApplication.daoImpl;
 
 import com.ttn.ecommerceApplication.ecommerceApplication.dao.UserDao;
+import com.ttn.ecommerceApplication.ecommerceApplication.dto.AddressDTO;
 import com.ttn.ecommerceApplication.ecommerceApplication.dto.UserDTO;
 import com.ttn.ecommerceApplication.ecommerceApplication.entities.*;
-import com.ttn.ecommerceApplication.ecommerceApplication.exceptionHandling.AlreadyExists;
-import com.ttn.ecommerceApplication.ecommerceApplication.exceptionHandling.PasswordAndConfirmPasswordMismatchException;
-import com.ttn.ecommerceApplication.ecommerceApplication.exceptionHandling.TokenNotFoundException;
+import com.ttn.ecommerceApplication.ecommerceApplication.exceptionHandling.*;
 import com.ttn.ecommerceApplication.ecommerceApplication.repository.AddressRepository;
 import com.ttn.ecommerceApplication.ecommerceApplication.repository.TokenRepository;
 import com.ttn.ecommerceApplication.ecommerceApplication.repository.UserRepository;
@@ -14,11 +13,13 @@ import com.ttn.ecommerceApplication.ecommerceApplication.utilities.NotificationS
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.*;
 
 @Service
@@ -58,63 +59,62 @@ public class UserDaoImpl implements UserDao
     @Autowired
     UploadDaoImpl uploadDao;
 
-    public String update(Address address, Long addressId)
-    {
+    public String update(AddressDTO address, Long addressId) {
         String username = getCurrentUser.getUser();
-        User user =userRepository.findByUsername(username);
-        Optional<Address> addressOptional= addressRepository.findById(addressId);
-        Address address1 = addressOptional.get();
-        address1.setCity(address.getCity());
-        address1.setCountry(address.getCountry());
-        address1.setZipcode(address.getZipcode());
-        address1.setLabel(address.getLabel());
-        address1.setState(address.getState());
-        address1.setAddressLine(address.getAddressLine());
-        address1.setUser(user);
-        addressRepository.save(address1);
-        userRepository.save(user);
+        User user = userRepository.findByUsername(username);
+        Set<Address> addresses = user.getAddresses();
+        int count = 0;
+        for (Address address1 : addresses) {
+            if (address1.getId() == addressId) {
+                address1 = modelMapper.map(address, Address.class);
+                address1.setUser(user);
+                address1.setId(addressId);
+                address1.setModifiedBy(username);
+                addressRepository.save(address1);
+                count++;
+            }
+        }
+        if (count == 0) {
+            throw new NotFoundException("address id is not valid");
+        }
         return "success";
     }
 
-    public String deleteUser()
-    {
+    public String deleteUser() {
         String username = getCurrentUser.getUser();
-        User user=userRepository.findByUsername(username);
+        User user = userRepository.findByUsername(username);
         userRepository.deleteUser(user.getId());
         return "success";
     }
 
-    public String addNewAddress(Address address)
-    {
+    public String addNewAddress(Address address) {
         String username = getCurrentUser.getUser();
         User user = userRepository.findByUsername(username);
         address.setUser(user);
         user.addAddress(address);
+        user.setModifiedBy(username);
         userRepository.save(user);
         return "success";
     }
 
-    public String editUsername(UserDTO user)
-    {
+
+    public String editUsername(UserDTO user) {
         User user1 = userRepository.findByUsername(user.getUsername());
-        if (user1==null) {
+        if (user1 == null) {
             String username = getCurrentUser.getUser();
             User user2 = userRepository.findByUsername(username);
             user2.setUsername(user.getUsername());
             user2.setModifiedBy(username);
             userRepository.save(user2);
             return "Success";
-        }
-        else
-        {
+        } else {
             throw new AlreadyExists("username is occupied,try with a different username");
         }
     }
 
     @Lazy
-    public String editEmail(UserDTO user)
-    {
-        User user1 = modelMapper.map(user,User.class);
+    public String editEmail(UserDTO user) {
+        User user1 = modelMapper.map(user, User.class);
         String username = getCurrentUser.getUser();
         user1.setUsername(username);
         notificationService.sendNotificaitoin(user1);
@@ -122,7 +122,7 @@ public class UserDaoImpl implements UserDao
     }
 
     @Lazy
-    public String verifyNewEmail(String token,UserDTO user) {
+    public String verifyNewEmail(String token, UserDTO user) {
         Token token1 = null;
         for (Token token2 : tokenRepository.findAll()) {
             if (token2.getRandomToken().equals(token)) {
@@ -132,9 +132,8 @@ public class UserDaoImpl implements UserDao
         if (token1 == null) {
             throw new TokenNotFoundException("token is invalid");
         } else {
-            if (token1.isExpired())
-            {
-                User user1 = modelMapper.map(user,User.class);
+            if (token1.isExpired()) {
+                User user1 = modelMapper.map(user, User.class);
                 String username = getCurrentUser.getUser();
                 user1.setUsername(username);
                 notificationService.sendNotificaitoin(user1);
@@ -152,12 +151,10 @@ public class UserDaoImpl implements UserDao
         }
     }
 
-    public String editPassword(UserDTO user)
-    {
+    public String editPassword(UserDTO user) {
         String username = getCurrentUser.getUser();
         User user1 = userRepository.findByUsername(username);
-        if (user.getPassword()!=null&&user.getConfirmPassword()!=null)
-        {
+        if (user.getPassword() != null && user.getConfirmPassword() != null) {
             if (user.getPassword().equals(user.getConfirmPassword())) {
                 user1.setPassword(passwordEncoder.encode(user.getPassword()));
                 user1.setModifiedBy(username);
@@ -168,18 +165,28 @@ public class UserDaoImpl implements UserDao
                 mail.setSubject("password changed status");
                 mail.setText("your password has been successfully changed");
                 javaMailSender.send(mail);
-            }
-            else
-            {
+            } else {
                 throw new PasswordAndConfirmPasswordMismatchException("password and confirm password does not match");
             }
-        }
-        else
-        {
+        } else {
             throw new NullPointerException("password and confirm password both are mandatory");
         }
         return "success";
     }
+
+    @Modifying
+    @Transactional
+    public String deleteAddress(Long id) {
+        Optional<Address> address = addressRepository.findById(id);
+        if (address.isPresent()) {
+            userRepository.deleteAddress(id);
+        } else {
+            throw new NotFoundException("address not present");
+        }
+          return "successfully deleted";
+    }
+
+
 
 
 

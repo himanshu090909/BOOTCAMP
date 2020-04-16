@@ -3,15 +3,19 @@ package com.ttn.ecommerceApplication.ecommerceApplication.daoImpl;
 import com.ttn.ecommerceApplication.ecommerceApplication.dao.RegistrationDao;
 import com.ttn.ecommerceApplication.ecommerceApplication.dto.CustomerDTO;
 import com.ttn.ecommerceApplication.ecommerceApplication.dto.SellerDTO;
-import com.ttn.ecommerceApplication.ecommerceApplication.entities.Customer;
-import com.ttn.ecommerceApplication.ecommerceApplication.entities.Role;
-import com.ttn.ecommerceApplication.ecommerceApplication.entities.Seller;
+import com.ttn.ecommerceApplication.ecommerceApplication.entities.*;
+import com.ttn.ecommerceApplication.ecommerceApplication.exceptionHandling.NotFoundException;
+import com.ttn.ecommerceApplication.ecommerceApplication.exceptionHandling.NullException;
 import com.ttn.ecommerceApplication.ecommerceApplication.exceptionHandling.PasswordAndConfirmPasswordMismatchException;
+import com.ttn.ecommerceApplication.ecommerceApplication.exceptionHandling.UserNotFoundException;
+import com.ttn.ecommerceApplication.ecommerceApplication.repository.AddressRepository;
+import com.ttn.ecommerceApplication.ecommerceApplication.repository.TokenRepository;
 import com.ttn.ecommerceApplication.ecommerceApplication.repository.UserRepository;
 import com.ttn.ecommerceApplication.ecommerceApplication.utilities.NotificationService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
@@ -19,11 +23,20 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Service
 public class RegistrationDaoImpl implements RegistrationDao
 {
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    AddressRepository addressRepository;
+
+    @Autowired
+    TokenRepository tokenRepository;
 
     private JavaMailSender javaMailSender;
 
@@ -51,6 +64,7 @@ public class RegistrationDaoImpl implements RegistrationDao
             String password = customer.getPassword();
             customer1.setPassword(new BCryptPasswordEncoder().encode(password));
             customer1.addRoles(new Role("ROLE_CUSTOMER"));
+            customer1.setActive(false);
             customer1.setCreatedBy(customer1.getUsername());
             userRepository.save(customer1);
             if ( userRepository.existsById(customer1.getId()))
@@ -66,7 +80,6 @@ public class RegistrationDaoImpl implements RegistrationDao
 
     }
 
-    @Async
     public String createSeller(SellerDTO seller)
     {
         if (seller.getPassword().equals(seller.getConfirmPassword())) {
@@ -74,12 +87,24 @@ public class RegistrationDaoImpl implements RegistrationDao
             String password = seller.getPassword();
             seller1.setPassword(passwordEncoder.encode(password));
             seller1.addRoles(new Role("ROLE_SELLER"));
+            seller1.setActive(false);
             seller1.setCreatedBy(seller.getUsername());
+            Address address = new Address();
+            address.setCity(seller.getCity());
+            address.setCountry(seller.getCountry());
+            address.setState(seller.getState());
+            address.setZipcode(seller.getZipcode());
+            address.setAddressLine(seller.getAddressLine());
+            address.setLabel("office");
+            Set<Address>  addresses = new HashSet<>();
+            address.setUser(seller1);
+            addresses.add(address);
+            seller1.setAddresses(addresses);
             userRepository.save(seller1);
             if (userRepository.existsById(seller1.getId())) {
                 SimpleMailMessage mail = new SimpleMailMessage();
                 mail.setTo(seller.getUsername());
-                mail.setFrom("bhatipinki056@gmail.com");
+                mail.setFrom("hs631443@gmail.com");
                 mail.setSubject("Regarding account activation");
                 mail.setText("you account has been created you can access it once admin verifies it");
                 javaMailSender.send(mail);
@@ -92,6 +117,31 @@ public class RegistrationDaoImpl implements RegistrationDao
         }
 
     }
+
+    public ResponseEntity resendActivationLink(String emailId)
+    {
+        User user = userRepository.findByUsername(emailId);
+        if (user==null)
+        {
+            throw new UserNotFoundException("user with this email id is not present");
+        }
+        else
+            {
+                for (Token token : tokenRepository.findAll())
+                {
+                    if (token.getName().equals(user.getUsername()))
+                    {
+                        tokenRepository.delete(token);
+                    }
+                }
+                if (user.isEnabled()==false&&user.isActive()==false)
+                notificationService.sendNotificaitoin(user);
+                else
+                 throw new NullException("account is already active");
+                return ResponseEntity.ok().body("activation token sent to the given email address");
+            }
+         }
+
 
 
 }

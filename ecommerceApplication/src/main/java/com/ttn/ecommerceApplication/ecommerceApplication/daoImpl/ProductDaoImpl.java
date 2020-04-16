@@ -202,30 +202,7 @@ public class ProductDaoImpl implements ProductDao {
         return id;
     }
 
-    public void setStatus( String productName)
-    {
-        String seller = getCurrentUser.getUser();
-        Seller seller1 = sellerRepository.findByUsername(seller);
-        List<Object[]> objects = getProductDetails();
-        Optional<Product> product = productRepository.findById(productRepository.findProduct(productName));
-        Product product1 = product.get();
-        if ((product1.getSeller().getUsername()).equals(seller1.getUsername()))
-        {
-            for (Object[] object : objects) {
 
-                if (object[0].equals(productName))
-                {
-                    productRepository.setActiveStatusOfProduct(productName);
-                    productRepository.setActiveStatusOfProductAndProductVariation(product1.getID());
-                }
-            }
-        }
-        else
-        {
-            throw  new NullException("You cannot edit the status of this product");
-        }
-
-    }
 
     @Override
     public List<Object[]> viewProduct(Long product_id) {
@@ -255,6 +232,72 @@ public class ProductDaoImpl implements ProductDao {
         {
             throw new NotFoundException("product with this id is not present");
         }
+    }
+
+    @Override
+    public List<Object[]> viewSingleProductForAdmin(Long productId) {
+        Optional<Product> productOptional = productRepository.findById(productId);
+        if (productOptional.isPresent())
+        {
+            return productRepository.getSingleProduct(productId);
+        } else {
+            throw new NotFoundException("This product ID is wrong");
+        }
+    }
+
+
+
+    @Override
+    public void deactivate(Long productId) {
+
+        Optional<Product> productOptional = productRepository.findById(productId);
+        if (productOptional.isPresent()) {
+            Product product = productOptional.get();
+            if (product.getisActive() == true) {
+                String seller = productRepository.getThatSeller(productId);
+                System.out.println(seller);
+                Seller seller1 = sellerRepository.findByUsername(seller);
+                System.out.println(product.getBrand());
+                productRepository.setActiveStatusOfProduct(productId);
+                productRepository.setActiveStatusOfProductAndProductVariation(product.getID());
+                System.out.println(seller1.getUsername());
+                String subject = "Regarding deactivation";
+                String text = product.getProductname() + "  got deactivated by admin";
+                notificationService.sendToSeller(seller1, subject, text);
+            } else {
+                throw new NotFoundException("This product is already de-activated");
+            }
+        } else {
+            throw new NotFoundException("This product is not found");
+        }
+
+
+    }
+
+    @Override
+    public void activateProduct(Long productId) {
+        Optional<Product> productOptional = productRepository.findById(productId);
+
+        if (productOptional.isPresent()) {
+            Product product = productOptional.get();
+
+            if (product.getisActive() == false) {
+                String seller = productRepository.getThatSeller(productId);
+                System.out.println(seller);
+                Seller seller1 = sellerRepository.findByUsername(seller);
+                System.out.println(product.getBrand());
+                productRepository.activateTheProduct(productId);
+                System.out.println(seller1.getUsername());
+                String subject = "Regarding Activation";
+                String text = product.getProductname() + "  got activated by admin";
+                notificationService.sendToSeller(seller1, subject, text);
+            } else {
+                throw new NotFoundException("This product is already activated");
+            }
+        } else {
+            throw new NotFoundException("This product is not found");
+        }
+
     }
 
 

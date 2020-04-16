@@ -1,6 +1,7 @@
 package com.ttn.ecommerceApplication.ecommerceApplication.controller;
 
 import com.ttn.ecommerceApplication.ecommerceApplication.dao.UserDao;
+import com.ttn.ecommerceApplication.ecommerceApplication.dto.AddressDTO;
 import com.ttn.ecommerceApplication.ecommerceApplication.dto.UserDTO;
 import com.ttn.ecommerceApplication.ecommerceApplication.entities.Address;
 import com.ttn.ecommerceApplication.ecommerceApplication.entities.User;
@@ -10,6 +11,7 @@ import com.ttn.ecommerceApplication.ecommerceApplication.utilities.GetCurrentUse
 import net.bytebuddy.implementation.auxiliary.AuxiliaryType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -101,13 +103,22 @@ public class UserController {
     {
         return userDao.verifyNewEmail(token,user);
     }
+
     @PutMapping("/editPassword")
     public String editPassword(@RequestBody UserDTO user) {
         return userDao.editPassword(user);
     }
 
     @PutMapping("/updateAddress/{addressId}")
-    public String  update(@Valid @RequestBody Address address, @PathVariable Long addressId) {
+    public String  update(@Valid @RequestBody AddressDTO address, @PathVariable Long addressId) {
         return userDao.update(address, addressId);
     }
+
+    @Secured("ROLE_CUSTOMER")
+    @DeleteMapping("/deleteAddress/{id}")
+    public String deleteAddress(@PathVariable Long id)
+    {
+        return userDao.deleteAddress(id);
+    }
+
 }

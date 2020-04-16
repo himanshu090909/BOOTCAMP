@@ -1,4 +1,6 @@
 package com.ttn.ecommerceApplication.ecommerceApplication.dao;
+import com.ttn.ecommerceApplication.ecommerceApplication.dto.RegisteredCustomersDTO;
+import com.ttn.ecommerceApplication.ecommerceApplication.dto.RegisteredSellersDTO;
 import com.ttn.ecommerceApplication.ecommerceApplication.entities.User;
 import com.ttn.ecommerceApplication.ecommerceApplication.exceptionHandling.Success;
 import com.ttn.ecommerceApplication.ecommerceApplication.exceptionHandling.UserNotFoundException;
@@ -23,5 +25,8 @@ public interface AdminDao
     public String lockUser(Long id);
     public String unlockUser(Long id);
     public List<Object[]> getAllProducts();
+    public List<RegisteredCustomersDTO> getAllRegisteredCustomers(Integer pageNo, Integer pageSize, String sortBy);
+
+    public List<RegisteredSellersDTO> getAllRegisteredSellers(Integer pageNo, Integer pageSize, String sortBy);
 
 }

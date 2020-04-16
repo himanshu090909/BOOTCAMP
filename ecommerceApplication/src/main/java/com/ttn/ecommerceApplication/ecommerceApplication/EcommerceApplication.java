@@ -72,6 +72,4 @@ public class EcommerceApplication
 
 		System.out.println(message.getSid());*/
 	}
-
-
 }

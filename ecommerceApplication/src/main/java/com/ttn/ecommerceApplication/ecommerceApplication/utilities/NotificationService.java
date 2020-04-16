@@ -37,7 +37,7 @@ public class NotificationService {
         SimpleMailMessage mail = new SimpleMailMessage();
         mail.setTo(user.getUsername());
         mail.setFrom("hs631443@gmail.com");
-        mail.setSubject("Spring Boot is awesome nahi hai!");
+        mail.setSubject("unique token for activation of email");
         String uu = tokenDao.getToken(user);
         mail.setText(uu);
         javaMailSender.send(mail);
@@ -58,6 +58,20 @@ public class NotificationService {
         javaMailSender.send(mail);
         System.out.println("Email Sent!");
     }
+
+    public  void sendToSeller(User seller, String subject, String text)throws MailException
+    {
+        System.out.println("Sending email...");
+        SimpleMailMessage mail = new SimpleMailMessage();
+        mail.setTo(seller.getUsername());
+        mail.setFrom("bhatipinki056@gmail.com");
+        mail.setSubject(subject);
+        mail.setText(text);
+        javaMailSender.send(mail);
+        System.out.println("Email Sent!");
+    }
+
+
 
 
 

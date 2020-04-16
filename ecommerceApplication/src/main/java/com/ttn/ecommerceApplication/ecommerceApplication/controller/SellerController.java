@@ -2,10 +2,12 @@ package com.ttn.ecommerceApplication.ecommerceApplication.controller;
 
 import com.ttn.ecommerceApplication.ecommerceApplication.dao.SellerDao;
 import com.ttn.ecommerceApplication.ecommerceApplication.dto.SellerDTO;
+import com.ttn.ecommerceApplication.ecommerceApplication.dto.SellerProfileDTO;
 import com.ttn.ecommerceApplication.ecommerceApplication.entities.Customer;
 import com.ttn.ecommerceApplication.ecommerceApplication.entities.Seller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -38,5 +40,18 @@ public class SellerController
     public String updateSellerDetails(@RequestBody Seller seller) {
         return sellerDao.editSellerDetails(seller);
     }
+
+    @GetMapping("/viewProfileForSeller")
+    public SellerProfileDTO viewProfile()
+    {
+        return sellerDao.viewProfile();
+    }
+
+    @PutMapping("/updateMyProfile")
+    public ResponseEntity updateMyProfile(@RequestBody SellerProfileDTO sellerProfileDTO)
+    {
+        return sellerDao.editMyProfile(sellerProfileDTO);
+    }
+
 
 }

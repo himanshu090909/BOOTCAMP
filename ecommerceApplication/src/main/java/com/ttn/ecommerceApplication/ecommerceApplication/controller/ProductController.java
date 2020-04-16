@@ -62,20 +62,44 @@ public class ProductController
         productDao.editProduct(product,id);
     }
 
-    @PostMapping("/setActiveStatus/{productName}")
-    public String  setStatus(@PathVariable String productName)
-    {
-       productDao.setStatus(productName);
-       return "success";
-    }
-
-
-
     @ApiOperation("This URI is for seller to view a single product he owns ")
     @GetMapping("/viewSingleProduct/{productId}")
     public List<Object[]> viewSingleProduct(@PathVariable Long productId)
     {
         return productDao.viewSingleProduct(productId);
+    }
+
+
+
+
+
+
+
+
+    //check these apis if running
+
+    @ApiOperation("This URI is for Admin to  deactivates a product and all its product variation")
+    @PutMapping("/deactivateProduct/{productId}")
+    public String deactivateProduct(@PathVariable Long productId) {
+
+        productDao.deactivate(productId);
+        return "Success";
+    }
+
+    //correct
+    @ApiOperation("This URI is for Admin to activates a product")
+    @PutMapping("/activateProduct/{productId}")
+    public String activateProduct(@PathVariable Long productId) {
+        productDao.activateProduct(productId);
+        return "Success";
+    }
+
+
+    @ApiOperation("This URI is for Admin to view a single product")
+    @GetMapping("/viewSingleProductForAdmin/{productId}")
+    public List<Object[]> viewSingleProductForAdmin(@PathVariable Long productId)
+    {
+        return productDao.viewSingleProductForAdmin(productId);
     }
 }
 

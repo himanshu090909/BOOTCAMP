@@ -48,8 +48,16 @@ public interface ProductRepository extends CrudRepository<Product,Long>
 
     @Transactional
     @Modifying
-    @Query(value = "update Product set isActive= false where productname =:productname")
-    public void setActiveStatusOfProduct(@Param(value = "productname") String productname);
+    @Query(value = "update Product set isActive= false where id =:id")
+    public void setActiveStatusOfProduct(@Param(value = "id") Long id);
+
+    @Query(value = "select username from user join  product on user.id=product.seller_user_id where product.id= ?1",nativeQuery = true)
+    public String getThatSeller(Long productId);
+
+    @Transactional
+    @Modifying
+    @Query(value = "update Product set isActive= true where id =:id")
+    public void activateTheProduct(@Param(value = "id") Long id);
 
     @Transactional
     @Modifying

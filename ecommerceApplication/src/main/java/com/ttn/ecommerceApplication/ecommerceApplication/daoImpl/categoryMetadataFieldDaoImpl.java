@@ -28,7 +28,6 @@ public class categoryMetadataFieldDaoImpl implements CategoryMetadataFieldDao
         if (categoryMetadataFieldRepository.findAll(paging).isEmpty()) {
             throw new NotFoundException("This list is empty because no metadata is present");
         } else {
-
             Page<CategoryMetadataField> pageResult = categoryMetadataFieldRepository.findAll(paging);
             if (pageResult.hasContent()) {
                 return pageResult.getContent();
@@ -37,6 +36,7 @@ public class categoryMetadataFieldDaoImpl implements CategoryMetadataFieldDao
             }
         }
     }
+
     @Override
     public void deleteCategoryMetadataField(Long id) {
 

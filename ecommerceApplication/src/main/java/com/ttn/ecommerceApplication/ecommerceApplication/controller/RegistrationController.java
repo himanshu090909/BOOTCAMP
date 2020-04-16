@@ -10,6 +10,8 @@ import com.ttn.ecommerceApplication.ecommerceApplication.repository.UserReposito
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
@@ -71,6 +73,13 @@ public class RegistrationController {
     public String createSeller(@Valid @RequestBody SellerDTO user) throws InterruptedException {
         return registrationDao.createSeller(user);
     }
+
+    @PostMapping("/resendActivationLink/{mailId}")
+    public ResponseEntity resendActivationLink(@PathVariable(name = "mailId") String mailId)
+    {
+        return registrationDao.resendActivationLink(mailId);
+    }
+
 
     @GetMapping("/doLogout")
     public String logout(HttpServletRequest request)

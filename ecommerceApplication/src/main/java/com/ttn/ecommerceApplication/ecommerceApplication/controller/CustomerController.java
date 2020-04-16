@@ -3,6 +3,7 @@ package com.ttn.ecommerceApplication.ecommerceApplication.controller;
 import com.ttn.ecommerceApplication.ecommerceApplication.dao.CustomerDao;
 import com.ttn.ecommerceApplication.ecommerceApplication.dao.ProductDao;
 import com.ttn.ecommerceApplication.ecommerceApplication.dao.UploadDao;;
+import com.ttn.ecommerceApplication.ecommerceApplication.dto.AddressDTO;
 import com.ttn.ecommerceApplication.ecommerceApplication.dto.ProfileDTO;
 import com.ttn.ecommerceApplication.ecommerceApplication.entities.Customer;
 import com.ttn.ecommerceApplication.ecommerceApplication.entities.Seller;
@@ -55,7 +56,7 @@ public class CustomerController
      }
 
      @GetMapping("/getAddresses")
-     public List<Object[]> getAddresses()
+     public List<AddressDTO> getAddresses()
      {
        return customerDao.getAddresses();
      }

@@ -1,16 +1,26 @@
 package com.ttn.ecommerceApplication.ecommerceApplication.daoImpl;
 
 import com.ttn.ecommerceApplication.ecommerceApplication.dao.AdminDao;
+import com.ttn.ecommerceApplication.ecommerceApplication.dto.AddressDTO;
+import com.ttn.ecommerceApplication.ecommerceApplication.dto.RegisteredCustomersDTO;
+import com.ttn.ecommerceApplication.ecommerceApplication.dto.RegisteredSellersDTO;
+import com.ttn.ecommerceApplication.ecommerceApplication.entities.Address;
 import com.ttn.ecommerceApplication.ecommerceApplication.entities.User;
 import com.ttn.ecommerceApplication.ecommerceApplication.exceptionHandling.UserNotFoundException;
 import com.ttn.ecommerceApplication.ecommerceApplication.repository.ProductRepository;
 import com.ttn.ecommerceApplication.ecommerceApplication.repository.UserRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,6 +40,9 @@ public class AdminDaoImpl implements AdminDao
 
     @Autowired
     ProductRepository productRepository;
+
+    @Autowired
+    ModelMapper modelMapper;
 
     @Async
     public void activateCustomerAndSeller(Long id)
@@ -175,7 +188,65 @@ public class AdminDaoImpl implements AdminDao
 
     public List<Object[]> getAllProducts()
     {
+
         return productRepository.getAllProducts();
+    }
+
+    public List<RegisteredCustomersDTO> getAllRegisteredCustomers(Integer pageNo, Integer pageSize, String sortBy)
+    {
+        Pageable paging = PageRequest.of(pageNo, pageSize, Sort.by(Sort.Order.asc(sortBy)));
+
+        List<RegisteredCustomersDTO> list = new ArrayList<>();
+            for (Long l : userRepository.findIdOfCustomers(paging))
+            {
+                Optional<User> user1 = userRepository.findById(l);
+                User user = user1.get();
+                if (user.getId()==l) {
+                    RegisteredCustomersDTO registeredCustomersDTO = new RegisteredCustomersDTO();
+                    registeredCustomersDTO.setId(user.getId());
+                    registeredCustomersDTO.setEmail(user.getUsername());
+                    registeredCustomersDTO.setFirstName(user.getFirstName());
+                    registeredCustomersDTO.setMiddleName(user.getMiddleName());
+                    registeredCustomersDTO.setLastName(user.getLastName());
+                    registeredCustomersDTO.setActive(user.getisActive());
+                    list.add(registeredCustomersDTO);
+                }
+            }
+
+        return list;
+    }
+
+    public List<RegisteredSellersDTO> getAllRegisteredSellers(Integer pageNo, Integer pageSize, String sortBy)
+    {
+        Pageable paging = PageRequest.of(pageNo, pageSize, Sort.by(Sort.Order.asc(sortBy)));
+
+        List<RegisteredSellersDTO> list = new ArrayList<>();
+            for (Long l : userRepository.findIdOfSellers(paging))
+            {
+                Optional<User> user1 = userRepository.findById(l);
+                User user = user1.get();
+                System.out.println(user.getId());
+                if (user.getId()==l)
+                {
+                    System.out.println("1");
+                    RegisteredSellersDTO registeredSellersDTO = new RegisteredSellersDTO();
+                    registeredSellersDTO.setId(user.getId());
+                    registeredSellersDTO.setEmail(user.getUsername());
+                    registeredSellersDTO.setFirstName(user.getFirstName());
+                    registeredSellersDTO.setMiddleName(user.getMiddleName());
+                    registeredSellersDTO.setLastName(user.getLastName());
+                    registeredSellersDTO.setActive(user.getisActive());
+                    AddressDTO addressDTO = new AddressDTO();
+                    for (Address address : user.getAddresses())
+                    {
+                        addressDTO = modelMapper.map(address,AddressDTO.class);
+                    }
+                    registeredSellersDTO.setAddressDTO(addressDTO);
+                    list.add(registeredSellersDTO);
+                }
+            }
+
+        return list;
     }
 
 }

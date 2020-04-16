@@ -1,5 +1,6 @@
 package com.ttn.ecommerceApplication.ecommerceApplication.daoImpl;
 import com.ttn.ecommerceApplication.ecommerceApplication.dao.CategoryDao;
+import com.ttn.ecommerceApplication.ecommerceApplication.dto.FilteringDTO;
 import com.ttn.ecommerceApplication.ecommerceApplication.dto.ViewCategoriesDTO;
 import com.ttn.ecommerceApplication.ecommerceApplication.entities.*;
 import com.ttn.ecommerceApplication.ecommerceApplication.exceptionHandling.NotFoundException;
@@ -44,8 +45,22 @@ public class CategoryDaoImpl implements CategoryDao
     }
 
     @Override
-    public List<Object[]> getAllSubCategory(String mainCategory) {
-       return categoryRepository.getSubCategory(mainCategory);
+    public List<Object[]> getAllSubCategory(Long id)
+    {
+        Optional<Category> category = categoryRepository.findById(id);
+        if (category.isPresent())
+        {
+            if (categoryRepository.checkIfLeaf(id)==1)
+            return categoryRepository.getSubCategoryOfCategory(id);
+            else
+            {
+                throw new NullException("category is a leaf node");
+            }
+        }
+        else
+        {
+            throw new NotFoundException("category with this id is not present");
+        }
     }
 
     @Override
@@ -93,27 +108,51 @@ public class CategoryDaoImpl implements CategoryDao
 
 
 
-    public List<Object[]> getFilteringDetails(Long category_id)
-    {
-        List<Long> longList = categoryMetadataFieldValuesRepository.getMetadataId(category_id);
-        List<Object[]> list = new ArrayList<>();
-        Object[] o = new Object[1];
-        o[0] = "metadata Field";
-        list.add(o);
-        for (Long l : longList)
-        {
-            List<Object[]> list1 = categoryMetadataFieldRepository.getMetadataField(l);
-            list.addAll(list1);
-        }
-        o[0]="metadata field values";
-        list.add(o);
-        List<Object[]> list1 = categoryMetadataFieldValuesRepository.getValues(category_id);
-        List<Object[]> list2 = productRepository.getBrands(category_id);
-        list.addAll(list1);
-        list.addAll(list2);
 
-        return list;
+    public FilteringDTO getFilteringDetails(Long category_id) {
+        Optional<Category> category = categoryRepository.findById(category_id);
+        FilteringDTO filteringDTO = new FilteringDTO();
+
+        if (category.isPresent() && categoryRepository.checkIfLeaf(category_id) == 0) {
+            List<Long> longList = categoryMetadataFieldValuesRepository.getMetadataId(category_id);
+            filteringDTO.setCategoryName(category.get().getName());
+            List<String> fields = new ArrayList<>();
+            List<String> values = new ArrayList<>();
+            for (Long l : longList) {
+                Optional<CategoryMetadataField> categoryMetadataField = categoryMetadataFieldRepository.findById(l);
+                fields.add(categoryMetadataField.get().getName());
+                values.add(categoryMetadataFieldValuesRepository.getFieldValuesForCompositeKey(category_id, l));
+            }
+            filteringDTO.setFields(fields);
+            filteringDTO.setValues(values);
+            Set<Product> set = category.get().getProducts();
+            Double minPrice = 0.0;
+            Double maxPrice = 0.0;
+            TreeSet<Double> doubles = new TreeSet<>();
+            List<String> brands = new ArrayList<>();
+            for (Product product : set) {
+                brands.add(product.getBrand());
+                Set<ProductVariation> set1 = product.getProductVariations();
+                for (ProductVariation productVariation : set1) {
+                    doubles.add(productVariation.getPrice());
+                }
+
+            }
+            filteringDTO.setBrands(brands);
+            Double[] d = doubles.toArray(new Double[doubles.size()]);
+            filteringDTO.setMaximuPrice(d[d.length - 1]);
+            filteringDTO.setMinimumPrice(d[0]);
+
+
+        }
+        else
+        {
+            throw new NotFoundException("category with this id is not present");
+        }
+        return filteringDTO;
+
     }
+
 
     public List<Object[]> viewACategory(Long category_id)
     {

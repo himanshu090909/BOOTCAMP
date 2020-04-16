@@ -3,21 +3,33 @@ package com.ttn.ecommerceApplication.ecommerceApplication.dto;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ProfileDTO
+public class RegisteredCustomersDTO
 {
-    private String firstName;
-    private String middleName;
-    private String lastName;
-    private String contactNo;
-    private Boolean isActive;
-    private String linkForImage="http://localhost:8080/viewProfileImage";
+    Long id;
+    String firstName;
+    String middleName;
+    String lastName;
+    String email;
+    Boolean isActive;
 
-    public String getLinkForImage() {
-        return linkForImage;
+    public RegisteredCustomersDTO() {
     }
 
-    public void setLinkForImage(String linkForImage) {
-        this.linkForImage = linkForImage;
+    public RegisteredCustomersDTO(Long id, String firstName, String middleName, String lastName, String email, Boolean isActive) {
+        this.id = id;
+        this.firstName = firstName;
+        this.middleName = middleName;
+        this.lastName = lastName;
+        this.email = email;
+        this.isActive = isActive;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getFirstName() {
@@ -44,12 +56,12 @@ public class ProfileDTO
         this.lastName = lastName;
     }
 
-    public String getContactNo() {
-        return contactNo;
+    public String getEmail() {
+        return email;
     }
 
-    public void setContactNo(String contactNo) {
-        this.contactNo = contactNo;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public Boolean getActive() {

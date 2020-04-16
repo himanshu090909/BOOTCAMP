@@ -32,7 +32,6 @@ public class TokenDao {
             Long result = System.currentTimeMillis() - token.getTimeInMill();
             if (result >= 60000)
             {
-                System.out.println("hello");
                 token.setExpired(true);
                 tokenRepository.save(token);
             }
@@ -59,6 +58,7 @@ public class TokenDao {
                 System.out.println("saving");
                 User user2 = userRepository.findByUsername(token1.getName());
                 user2.setEnabled(true);
+                user2.setActive(true);
                 System.out.println(user2.getUsername() + " " + user2.isEnabled());
                 userRepository.save(user2);
                 tokenRepository.delete(token1);

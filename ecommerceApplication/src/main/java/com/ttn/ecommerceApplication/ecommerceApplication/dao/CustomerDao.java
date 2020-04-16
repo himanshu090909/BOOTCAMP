@@ -1,5 +1,6 @@
 package com.ttn.ecommerceApplication.ecommerceApplication.dao;
 
+import com.ttn.ecommerceApplication.ecommerceApplication.dto.AddressDTO;
 import com.ttn.ecommerceApplication.ecommerceApplication.dto.CustomerDTO;
 import com.ttn.ecommerceApplication.ecommerceApplication.dto.ProfileDTO;
 import com.ttn.ecommerceApplication.ecommerceApplication.entities.Customer;
@@ -15,7 +16,7 @@ public interface CustomerDao
     public String returnRequested(Long orderStatusId);
     public String  cancelOrder(Long orderStatusId);
     String editContact(Customer customer);
-    List<Object[]> getAddresses();
+    List<AddressDTO> getAddresses();
     public ProfileDTO viewProfile();
     public String updateProfile(ProfileDTO customer);
     public List<Object[]> viewProduct(Long id);

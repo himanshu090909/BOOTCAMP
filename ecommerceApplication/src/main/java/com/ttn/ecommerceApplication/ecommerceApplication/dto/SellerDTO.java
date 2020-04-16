@@ -31,17 +31,80 @@ public class SellerDTO {
     @ValidPassword
     private String password;
 
+    @Column(nullable = false)
+    @NotEmpty(message = "confirm password cannot be null")
     private String confirmPassword;
 
     @Column(unique = true)
     @Pattern(regexp = "\\d{2}[A-Z]{5}\\d{4}[A-Z]{1}[A-Z\\d]{1}[Z]{1}[A-Z\\d]{1}")
     private String gstNo;
+
     @Column(unique = true)
     private String companyName;
 
     @Pattern(regexp = "(\\+91|0)[0-9]{10}")
     private String companyContactNo;
 
+    @Column(nullable = false)
+    private String city;
+    @Column(nullable = false)
+    private String state;
+    @Column(nullable = false)
+    private String country;
+    @Column(nullable = false)
+    private String zipcode;
+    @Column(nullable = false)
+    private String addressLine;
+
+    private String label="office";
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    public String getZipcode() {
+        return zipcode;
+    }
+
+    public void setZipcode(String zipcode) {
+        this.zipcode = zipcode;
+    }
+
+    public String getAddressLine() {
+        return addressLine;
+    }
+
+    public void setAddressLine(String addressLine) {
+        this.addressLine = addressLine;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
+    }
 
     public String getUsername() {
         return username;

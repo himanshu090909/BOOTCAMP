@@ -3,12 +3,14 @@ package com.ttn.ecommerceApplication.ecommerceApplication.controller;
 import com.ttn.ecommerceApplication.ecommerceApplication.dao.CategoryDao;
 import com.ttn.ecommerceApplication.ecommerceApplication.dao.CategoryMetadataFieldDao;
 import com.ttn.ecommerceApplication.ecommerceApplication.dao.ProductDao;
+import com.ttn.ecommerceApplication.ecommerceApplication.dto.FilteringDTO;
 import com.ttn.ecommerceApplication.ecommerceApplication.dto.ViewCategoriesDTO;
 import com.ttn.ecommerceApplication.ecommerceApplication.entities.Category;
 import com.ttn.ecommerceApplication.ecommerceApplication.entities.CategoryMetadataField;
 import com.ttn.ecommerceApplication.ecommerceApplication.entities.CategoryMetadataFieldValues;
 import com.ttn.ecommerceApplication.ecommerceApplication.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -47,6 +49,18 @@ public class CategoryController {
     ProductVariationRepository productVariationRepository;
 
 
+    @GetMapping("/viewCategoriesForCustomer")
+    public List<Object[]> getMainCategoriesForCustomer()
+    {
+        return categoryDao.getAllCategory();
+    }
+
+    @GetMapping("/viewCategoriesForCustomer/{id}")
+    public List<Object[]> getSubCategory(@PathVariable(name = "id") Long id)
+    {
+        List<Object[]> list = categoryDao.getAllSubCategory(id);
+        return list;
+    }
 
 
 
@@ -108,17 +122,7 @@ public class CategoryController {
 
 
 
-    @GetMapping("/getCategory/{category_name}")
-    public List<Object[]> getSubCategory(@PathVariable(name = "category_name") String categoryName) {
-        List<Object[]> list = categoryDao.getAllSubCategory(categoryName);
-        if (list.isEmpty()) {
-            list = productRepository.getProducts(categoryName);
-            if (list.isEmpty()) {
-                list = productRepository.findByProductname(categoryName);
-            }
-        }
-        return list;
-    }
+
 
     @PostMapping("/addNewCategory/{parent_category_id}")
     public String addNewSubCategory(@Valid @PathVariable(name = "parent_category_id") Long parent_category_id, @RequestBody Category category) {
@@ -138,10 +142,10 @@ public class CategoryController {
         return objects;
     }
 
-    @GetMapping("/filtering")
-    public List<Object[]> a()
+    @GetMapping("/filtering/{id}")
+    public FilteringDTO a(@PathVariable Long id)
     {
-       return categoryDao.getFilteringDetails(6L);
+       return categoryDao.getFilteringDetails(id);
     }
 
     @GetMapping("/viewACategory/{id}")

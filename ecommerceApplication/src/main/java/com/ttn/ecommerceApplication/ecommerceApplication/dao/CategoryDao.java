@@ -1,5 +1,6 @@
 package com.ttn.ecommerceApplication.ecommerceApplication.dao;
 
+import com.ttn.ecommerceApplication.ecommerceApplication.dto.FilteringDTO;
 import com.ttn.ecommerceApplication.ecommerceApplication.dto.ViewCategoriesDTO;
 import com.ttn.ecommerceApplication.ecommerceApplication.entities.Category;
 import com.ttn.ecommerceApplication.ecommerceApplication.entities.CategoryMetadataFieldValues;
@@ -12,7 +13,7 @@ public interface CategoryDao
 {
     List<Object[]> getAllCategory();
 
-    List<Object[]> getAllSubCategory(String mainCategory);
+    List<Object[]> getAllSubCategory(Long id);
 
     void save(Category category);
 
@@ -28,7 +29,7 @@ public interface CategoryDao
     public void updateCategory(Category category, Long categoryId);
 
 
-    public List<Object[]> getFilteringDetails(Long category_id);
+    public FilteringDTO getFilteringDetails(Long category_id);
 
     public void addMetadataValues(CategoryMetadataFieldValues categoryMetadataFieldValues, Long categoryId, Long metadataId);
 

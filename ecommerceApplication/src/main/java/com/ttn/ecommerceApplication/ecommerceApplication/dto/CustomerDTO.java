@@ -33,6 +33,8 @@ public class CustomerDTO {
     @ValidPassword
     private String password;
 
+    @Column(nullable = false)
+    @NotEmpty(message = "confirm password cannot be null")
     private String confirmPassword;
 
     @Pattern(regexp = "(\\+91|0)[0-9]{10}")

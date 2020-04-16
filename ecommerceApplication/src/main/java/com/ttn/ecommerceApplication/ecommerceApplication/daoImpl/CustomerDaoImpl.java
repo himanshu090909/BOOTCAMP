@@ -2,8 +2,7 @@
 package com.ttn.ecommerceApplication.ecommerceApplication.daoImpl;
 
 import com.ttn.ecommerceApplication.ecommerceApplication.dao.CustomerDao;
-import com.ttn.ecommerceApplication.ecommerceApplication.dao.ProductDao;
-import com.ttn.ecommerceApplication.ecommerceApplication.dto.CustomerDTO;
+import com.ttn.ecommerceApplication.ecommerceApplication.dto.AddressDTO;
 import com.ttn.ecommerceApplication.ecommerceApplication.dto.ProfileDTO;
 import com.ttn.ecommerceApplication.ecommerceApplication.entities.*;
 import com.ttn.ecommerceApplication.ecommerceApplication.enums.FromStatus;
@@ -11,7 +10,6 @@ import com.ttn.ecommerceApplication.ecommerceApplication.enums.ToStatus;
 import com.ttn.ecommerceApplication.ecommerceApplication.exceptionHandling.*;
 import com.ttn.ecommerceApplication.ecommerceApplication.repository.*;
 import com.ttn.ecommerceApplication.ecommerceApplication.utilities.GetCurrentUser;
-import org.graalvm.compiler.core.common.type.ArithmeticOpTable;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -86,15 +84,26 @@ public class CustomerDaoImpl implements CustomerDao {
             }
     }
 
-    public List<Object[]> getAddresses() {
+    public List<AddressDTO> getAddresses() {
         String username = getCurrentUser.getUser();
         Customer customer = customerRepository.findByUsername(username);
-        List<Object[]> list = addressRepository.findAllByUser(customer.getId());
-        if (list.isEmpty())
+        Set<Address> addresses = customer.getAddresses();
+        List<AddressDTO> list = new ArrayList<>();
+        if (addresses.isEmpty())
         {
-            throw new UserNotFoundException("no addresses found for this user");
+            throw new NotFoundException("no address found for the user");
         }
-        return list;
+        else
+        {
+            for (Address address : addresses)
+            {
+                AddressDTO addressDTO = modelMapper.map(address,AddressDTO.class);
+                list.add(addressDTO);
+
+            }
+
+        }
+      return list;
     }
 
     @Override
@@ -133,7 +142,7 @@ public class CustomerDaoImpl implements CustomerDao {
                  throw new PatternMismatchException("Contact number should start with +91 or 0 and length should be 10");
              }
          }
-         if (customer.isActive()==false)
+         if (customer.getActive()==false)
          {
              customer1.setActive(false);
              customer1.setEnabled(false);

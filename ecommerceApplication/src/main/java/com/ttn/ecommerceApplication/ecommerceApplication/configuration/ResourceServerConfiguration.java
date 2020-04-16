@@ -44,6 +44,15 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
     public void configureGlobal(final AuthenticationManagerBuilder authenticationManagerBuilder) {
         authenticationManagerBuilder.authenticationProvider(authenticationProvider());
     }
+    private static final String[] AUTH_WHITELIST = {
+            "/v2/api-docs",
+            "/swagger-resources",
+            "/swagger-resources/**",
+            "/configuration/ui",
+            "/configuration/security",
+            "/swagger-ui.html",
+            "/webjars/**"
+    };
 
     @Override
     public void configure(final HttpSecurity http) throws Exception {
@@ -85,6 +94,7 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
                 .antMatchers("/viewProduct/{product_id}").hasAnyRole("CUSTOMER")
                 .antMatchers("/viewAllProductsForCustomer/{category_id}").hasAnyRole("CUSTOMER")
                 .antMatchers("/viewSimilarProduct/{product_id}").hasAnyRole("CUSTOMER")
+                .antMatchers("/viewCategoriesForCustomer").hasAnyRole("CUSTOMER")
 
 
                 //admin and customer accessible uri
@@ -92,7 +102,7 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
                 .antMatchers("/detailsOfCustomer").hasAnyRole("ADMIN,CUSTOMER")
                 .antMatchers("/getAddresses").hasAnyRole("ADMIN,CUSTOMER")
                 .antMatchers("/getCategory").hasAnyRole("ADMIN,CUSTOMER")
-                .antMatchers("/getCategory/{category_name}").hasAnyRole("ADMIN,CUSTOMER")
+                .antMatchers("/viewCategoriesForCustomer/{id}").hasAnyRole("CUSTOMER")
                 .antMatchers("/addReview/{product_id}").hasAnyRole("ADMIN,CUSTOMER")
 
                 //only seller accessible uri
@@ -119,7 +129,7 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
 
                 //accessible for all
                 .antMatchers("/deleteUser").hasAnyRole("ADMIN,CUSTOMER,SELLER")
-                .antMatchers("/addNewAddress").hasAnyRole("ADMIN,CUSTOMER,SELLER")
+                .antMatchers("/addNewAddress").hasAnyRole("CUSTOMER")
                 .antMatchers("/editUsername").hasAnyRole("ADMIN,CUSTOMER,SELLER")
                 .antMatchers("/editEmail").hasAnyRole("ADMIN,CUSTOMER,SELLER")
                 .antMatchers("/editPassword").hasAnyRole("ADMIN,CUSTOMER,SELLER")
@@ -135,13 +145,16 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
                 .antMatchers("/verify/{u}").anonymous()
                 .antMatchers("/forgotPassword/{email_id}").anonymous()
                 .antMatchers("/setPassword/{token}/{password}").anonymous()
-                .antMatchers("/filtering").anonymous()
+                .antMatchers("/filtering/{id}").anonymous()
                 .antMatchers("/uploadVariationPic/{id}").anonymous()
+                .antMatchers("/resendActivationLink/{mailId}").anonymous()
 
 
 
 
                 .antMatchers("dp/{id}").hasAnyRole("SELLER")
+                .antMatchers("/viewProfileForSeller").hasAnyRole("SELLER")
+                .antMatchers("/updateMyProfile").hasAnyRole("SELLER")
 
 
 
@@ -151,13 +164,10 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
                 .antMatchers("/viewCategoriesForSeller").hasAnyRole("SELLER")
 
 
-
+                .antMatchers(AUTH_WHITELIST).permitAll()
 
                 .antMatchers("/").anonymous()
                 .antMatchers("/createUser").anonymous()
-                .antMatchers("/v2/api-docs").permitAll()
-                .antMatchers("/swagger-ui.html").permitAll()
-                .antMatchers("/swagger.json").permitAll()
                 .antMatchers("/listcategories").anonymous()
                 .antMatchers("/getProducts/{id}").anonymous()
                 .antMatchers("/deleteUser/{user_id}").anonymous()
