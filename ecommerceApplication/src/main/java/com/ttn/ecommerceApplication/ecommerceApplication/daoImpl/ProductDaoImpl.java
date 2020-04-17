@@ -3,28 +3,26 @@ package com.ttn.ecommerceApplication.ecommerceApplication.daoImpl;
 import com.ttn.ecommerceApplication.ecommerceApplication.dao.CategoryDao;
 import com.ttn.ecommerceApplication.ecommerceApplication.dao.ProductDao;
 import com.ttn.ecommerceApplication.ecommerceApplication.dto.ProductDTO;
-import com.ttn.ecommerceApplication.ecommerceApplication.entities.Category;
-import com.ttn.ecommerceApplication.ecommerceApplication.entities.Product;
-import com.ttn.ecommerceApplication.ecommerceApplication.entities.Seller;
-import com.ttn.ecommerceApplication.ecommerceApplication.entities.User;
+import com.ttn.ecommerceApplication.ecommerceApplication.dto.ViewProductDTO;
+import com.ttn.ecommerceApplication.ecommerceApplication.dto.ViewProductForCustomerDTO;
+import com.ttn.ecommerceApplication.ecommerceApplication.entities.*;
 import com.ttn.ecommerceApplication.ecommerceApplication.exceptionHandling.NotFoundException;
 import com.ttn.ecommerceApplication.ecommerceApplication.exceptionHandling.NullException;
-import com.ttn.ecommerceApplication.ecommerceApplication.repository.CategoryRepository;
-import com.ttn.ecommerceApplication.ecommerceApplication.repository.ProductRepository;
-import com.ttn.ecommerceApplication.ecommerceApplication.repository.SellerRepository;
-import com.ttn.ecommerceApplication.ecommerceApplication.repository.UserRepository;
+import com.ttn.ecommerceApplication.ecommerceApplication.repository.*;
 import com.ttn.ecommerceApplication.ecommerceApplication.utilities.GetCurrentUser;
 import com.ttn.ecommerceApplication.ecommerceApplication.utilities.NotificationService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.lang.reflect.Field;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class ProductDaoImpl implements ProductDao {
@@ -43,6 +41,12 @@ public class ProductDaoImpl implements ProductDao {
     GetCurrentUser getCurrentUser;
 
     @Autowired
+    CategoryMetadataFieldValuesRepository categoryMetadataFieldValuesRepository;
+
+    @Autowired
+    CategoryMetadataFieldRepository categoryMetadataFieldRepository;
+
+    @Autowired
     SellerRepository sellerRepository;
 
     @Autowired
@@ -54,38 +58,15 @@ public class ProductDaoImpl implements ProductDao {
     @Autowired
     ModelMapper modelMapper;
 
-  /*  @Override
-    public Iterable<Product> getAllProducts(Long id) {
-       List<Long> longList = productRepository.ids(id);
-       return  productRepository.findAllById(longList);
-   }
-*/
-
     @Override
     public void save(Product product) {
 
     }
 
 
-    @Override
-    public void addProduct(Product product, Long categoryid) {
-        String sellername = getCurrentUser.getUser();
-        Seller seller = sellerRepository.findByUsername(sellername);
-        Set<Product> productSet = new HashSet<>();
-        Product product1 = new Product();
-        product1.setBrand(product.getBrand());
-        product1.setActive(false);
-        product1.setCancellable(product.getisCancellable());
-        product1.setDescription(product.getDescription());
-        product1.setProductname(product.getProductname());
-        product1.setSeller(seller);
-        product1.setCategory1(categoryRepository.findById(categoryid).get());
-        productSet.add(product1);
-        productRepository.save(product1);
-    }
 
 
-
+    //adding a new product
     @Override
     public void addNewProduct(ProductDTO product, Long categoryId)
     {
@@ -111,12 +92,73 @@ public class ProductDaoImpl implements ProductDao {
         notificationService.sendToAdmin(user,text);
     }
 
+
+
+
+
+
+
+    //for seller single product
+    public ViewProductDTO viewSingleProduct(Long productId)
+    {
+        String sellername= getCurrentUser.getUser();
+        Seller seller= sellerRepository.findByUsername(sellername);
+        Optional<Product> product=  productRepository.findById(productId);
+        if (product.isPresent())
+        {
+            if ((product.get().getSeller().getUsername()).equals(seller.getUsername()))
+            {
+                ViewProductDTO viewProductDTO = new ViewProductDTO();
+                viewProductDTO.setBrand(product.get().getBrand());
+                viewProductDTO.setActive(product.get().getisActive());
+                viewProductDTO.setCancellable(product.get().isCancellable());
+                viewProductDTO.setDescription(product.get().getDescription());
+                viewProductDTO.setProductname(product.get().getProductname());
+                Optional<Category> category = categoryRepository.findById(productRepository.getCategoryId(productId));
+                viewProductDTO.setName(category.get().getName());
+                List<String > fields = new ArrayList<>();
+                List<String > values = new ArrayList<>();
+                List<Long> longList1 = categoryMetadataFieldValuesRepository.getMetadataId(category.get().getId());
+                for (Long l1 : longList1) {
+                    Optional<CategoryMetadataField> categoryMetadataField = categoryMetadataFieldRepository.findById(l1);
+                    fields.add(categoryMetadataField.get().getName());
+                    values.add(categoryMetadataFieldValuesRepository.getFieldValuesForCompositeKey(category.get().getId(), l1));
+                }
+                viewProductDTO.setFieldName(fields);
+                viewProductDTO.setValues(values);
+
+
+                return viewProductDTO;
+            } else {
+                throw new NotFoundException("You cannot view this product");
+            }
+
+        }
+        else
+        {
+            throw new NotFoundException("product with this id is not present");
+        }
+    }
+
+
+
+
+
+    //for seller all products
     @Override
-    public List<Object[]> getProductDetails() {
+    public List<ViewProductDTO> getProductDetails(Integer pageNo, Integer pageSize, String sortBy)
+    {
+        Pageable paging = PageRequest.of(pageNo, pageSize, Sort.by(Sort.Order.asc(sortBy)));
         String username = getCurrentUser.getUser();
         Seller seller = sellerRepository.findByUsername(username);
-        List<Object[]> objects = productRepository.getProductss(seller.getId());
-        return objects;
+        List<Long> longList = productRepository.getProductIdOfSeller(seller.getId(),paging);
+        List<ViewProductDTO> list = new ArrayList<>();
+        for (Long l : longList)
+        {
+                list.add(viewSingleProduct(productRepository.findById(l).get().getID()));
+
+        }
+      return list;
     }
 
     @Override
@@ -209,41 +251,6 @@ public class ProductDaoImpl implements ProductDao {
         return null;
     }
 
-    public List<Object[]> viewSingleProduct(Long productId)
-    {
-        String sellername= getCurrentUser.getUser();
-        Seller seller= sellerRepository.findByUsername(sellername);
-        Optional<Product> product=  productRepository.findById(productId);
-        if (product.isPresent())
-        {
-            if (product.get().isActive()) {
-                if ((product.get().getSeller().getUsername()).equals(seller.getUsername())) {
-                    return productRepository.getSingleProduct(productId);
-                } else {
-                    throw new NotFoundException("You cannot view this product");
-                }
-            }
-            else
-            {
-                throw new NullException("product is not active right now");
-            }
-        }
-        else
-        {
-            throw new NotFoundException("product with this id is not present");
-        }
-    }
-
-    @Override
-    public List<Object[]> viewSingleProductForAdmin(Long productId) {
-        Optional<Product> productOptional = productRepository.findById(productId);
-        if (productOptional.isPresent())
-        {
-            return productRepository.getSingleProduct(productId);
-        } else {
-            throw new NotFoundException("This product ID is wrong");
-        }
-    }
 
 
 
@@ -270,7 +277,6 @@ public class ProductDaoImpl implements ProductDao {
         } else {
             throw new NotFoundException("This product is not found");
         }
-
 
     }
 
@@ -300,5 +306,208 @@ public class ProductDaoImpl implements ProductDao {
 
     }
 
+    @Override
+    public List<ViewProductForCustomerDTO> getSimilarProducts(Long productId, Integer pageNo, Integer pageSize, String sortBy) {
+        Optional<Product> product = productRepository.findById(productId);
+        Pageable paging = PageRequest.of(pageNo, pageSize, Sort.by(Sort.Order.asc(sortBy)));
+        List<ViewProductForCustomerDTO> list = new ArrayList<>();
+
+        if (product.isPresent())
+        {
+            List<Long> longList = productRepository.getIdOfSimilarProduct(product.get().getCategory1().getId(),product.get().getBrand(),paging);
+            System.out.println(longList);
+            for (Long l : longList)
+            {
+                list.add(viewSingleProductForCustomer(productRepository.findById(l).get().getID()));
+            }
+            return list;
+
+        }
+        else
+        {
+            throw new NotFoundException("product with this id is not present");
+        }
+    }
+
+
+    public ViewProductForCustomerDTO viewSingleProductForCustomer(Long productId)
+    {
+        Optional<Product> product=  productRepository.findById(productId);
+        if (product.isPresent()&&product.get().isActive()==true&&product.get().getProductVariations().isEmpty()==false)
+        {
+                ViewProductForCustomerDTO viewProductDTO = new ViewProductForCustomerDTO();
+                viewProductDTO.setBrand(product.get().getBrand());
+                viewProductDTO.setActive(product.get().getisActive());
+                viewProductDTO.setCancellable(product.get().isCancellable());
+                viewProductDTO.setDescription(product.get().getDescription());
+                viewProductDTO.setProductname(product.get().getProductname());
+                Optional<Category> category = categoryRepository.findById(productRepository.getCategoryId(productId));
+                viewProductDTO.setName(category.get().getName());
+                List<String > fields = new ArrayList<>();
+                List<String > values = new ArrayList<>();
+                List<Long> longList1 = categoryMetadataFieldValuesRepository.getMetadataId(category.get().getId());
+                for (Long l1 : longList1) {
+                    Optional<CategoryMetadataField> categoryMetadataField = categoryMetadataFieldRepository.findById(l1);
+                    fields.add(categoryMetadataField.get().getName());
+                    values.add(categoryMetadataFieldValuesRepository.getFieldValuesForCompositeKey(category.get().getId(), l1));
+                }
+                viewProductDTO.setFieldName(fields);
+                viewProductDTO.setValues(values);
+                List<String > list = new ArrayList<>();
+                Set<ProductVariation> productVariations = product.get().getProductVariations();
+                String firstPath = System.getProperty("user.dir");
+                String fileBasePath = firstPath+"/src/main/resources/productVariation/";
+                for (ProductVariation productVariation : productVariations)
+                {
+                    File dir = new File(fileBasePath);
+                    if (dir.isDirectory())
+                    {
+                        File[] files = dir.listFiles();
+                        for (File file1 : files) {
+                            String value = productVariation.getId().toString()+"_0";
+                            if (file1.getName().startsWith(value)) {
+                                list.add("http://localhost:8080/viewProductVariationImage/"+file1.getName());
+                            }
+                        }
+                    }
+                }
+                viewProductDTO.setLinks(list);
+                return viewProductDTO;
+            }
+        else {
+                throw new NotFoundException("product is not present");
+            }
+
+        }
+
+
+
+    public ViewProductForCustomerDTO viewSingleProductForAdmin(Long productId)
+    {
+        Optional<Product> product=  productRepository.findById(productId);
+        if (product.isPresent())
+        {
+            ViewProductForCustomerDTO viewProductDTO = new ViewProductForCustomerDTO();
+            viewProductDTO.setBrand(product.get().getBrand());
+            viewProductDTO.setActive(product.get().getisActive());
+            viewProductDTO.setCancellable(product.get().isCancellable());
+            viewProductDTO.setDescription(product.get().getDescription());
+            viewProductDTO.setProductname(product.get().getProductname());
+            Optional<Category> category = categoryRepository.findById(productRepository.getCategoryId(productId));
+            viewProductDTO.setName(category.get().getName());
+            List<String > fields = new ArrayList<>();
+            List<String > values = new ArrayList<>();
+            List<Long> longList1 = categoryMetadataFieldValuesRepository.getMetadataId(category.get().getId());
+            for (Long l1 : longList1) {
+                Optional<CategoryMetadataField> categoryMetadataField = categoryMetadataFieldRepository.findById(l1);
+                fields.add(categoryMetadataField.get().getName());
+                values.add(categoryMetadataFieldValuesRepository.getFieldValuesForCompositeKey(category.get().getId(), l1));
+            }
+            viewProductDTO.setFieldName(fields);
+            viewProductDTO.setValues(values);
+            List<String > list = new ArrayList<>();
+            Set<ProductVariation> productVariations = product.get().getProductVariations();
+            String firstPath = System.getProperty("user.dir");
+            String fileBasePath = firstPath+"/src/main/resources/productVariation/";
+            for (ProductVariation productVariation : productVariations)
+            {
+                File dir = new File(fileBasePath);
+                if (dir.isDirectory())
+                {
+                    File[] files = dir.listFiles();
+                    for (File file1 : files) {
+                        String value = productVariation.getId().toString()+"_0";
+                        if (file1.getName().startsWith(value)) {
+                            list.add("http://localhost:8080/viewProductVariationImage/"+file1.getName());
+                        }
+                    }
+                }
+            }
+            viewProductDTO.setLinks(list);
+
+            return viewProductDTO;
+        }
+
+        else {
+            throw new NotFoundException("product is not present");
+        }
+
+    }
+
+
+    public List<ViewProductForCustomerDTO> getProductDetailsForCustomer(Long categoryId,Integer pageNo, Integer pageSize, String sortBy)
+    {
+        Pageable paging = PageRequest.of(pageNo, pageSize, Sort.by(Sort.Order.asc(sortBy)));
+        Optional<Category> category = categoryRepository.findById(categoryId);
+        List<ViewProductForCustomerDTO> list = new ArrayList<>();
+        if (category.isPresent()&&categoryRepository.checkIfLeaf(categoryId)==0)
+        {
+            List<Long> longList = productRepository.getIdsOdProducts(categoryId,paging);
+            System.out.println(longList);
+            for (Long l : longList)
+            {
+                    list.add(viewSingleProductForCustomer(productRepository.findById(l).get().getID()));
+
+            }
+            return list;
+        }
+        else
+        {
+            throw new NotFoundException("category  with this id is not present");
+        }
+
+    }
+
+
+
+    public List<ViewProductForCustomerDTO> getProductDetailsForAdmin(Integer pageNo, Integer pageSize, String sortBy)
+    {
+        Pageable paging = PageRequest.of(pageNo, pageSize, Sort.by(Sort.Order.asc(sortBy)));
+        List<Long> longList = productRepository.getAllId(paging);
+        System.out.println(longList);
+        List<ViewProductForCustomerDTO> list = new ArrayList<>();
+        for (Long l : longList)
+        {
+                System.out.println(productRepository.findById(l).get().getProductname());
+                list.add(viewSingleProductForAdmin(productRepository.findById(l).get().getID()));
+
+        }
+      return list;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    @Override
+    public void addProduct(Product product, Long categoryid) {
+        String sellername = getCurrentUser.getUser();
+        Seller seller = sellerRepository.findByUsername(sellername);
+        Set<Product> productSet = new HashSet<>();
+        Product product1 = new Product();
+        product1.setBrand(product.getBrand());
+        product1.setActive(false);
+        product1.setCancellable(product.getisCancellable());
+        product1.setDescription(product.getDescription());
+        product1.setProductname(product.getProductname());
+        product1.setSeller(seller);
+        product1.setCategory1(categoryRepository.findById(categoryid).get());
+        productSet.add(product1);
+        productRepository.save(product1);
+    }
+
 
 }
+
+

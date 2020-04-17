@@ -1,15 +1,17 @@
 package com.ttn.ecommerceApplication.ecommerceApplication.repository;
 
 import com.ttn.ecommerceApplication.ecommerceApplication.entities.Product;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 
 import javax.transaction.Transactional;
 import java.util.List;
 
-public interface ProductRepository extends CrudRepository<Product,Long>
+public interface ProductRepository extends PagingAndSortingRepository<Product,Long>
 {
     @Query(value = "select brand,description,productname from product where category_id in (select id from category where name=:name)",nativeQuery = true)
     List<Object[]> getProducts(@Param("name") String name );
@@ -21,7 +23,7 @@ public interface ProductRepository extends CrudRepository<Product,Long>
     List<Object[]> findByProductname(String productName);
 
     @Query(value = "select category_id from product where id=:id",nativeQuery = true)
-    long getCategoryId(@Param("id")long id);
+    Long getCategoryId(@Param("id") Long id);
 
     @Query(value = "select brand,description,is_cancellable,productname,name from product join category on product.category_id=category.id where product.is_active=true",nativeQuery = true)
     public List<Object[]> getAllProducts();
@@ -76,5 +78,17 @@ public interface ProductRepository extends CrudRepository<Product,Long>
 
     @Query(value = "select * from product where category_id=:category_id",nativeQuery = true)
     List<Product> getProducts(@Param("category_id") Long category_id);
+
+    @Query(value = "select id from product where category_id=:category_id and is_active=true",nativeQuery = true)
+    List<Long> getIdsOdProducts(@Param("category_id") Long category_id, Pageable pageable);
+
+    @Query(value = "select id from product where is_active=true",nativeQuery = true)
+    List<Long> getAllId(Pageable pageable);
+
+    @Query(value = "select id from product where seller_user_id=:seller_user_id",nativeQuery = true)
+    List<Long> getProductIdOfSeller(@Param("seller_user_id") Long seller_user_id,Pageable pageable);
+
+    @Query(value = "select id from product where category_id=:category_id and brand=:brand and is_active=true",nativeQuery = true)
+    List<Long> getIdOfSimilarProduct(@Param("category_id") Long category_id,@Param("brand") String brand,Pageable pageable);
 
 }
