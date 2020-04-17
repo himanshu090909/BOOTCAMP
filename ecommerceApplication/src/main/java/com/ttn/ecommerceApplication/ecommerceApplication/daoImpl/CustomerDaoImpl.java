@@ -12,6 +12,8 @@ import com.ttn.ecommerceApplication.ecommerceApplication.repository.*;
 import com.ttn.ecommerceApplication.ecommerceApplication.utilities.GetCurrentUser;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
@@ -50,22 +52,10 @@ public class CustomerDaoImpl implements CustomerDao {
     @Autowired
     OrderStatusRepository orderStatusRepository;
 
-    @Override
-    public String  returnRequested(Long orderStatusId) {
-        Optional<OrderStatus> orderStatusOptional = orderStatusRepository.findById(orderStatusId);
-        OrderStatus orderStatus = orderStatusOptional.get();
-        if (orderStatus.getToStatus() == ToStatus.CLOSED) {
-              throw new NullPointerException("You can not request for return ");
-        } else if (orderStatus.getToStatus() == ToStatus.DELIVERED) {
-            orderStatus.setFromStatus(FromStatus.RETURN_REQUESTED);
-            orderStatusRepository.save(orderStatus);
-            return "return request approved";
-        }
-        else
-        {
-            throw new NullPointerException("You can not request for return ");
-        }
-    }
+    @Autowired
+    MessageSource messageSource;
+
+
 
     public String editContact(Customer customer)
     {
@@ -80,18 +70,59 @@ public class CustomerDaoImpl implements CustomerDao {
         }
         else
             {
-             throw new PatternMismatchException("Contact number should start with +91 or 0 and length should be 10");
+                Long[] l = {};
+             throw new PatternMismatchException(messageSource.getMessage("message5.txt",l, LocaleContextHolder.getLocale()));
             }
     }
 
-    public List<AddressDTO> getAddresses() {
+
+    @Transactional
+    @Override
+    public String getAnSellerAccount(Seller seller) {
+        Long[] l = {};
+
+        if (seller.getCompanyName() != null && seller.getCompanyContactNo() != null && seller.getGstNo() != null) {
+            String username = getCurrentUser.getUser();
+            User customer = userRepository.findByUsername(username);
+            if (seller.getCompanyContactNo().matches("(\\+91|0)[0-9]{10}")) {
+                if (seller.getGstNo().matches("\\d{2}[A-Z]{5}\\d{4}[A-Z]{1}[A-Z\\d]{1}[Z]{1}[A-Z\\d]{1}")) {
+                    seller.setId(customer.getId());
+                    sellerRepository.insertIntoSeller(seller.getCompanyContactNo(), seller.getCompanyName(), seller.getGstNo(), seller.getId());
+                    Set<Role> roles = customer.getRoles();
+                    Role role = new Role();
+                    role.setRole("ROLE_SELLER");
+                    roles.add(role);
+                    customer.setRoles(roles);
+                    Set<User> users = new HashSet<>();
+                    role.setUsers(users);
+                    userRepository.save(customer);
+                    return "success";
+                } else {
+                    throw new PatternMismatchException(messageSource.getMessage("message6.txt",l,LocaleContextHolder.getLocale()));
+                }
+            } else {
+                throw new PatternMismatchException(messageSource.getMessage("message5.txt",l,LocaleContextHolder.getLocale()));
+
+            }
+        } else {
+            throw new NullException(messageSource.getMessage("message7.txt",l,LocaleContextHolder.getLocale()));
+        }
+    }
+
+
+
+
+
+    public List<AddressDTO> getAddresses()
+    {
+        Long[] l = {};
         String username = getCurrentUser.getUser();
         Customer customer = customerRepository.findByUsername(username);
         Set<Address> addresses = customer.getAddresses();
         List<AddressDTO> list = new ArrayList<>();
         if (addresses.isEmpty())
         {
-            throw new NotFoundException("no address found for the user");
+            throw new NotFoundException(messageSource.getMessage("message8.txt",l,LocaleContextHolder.getLocale()));
         }
         else
         {
@@ -123,6 +154,7 @@ public class CustomerDaoImpl implements CustomerDao {
     @Override
     public String updateProfile(ProfileDTO customer)
     {
+        Long[] l = {};
          String username = getCurrentUser.getUser();
          Customer customer1 = customerRepository.findByUsername(username);
          if (customer.getFirstName()!=null)
@@ -139,7 +171,7 @@ public class CustomerDaoImpl implements CustomerDao {
              }
              else
              {
-                 throw new PatternMismatchException("Contact number should start with +91 or 0 and length should be 10");
+                 throw new PatternMismatchException(messageSource.getMessage("message5.txt",l,LocaleContextHolder.getLocale()));
              }
          }
          if (customer.getActive()==false)
@@ -150,6 +182,25 @@ public class CustomerDaoImpl implements CustomerDao {
          customerRepository.save(customer1);
          return "success";
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     @Override
     public List<Object[]> viewProduct(Long id) {
@@ -239,8 +290,6 @@ public class CustomerDaoImpl implements CustomerDao {
 
     }
 
-
-
     @Override
     public String cancelOrder(Long orderStatusId) {
         Optional<OrderStatus> orderStatusOptional = orderStatusRepository.findById(orderStatusId);
@@ -269,34 +318,22 @@ public class CustomerDaoImpl implements CustomerDao {
         return customer;
     }
 
-    @Transactional
-    @Override
-    public String getAnSellerAccount(Seller seller) {
-        if (seller.getCompanyName() != null && seller.getCompanyContactNo() != null && seller.getGstNo() != null) {
-            String username = getCurrentUser.getUser();
-            User customer = userRepository.findByUsername(username);
-            if (seller.getCompanyContactNo().matches("(\\+91|0)[0-9]{10}")) {
-                if (seller.getGstNo().matches("\\d{2}[A-Z]{5}\\d{4}[A-Z]{1}[A-Z\\d]{1}[Z]{1}[A-Z\\d]{1}")) {
-                    seller.setId(customer.getId());
-                    sellerRepository.insertIntoSeller(seller.getCompanyContactNo(), seller.getCompanyName(), seller.getGstNo(), seller.getId());
-                    Set<Role> roles = customer.getRoles();
-                    Role role = new Role();
-                    role.setRole("ROLE_SELLER");
-                    roles.add(role);
-                    customer.setRoles(roles);
-                    Set<User> users = new HashSet<>();
-                    role.setUsers(users);
-                    userRepository.save(customer);
-                    return "success";
-                } else {
-                    throw new PatternMismatchException("gst number is not correct");
-                }
-            } else {
-                throw new PatternMismatchException("Contact number should start with +91 or 0 and length should be 10");
 
-            }
-        } else {
-            throw new NullException("all the fields are mandatory");
+
+    @Override
+    public String  returnRequested(Long orderStatusId) {
+        Optional<OrderStatus> orderStatusOptional = orderStatusRepository.findById(orderStatusId);
+        OrderStatus orderStatus = orderStatusOptional.get();
+        if (orderStatus.getToStatus() == ToStatus.CLOSED) {
+            throw new NullPointerException("You can not request for return ");
+        } else if (orderStatus.getToStatus() == ToStatus.DELIVERED) {
+            orderStatus.setFromStatus(FromStatus.RETURN_REQUESTED);
+            orderStatusRepository.save(orderStatus);
+            return "return request approved";
+        }
+        else
+        {
+            throw new NullPointerException("You can not request for return ");
         }
     }
 

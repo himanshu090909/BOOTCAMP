@@ -10,7 +10,7 @@ public class RegisteredSellersDTO
     String firstName;
     String middleName;
     String lastName;
-    String email;
+    String username;
     Boolean isActive;
     String companyName;
     AddressDTO addressDTO;
@@ -24,7 +24,7 @@ public class RegisteredSellersDTO
         this.firstName = firstName;
         this.middleName = middleName;
         this.lastName = lastName;
-        this.email = email;
+        this.username = email;
         this.isActive = isActive;
         this.companyName = companyName;
         this.addressDTO = addressDTO;
@@ -63,12 +63,12 @@ public class RegisteredSellersDTO
         this.lastName = lastName;
     }
 
-    public String getEmail() {
-        return email;
+    public String getUsername() {
+        return username;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public Boolean getActive() {

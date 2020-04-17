@@ -37,68 +37,6 @@ public class SellerDaoImpl implements SellerDao {
     @Autowired
     AddressRepository addressRepository;
 
-
-    @Override
-    public List<Object[]> getSellerDetails() {
-        String username = getCurrentUser.getUser();
-        List<Object[]> objects = sellerRepository.getDetails(username);
-        return objects;
-    }
-
-    @Transactional
-    @Override
-    public String getAnCustomerAccount(Customer customer) {
-        if (customer.getContactNo() != null) {
-            if (customer.getContactNo().matches("(\\+91|0)[0-9]{10}")) {
-                String username = getCurrentUser.getUser();
-                User seller = userRepository.findByUsername(username);
-                customer.setId(seller.getId());
-                customerRepository.insertIntoCustomer(customer.getContactNo(), customer.getId());
-                Set<Role> roles = seller.getRoles();
-                Role role = new Role();
-                role.setRole("ROLE_CUSTOMER");
-                roles.add(role);
-                seller.setRoles(roles);
-                Set<User> users = new HashSet<>();
-                role.setUsers(users);
-                userRepository.save(seller);
-                return "success";
-            } else {
-                throw new PatternMismatchException("Contact number should start with +91 or 0 and length should be 10");
-            }
-        } else {
-            throw new NullException("contact number is mandatory");
-        }
-    }
-
-    @Override
-    public String editSellerDetails(Seller seller) {
-        String user = getCurrentUser.getUser();
-        Seller user1 = sellerRepository.findByUsername(user);
-        if (seller.getCompanyName() != null) {
-            user1.setCompanyName(seller.getCompanyName());
-        }
-        if (seller.getCompanyContactNo() != null) {
-            if (seller.getCompanyContactNo().matches("(\\+91|0)[0-9]{10}")) {
-                user1.setCompanyContactNo(seller.getCompanyContactNo());
-            } else {
-                throw new PatternMismatchException("Contact number should start with +91 or 0 and length should be 10");
-            }
-        }
-        if (seller.getGstNo() != null) {
-
-            if (seller.getGstNo().matches("\\d{2}[A-Z]{5}\\d{4}[A-Z]{1}[A-Z\\d]{1}[Z]{1}[A-Z\\d]{1}")) {
-                user1.setGstNo(seller.getGstNo());
-            } else {
-                throw new PatternMismatchException("gst number is not correct");
-            }
-        }
-        user1.setModifiedBy(user);
-        sellerRepository.save(user1);
-        return "success";
-    }
-
-
     public SellerProfileDTO viewProfile() {
         String username = getCurrentUser.getUser();
         Seller seller = sellerRepository.findByUsername(username);
@@ -144,28 +82,84 @@ public class SellerDaoImpl implements SellerDao {
                 throw new PatternMismatchException("gst number is not correct");
             }
         }
-        Set<Address> addresses = seller.getAddresses();
-        for (Address address : addresses) {
-            if (sellerProfileDTO.getCity() != null) {
-                address.setCity(sellerProfileDTO.getCity());
-            }
-            if (sellerProfileDTO.getState() != null) {
-                address.setState(sellerProfileDTO.getState());
-            }
-            if (sellerProfileDTO.getCountry() != null) {
-                address.setCountry(sellerProfileDTO.getCountry());
-            }
-            if (sellerProfileDTO.getAddressLine() != null) {
-                address.setAddressLine(sellerProfileDTO.getAddressLine());
-            }
-            if (sellerProfileDTO.getZipCode() != null) {
-                address.setZipcode(sellerProfileDTO.getZipCode());
-            }
-            addressRepository.save(address);
-        }
         sellerRepository.save(seller);
 
         return ResponseEntity.ok().body("profile is updated successfully");
     }
+
+
+
+
+
+
+
+
+
+
+
+    @Override
+    public String editSellerDetails(Seller seller) {
+        String user = getCurrentUser.getUser();
+        Seller user1 = sellerRepository.findByUsername(user);
+        if (seller.getCompanyName() != null) {
+            user1.setCompanyName(seller.getCompanyName());
+        }
+        if (seller.getCompanyContactNo() != null) {
+            if (seller.getCompanyContactNo().matches("(\\+91|0)[0-9]{10}")) {
+                user1.setCompanyContactNo(seller.getCompanyContactNo());
+            } else {
+                throw new PatternMismatchException("Contact number should start with +91 or 0 and length should be 10");
+            }
+        }
+        if (seller.getGstNo() != null) {
+
+            if (seller.getGstNo().matches("\\d{2}[A-Z]{5}\\d{4}[A-Z]{1}[A-Z\\d]{1}[Z]{1}[A-Z\\d]{1}")) {
+                user1.setGstNo(seller.getGstNo());
+            } else {
+                throw new PatternMismatchException("gst number is not correct");
+            }
+        }
+        user1.setModifiedBy(user);
+        sellerRepository.save(user1);
+        return "success";
+    }
+
+
+
+
+    @Override
+    public List<Object[]> getSellerDetails() {
+        String username = getCurrentUser.getUser();
+        List<Object[]> objects = sellerRepository.getDetails(username);
+        return objects;
+    }
+
+    @Transactional
+    @Override
+    public String getAnCustomerAccount(Customer customer) {
+        if (customer.getContactNo() != null) {
+            if (customer.getContactNo().matches("(\\+91|0)[0-9]{10}")) {
+                String username = getCurrentUser.getUser();
+                User seller = userRepository.findByUsername(username);
+                customer.setId(seller.getId());
+                customerRepository.insertIntoCustomer(customer.getContactNo(), customer.getId());
+                Set<Role> roles = seller.getRoles();
+                Role role = new Role();
+                role.setRole("ROLE_CUSTOMER");
+                roles.add(role);
+                seller.setRoles(roles);
+                Set<User> users = new HashSet<>();
+                role.setUsers(users);
+                userRepository.save(seller);
+                return "success";
+            } else {
+                throw new PatternMismatchException("Contact number should start with +91 or 0 and length should be 10");
+            }
+        } else {
+            throw new NullException("contact number is mandatory");
+        }
+    }
+
+
 
 }

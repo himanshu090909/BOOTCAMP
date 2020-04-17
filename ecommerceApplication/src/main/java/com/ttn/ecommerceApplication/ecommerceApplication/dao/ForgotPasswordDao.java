@@ -7,6 +7,7 @@ import com.ttn.ecommerceApplication.ecommerceApplication.utilities.NotificationS
 import com.ttn.ecommerceApplication.ecommerceApplication.utilities.TokenDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
@@ -15,6 +16,6 @@ import org.springframework.stereotype.Repository;
 
 public interface ForgotPasswordDao
 {
-    public void forgotPassword(String email_id);
-    public void setPassword(String token_on_mail, String password);
+    public ResponseEntity forgotPassword(String email_id);
+    public ResponseEntity setPassword(String token_on_mail, String password);
 }

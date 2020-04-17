@@ -22,7 +22,7 @@ import java.util.Set;
 public interface RegistrationDao
 {
     public String createCustomer(CustomerDTO customer);
-    public String createSeller(SellerDTO seller);
+    public ResponseEntity createSeller(SellerDTO seller);
     public ResponseEntity resendActivationLink(String emailId);
 
 

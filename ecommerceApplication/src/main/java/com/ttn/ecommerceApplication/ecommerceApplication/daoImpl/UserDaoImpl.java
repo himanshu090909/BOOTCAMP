@@ -66,7 +66,16 @@ public class UserDaoImpl implements UserDao
         int count = 0;
         for (Address address1 : addresses) {
             if (address1.getId() == addressId) {
-                address1 = modelMapper.map(address, Address.class);
+                if (address.getAddressLine()!=null)
+                    address1.setAddressLine(address.getAddressLine());
+                if (address.getCity()!=null)
+                    address1.setCity(address.getCity());
+                if (address.getCountry()!=null)
+                    address1.setCountry(address.getCountry());
+                if (address.getState()!=null)
+                    address1.setState(address.getState());
+                if (address.getZipcode()!=null)
+                    address1.setZipcode(address.getZipcode());
                 address1.setUser(user);
                 address1.setId(addressId);
                 address1.setModifiedBy(username);
@@ -90,13 +99,13 @@ public class UserDaoImpl implements UserDao
     public String addNewAddress(Address address) {
         String username = getCurrentUser.getUser();
         User user = userRepository.findByUsername(username);
+        address.setLabel("home");
         address.setUser(user);
         user.addAddress(address);
         user.setModifiedBy(username);
         userRepository.save(user);
         return "success";
     }
-
 
     public String editUsername(UserDTO user) {
         User user1 = userRepository.findByUsername(user.getUsername());
@@ -117,7 +126,7 @@ public class UserDaoImpl implements UserDao
         User user1 = modelMapper.map(user, User.class);
         String username = getCurrentUser.getUser();
         user1.setUsername(username);
-        notificationService.sendNotificaitoin(user1);
+        notificationService.sendNotification(user1);
         return "success";
     }
 
@@ -136,7 +145,7 @@ public class UserDaoImpl implements UserDao
                 User user1 = modelMapper.map(user, User.class);
                 String username = getCurrentUser.getUser();
                 user1.setUsername(username);
-                notificationService.sendNotificaitoin(user1);
+                notificationService.sendNotification(user1);
                 tokenRepository.delete(token1);
                 throw new TokenNotFoundException("token is expired check mail for new token");
             } else {

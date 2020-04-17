@@ -33,11 +33,37 @@ public class UploadDaoImpl implements UploadDao {
     }
 
     @Override
+    public ResponseEntity downloadImage(String fileName, HttpServletRequest request) throws IOException {
+        String fileBasePath = firstPath + "/src/main/resources/users/";
+        return getImmage(fileBasePath, fileName, request);
+    }
+
+    @Override
+    public ResponseEntity downloadImageOfProductVariation(String fileName, HttpServletRequest request) throws IOException {
+        String fileBasePath = firstPath + "/src/main/resources/productVariation/";
+        return getImmage(fileBasePath,fileName,request);
+
+    }
+
+    public ResponseEntity<Object> uploadSingleImage(MultipartFile file, Customer customer) throws IOException {
+        File convertfile = new File(firstPath + "/src/main/resources/users/images" + file.getOriginalFilename());
+        convertfile.createNewFile();
+        String fileBasePath = firstPath + "/src/main/resources/users/";
+        Path path = Paths.get(fileBasePath + convertfile.getName());
+        FileOutputStream fout = new FileOutputStream(convertfile);
+        fout.write(file.getBytes());
+        fout.close();
+        Optional<String> ext = getExtensionByStringHandling(convertfile.getName());
+        changeNameOfFile(customer,ext,path);
+        return new ResponseEntity<>("file added", HttpStatus.OK);
+    }
+
+    @Override
     public ResponseEntity<Object> uploadSingleImageForProductVariation(MultipartFile file, ProductVariation productVariation) throws IOException {
 
-        File convertfile = new File(firstPath+"/src/main/resources/productVariation/images" + file.getOriginalFilename());
+        File convertfile = new File(firstPath + "/src/main/resources/productVariation/images" + file.getOriginalFilename());
         convertfile.createNewFile();
-        String fileBasePath = firstPath+"/src/main/resources/productVariation/";
+        String fileBasePath = firstPath + "/src/main/resources/productVariation/";
         Path path = Paths.get(fileBasePath + convertfile.getName());
         FileOutputStream fout = new FileOutputStream(convertfile);
         System.out.println(convertfile.getAbsolutePath());
@@ -58,7 +84,7 @@ public class UploadDaoImpl implements UploadDao {
                     }
                 }
                 String value1 = productVariation.getId().toString();
-                value1 = value1 + count;
+                value1 = value1 + "_" + count;
                 Files.move(path, path.resolveSibling(value1 + "." + ext.get()));
             }
         } else {
@@ -67,20 +93,51 @@ public class UploadDaoImpl implements UploadDao {
         return new ResponseEntity<>("file added", HttpStatus.OK);
     }
 
-    public ResponseEntity<Object> uploadSingleImage(MultipartFile file, Customer customer) throws IOException {
-        File convertfile = new File(firstPath+"/src/main/resources/users/images" + file.getOriginalFilename());
-        convertfile.createNewFile();
-        String fileBasePath = firstPath+"/src/main/resources/users/";
-        Path path = Paths.get(fileBasePath + convertfile.getName());
-        FileOutputStream fout = new FileOutputStream(convertfile);
-        fout.write(file.getBytes());
-        fout.close();
-        Optional<String> ext = getExtensionByStringHandling(convertfile.getName());
+    @Override
+    public ResponseEntity<Object> uploadMultipleFiles(MultipartFile[] files,ProductVariation productVariation) throws IOException {
+
+
+        for (MultipartFile multipartFile : files) {
+            File convertfile = new File(firstPath+"/src/main/resources/productVariation/images" + multipartFile.getOriginalFilename());
+            convertfile.createNewFile();
+            String fileBasePath = firstPath + "/src/main/resources/productVariation/";
+            Path path = Paths.get(fileBasePath + convertfile.getName());
+            FileOutputStream fout = new FileOutputStream(convertfile);
+            System.out.println(convertfile.getAbsolutePath());
+            fout.write(multipartFile.getBytes());
+            fout.close();
+            Optional<String> ext = getExtensionByStringHandling(convertfile.getName());
+            int count = 0;
+            File dir = new File(fileBasePath);
+
+            if (ext.isPresent()) {
+                if (dir.isDirectory()) {
+                    File[] files1 = dir.listFiles();
+                    for (File file1 : files1) {
+                        String value = productVariation.getId().toString();
+                        if (file1.getName().startsWith(value)) {
+                            count++;
+                            System.out.println(count);
+                        }
+                    }
+                    String value1 = productVariation.getId().toString();
+                    value1 = value1 + "_" + count;
+                    Files.move(path, path.resolveSibling(value1 + "." + ext.get()));
+                }
+            } else {
+                throw new RuntimeException();
+            }
+
+        }
+        return new ResponseEntity<>("file added", HttpStatus.OK);
+    }
+
+    public void changeNameOfFile(Customer customer,Optional<String> ext,Path path) throws IOException {
+        String fileBasePath = firstPath + "/src/main/resources/productVariation/";
+
         File dir = new File(fileBasePath);
-        if (ext.isPresent())
-        {
-            if (dir.isDirectory())
-            {
+        if (ext.isPresent()) {
+            if (dir.isDirectory()) {
                 File[] files = dir.listFiles();
                 for (File file1 : files) {
                     String value = customer.getId().toString();
@@ -95,25 +152,12 @@ public class UploadDaoImpl implements UploadDao {
         } else {
             throw new RuntimeException();
         }
-        return new ResponseEntity<>("file added", HttpStatus.OK);
+
     }
 
-    @Override
-    public ResponseEntity<Object> uploadMultipleFiles(MultipartFile[] files) throws IOException {
-        for (MultipartFile multipartFile : files) {
-            File convertfile = new File("/home/himanshu/BOOTCAMP/ecommerceApplication/src/main/resources/upload/images" + multipartFile.getOriginalFilename());
-            convertfile.createNewFile();
-            FileOutputStream fout = new FileOutputStream(convertfile);
-            System.out.println(convertfile.getAbsolutePath());
-            fout.write(multipartFile.getBytes());
-            fout.close();
-        }
-        return new ResponseEntity<>("file added", HttpStatus.OK);
-    }
 
-    @Override
-    public ResponseEntity downloadImage(String fileName, HttpServletRequest request) throws IOException {
-        String fileBasePath = firstPath+"/src/main/resources/users/";
+    public ResponseEntity getImmage(String fileBasePath, String fileName, HttpServletRequest request
+    ) throws IOException {
         File dir = new File(fileBasePath);
         Resource resource = null;
         String contentType = null;
@@ -122,11 +166,9 @@ public class UploadDaoImpl implements UploadDao {
             for (File file : arr) {
                 if (file.getName().startsWith(fileName)) {
                     Path path = Paths.get(fileBasePath + file.getName());
-                    try
-                    {
+                    try {
                         resource = new UrlResource(path.toUri());
-                    } catch (MalformedURLException e)
-                    {
+                    } catch (MalformedURLException e) {
                         e.printStackTrace();
                     }
                     contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
@@ -139,5 +181,11 @@ public class UploadDaoImpl implements UploadDao {
                 .contentType(MediaType.parseMediaType(contentType))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
                 .body(resource);
+
     }
+
+
+
+
+
 }

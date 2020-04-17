@@ -11,10 +11,13 @@ import com.ttn.ecommerceApplication.ecommerceApplication.repository.ProductRepos
 import com.ttn.ecommerceApplication.ecommerceApplication.repository.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
@@ -42,10 +45,61 @@ public class AdminDaoImpl implements AdminDao
     ProductRepository productRepository;
 
     @Autowired
+    MessageSource messageSource;
+
+    @Autowired
     ModelMapper modelMapper;
 
+
+    public List<RegisteredCustomersDTO> getAllRegisteredCustomers(Integer pageNo, Integer pageSize, String sortBy)
+    {
+        Pageable paging = PageRequest.of(pageNo, pageSize, Sort.by(Sort.Order.asc(sortBy)));
+
+        List<RegisteredCustomersDTO> list = new ArrayList<>();
+        for (Long l : userRepository.findIdOfCustomers(paging))
+        {
+            Optional<User> user1 = userRepository.findById(l);
+            User user = user1.get();
+            if (user.getId()==l) {
+                RegisteredCustomersDTO registeredCustomersDTO = modelMapper.map(user,RegisteredCustomersDTO.class);
+                list.add(registeredCustomersDTO);
+            }
+        }
+
+        return list;
+    }
+
+    public List<RegisteredSellersDTO> getAllRegisteredSellers(Integer pageNo, Integer pageSize, String sortBy)
+    {
+        Pageable paging = PageRequest.of(pageNo, pageSize, Sort.by(Sort.Order.asc(sortBy)));
+        List<RegisteredSellersDTO> list = new ArrayList<>();
+        for (Long l : userRepository.findIdOfSellers(paging))
+        {
+            Optional<User> user1 = userRepository.findById(l);
+            User user = user1.get();
+            if (user.getId()==l)
+            {
+                RegisteredSellersDTO registeredSellersDTO = modelMapper.map(user,RegisteredSellersDTO.class);
+                AddressDTO addressDTO = new AddressDTO();
+                for (Address address : user.getAddresses())
+                {
+                    addressDTO = modelMapper.map(address,AddressDTO.class);
+                }
+                registeredSellersDTO.setAddressDTO(addressDTO);
+                list.add(registeredSellersDTO);
+            }
+        }
+
+        return list;
+    }
+
+
+
+
+
+
     @Async
-    public void activateCustomerAndSeller(Long id)
+    public ResponseEntity activateCustomerAndSeller(Long id)
     {
         User user1 = null;
         String message;
@@ -56,33 +110,34 @@ public class AdminDaoImpl implements AdminDao
             user1 = user.get();
             if (user1.isEnabled()==true)
             {
-                message = "user account is already activated";
+                return ResponseEntity.ok().body("user is already activated");
             }
             else
             {
                 user1.setEnabled(true);
+                user1.setActive(true);
                 System.out.println("Sending email for account activation");
                 SimpleMailMessage mail = new SimpleMailMessage();
                 mail.setTo(user1.getUsername());
                 mail.setFrom("hs631443@gmail.com");
                 mail.setSubject("Regarding account activation");
                 mail.setText("your account has been activated by admin you can now login");
-                System.out.println("now starting");
                 javaMailSender.send(mail);
                 userRepository.save(user1);
                 System.out.println("Email Sent!");
-                message = "your account has been activated";
+                return ResponseEntity.ok().body("your account has been activated");
             }
         }
         else
         {
-            throw new UserNotFoundException("user with this id is not present");
+            Long[] l ={};
+            throw new UserNotFoundException(messageSource.getMessage("message3.txt",l, LocaleContextHolder.getLocale()));
         }
-        System.out.println("message is"+message);
+
     }
 
     @Async
-    public String  deActivateCustomerAndSeller(Long id)
+    public ResponseEntity  deActivateCustomerAndSeller(Long id)
     {
         User user1 = null;
         String message = null;
@@ -92,11 +147,12 @@ public class AdminDaoImpl implements AdminDao
             user1 = user.get();
             if (user1.isEnabled()==false)
             {
-                message = "user account is already deactivated";
+                return ResponseEntity.ok().body("user account is already deactivated");
             }
             else
             {
                 user1.setEnabled(false);
+                user1.setActive(false);
                 userRepository.save(user1);
                 System.out.println("Sending email...");
                 SimpleMailMessage mail = new SimpleMailMessage();
@@ -106,19 +162,20 @@ public class AdminDaoImpl implements AdminDao
                 mail.setText("your account has been deactivated by admin you can not login now");
                 javaMailSender.send(mail);
                 System.out.println("Email Sent!");
-                message = "your account has been activated";
+                return ResponseEntity.ok().body("account has been successfully deactivated");
             }
         }
         else
         {
-            System.out.println("user with this id is not present");
-            throw new RuntimeException();
+            Long[] l ={};
+            throw new UserNotFoundException(messageSource.getMessage("message3.txt",l, LocaleContextHolder.getLocale()));
+
         }
-        return message;
+
     }
 
     @Async
-    public String lockUser(Long id)
+    public ResponseEntity lockUser(Long id)
     {
         User user1 = null;
         Optional<User> user = userRepository.findById(id);
@@ -127,7 +184,7 @@ public class AdminDaoImpl implements AdminDao
             user1 = user.get();
             if (user1.isAccountNonLocked()==false)
             {
-                return "user account is already locked";
+                return ResponseEntity.ok().body("user account is already locked");
             }
             else
             {
@@ -141,19 +198,20 @@ public class AdminDaoImpl implements AdminDao
                 mail.setText("your account has been locked by admin you can not login now");
                 javaMailSender.send(mail);
                 System.out.println("Email Sent!");
-                return "account has been locked";
+                return ResponseEntity.ok().body("account has been locked");
             }
         }
         else
         {
-            System.out.println("user with this id is not present");
-            throw new RuntimeException();
+            Long[] l ={};
+            throw new UserNotFoundException(messageSource.getMessage("message3.txt",l, LocaleContextHolder.getLocale()));
+
         }
 
     }
 
     @Async
-    public String unlockUser(Long id)
+    public ResponseEntity unlockUser(Long id)
     {
         User user1 = null;
         Optional<User> user = userRepository.findById(id);
@@ -162,7 +220,7 @@ public class AdminDaoImpl implements AdminDao
             user1 = user.get();
             if (user1.isAccountNonLocked()==true)
             {
-                return "user account is already unlocked";
+                return ResponseEntity.ok().body("user account is already unlocked");
             }
             else
             {
@@ -176,77 +234,17 @@ public class AdminDaoImpl implements AdminDao
                 mail.setText("your account has been unlocked by admin you can login now");
                 javaMailSender.send(mail);
                 System.out.println("Email Sent!");
-                return "account has been locked";
+                return ResponseEntity.ok().body("account has been unlocked");
             }
         }
         else
         {
-            System.out.println("user with this id is not present");
-            throw new RuntimeException();
+            Long[] l ={};
+            throw new UserNotFoundException(messageSource.getMessage("message3.txt",l, LocaleContextHolder.getLocale()));
+
         }
     }
 
-    public List<Object[]> getAllProducts()
-    {
 
-        return productRepository.getAllProducts();
-    }
-
-    public List<RegisteredCustomersDTO> getAllRegisteredCustomers(Integer pageNo, Integer pageSize, String sortBy)
-    {
-        Pageable paging = PageRequest.of(pageNo, pageSize, Sort.by(Sort.Order.asc(sortBy)));
-
-        List<RegisteredCustomersDTO> list = new ArrayList<>();
-            for (Long l : userRepository.findIdOfCustomers(paging))
-            {
-                Optional<User> user1 = userRepository.findById(l);
-                User user = user1.get();
-                if (user.getId()==l) {
-                    RegisteredCustomersDTO registeredCustomersDTO = new RegisteredCustomersDTO();
-                    registeredCustomersDTO.setId(user.getId());
-                    registeredCustomersDTO.setEmail(user.getUsername());
-                    registeredCustomersDTO.setFirstName(user.getFirstName());
-                    registeredCustomersDTO.setMiddleName(user.getMiddleName());
-                    registeredCustomersDTO.setLastName(user.getLastName());
-                    registeredCustomersDTO.setActive(user.getisActive());
-                    list.add(registeredCustomersDTO);
-                }
-            }
-
-        return list;
-    }
-
-    public List<RegisteredSellersDTO> getAllRegisteredSellers(Integer pageNo, Integer pageSize, String sortBy)
-    {
-        Pageable paging = PageRequest.of(pageNo, pageSize, Sort.by(Sort.Order.asc(sortBy)));
-
-        List<RegisteredSellersDTO> list = new ArrayList<>();
-            for (Long l : userRepository.findIdOfSellers(paging))
-            {
-                Optional<User> user1 = userRepository.findById(l);
-                User user = user1.get();
-                System.out.println(user.getId());
-                if (user.getId()==l)
-                {
-                    System.out.println("1");
-                    RegisteredSellersDTO registeredSellersDTO = new RegisteredSellersDTO();
-                    registeredSellersDTO.setId(user.getId());
-                    registeredSellersDTO.setEmail(user.getUsername());
-                    registeredSellersDTO.setFirstName(user.getFirstName());
-                    registeredSellersDTO.setMiddleName(user.getMiddleName());
-                    registeredSellersDTO.setLastName(user.getLastName());
-                    registeredSellersDTO.setActive(user.getisActive());
-                    AddressDTO addressDTO = new AddressDTO();
-                    for (Address address : user.getAddresses())
-                    {
-                        addressDTO = modelMapper.map(address,AddressDTO.class);
-                    }
-                    registeredSellersDTO.setAddressDTO(addressDTO);
-                    list.add(registeredSellersDTO);
-                }
-            }
-
-        return list;
-    }
 
 }

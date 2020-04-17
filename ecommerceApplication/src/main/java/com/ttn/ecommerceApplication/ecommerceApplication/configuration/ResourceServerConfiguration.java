@@ -59,13 +59,7 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
         http
                 .authorizeRequests()
                 //only admin accessible uri
-                .antMatchers("/activate/{user_id}").hasAnyRole("ADMIN")
-                .antMatchers("/deactivate/{user_id}").hasAnyRole("ADMIN")
-                .antMatchers("/allCustomers").hasAnyRole("ADMIN")
-                .antMatchers("/allSellers").hasAnyRole("ADMIN")
                 .antMatchers("/addNewCategory/{parent_category_id}").hasAnyRole("ADMIN")
-                .antMatchers("/lock/{user_id}").hasAnyRole("ADMIN")
-                .antMatchers("/unlock/{user_id}").hasAnyRole("ADMIN")
                 .antMatchers("/getAllProducts").hasAnyRole("ADMIN")
                 .antMatchers("/addNewCategory").hasAnyRole("ADMIN")
                 .antMatchers("/viewACategory/{id}").hasAnyRole("ADMIN")
@@ -87,10 +81,6 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
                 .antMatchers("/OrderOneProductFromCart/{cartId}/{paymentMethod}/{AddressId}").hasAnyRole("CUSTOMER")
                 .antMatchers("/OrderWholeCart/{AddressId}").hasAnyRole("CUSTOMER")
                 .antMatchers("/editEmail/{token}").hasAnyRole("CUSTOMER")
-                .antMatchers("/viewProfile").hasAnyRole("CUSTOMER")
-                .antMatchers("/updateProfile").hasAnyRole("CUSTOMER")
-                .antMatchers("/uploadProfilePic").hasAnyRole("CUSTOMER")
-                .antMatchers("/viewProfileImage").hasAnyRole("CUSTOMER")
                 .antMatchers("/viewProduct/{product_id}").hasAnyRole("CUSTOMER")
                 .antMatchers("/viewAllProductsForCustomer/{category_id}").hasAnyRole("CUSTOMER")
                 .antMatchers("/viewSimilarProduct/{product_id}").hasAnyRole("CUSTOMER")
@@ -98,9 +88,7 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
 
 
                 //admin and customer accessible uri
-                .antMatchers("/editContact").hasAnyRole("ADMIN,CUSTOMER")
                 .antMatchers("/detailsOfCustomer").hasAnyRole("ADMIN,CUSTOMER")
-                .antMatchers("/getAddresses").hasAnyRole("ADMIN,CUSTOMER")
                 .antMatchers("/getCategory").hasAnyRole("ADMIN,CUSTOMER")
                 .antMatchers("/viewCategoriesForCustomer/{id}").hasAnyRole("CUSTOMER")
                 .antMatchers("/addReview/{product_id}").hasAnyRole("ADMIN,CUSTOMER")
@@ -129,7 +117,6 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
 
                 //accessible for all
                 .antMatchers("/deleteUser").hasAnyRole("ADMIN,CUSTOMER,SELLER")
-                .antMatchers("/addNewAddress").hasAnyRole("CUSTOMER")
                 .antMatchers("/editUsername").hasAnyRole("ADMIN,CUSTOMER,SELLER")
                 .antMatchers("/editEmail").hasAnyRole("ADMIN,CUSTOMER,SELLER")
                 .antMatchers("/editPassword").hasAnyRole("ADMIN,CUSTOMER,SELLER")
@@ -142,7 +129,7 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
                 //anonymous
                 .antMatchers("/registerAsCustomer").anonymous()
                 .antMatchers("/registerAsSeller").anonymous()
-                .antMatchers("/verify/{u}").anonymous()
+                .antMatchers("/activateCustomer/{token}").anonymous()
                 .antMatchers("/forgotPassword/{email_id}").anonymous()
                 .antMatchers("/setPassword/{token}/{password}").anonymous()
                 .antMatchers("/filtering/{id}").anonymous()
@@ -153,8 +140,6 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
 
 
                 .antMatchers("dp/{id}").hasAnyRole("SELLER")
-                .antMatchers("/viewProfileForSeller").hasAnyRole("SELLER")
-                .antMatchers("/updateMyProfile").hasAnyRole("SELLER")
 
 
 
@@ -162,6 +147,7 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
                 .antMatchers("/viewCategoryMetadataField").hasAnyRole("ADMIN")
                 .antMatchers("/deleteCategoryMetadataField/{id}").hasAnyRole("ADMIN")
                 .antMatchers("/viewCategoriesForSeller").hasAnyRole("SELLER")
+
 
 
                 .antMatchers(AUTH_WHITELIST).permitAll()

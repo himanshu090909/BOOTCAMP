@@ -3,19 +3,26 @@ package com.ttn.ecommerceApplication.ecommerceApplication.controller;
 import com.ttn.ecommerceApplication.ecommerceApplication.dao.CustomerDao;
 import com.ttn.ecommerceApplication.ecommerceApplication.dao.ProductDao;
 import com.ttn.ecommerceApplication.ecommerceApplication.dao.UploadDao;;
+import com.ttn.ecommerceApplication.ecommerceApplication.dao.UserDao;
 import com.ttn.ecommerceApplication.ecommerceApplication.dto.AddressDTO;
 import com.ttn.ecommerceApplication.ecommerceApplication.dto.ProfileDTO;
+import com.ttn.ecommerceApplication.ecommerceApplication.entities.Address;
 import com.ttn.ecommerceApplication.ecommerceApplication.entities.Customer;
 import com.ttn.ecommerceApplication.ecommerceApplication.entities.Seller;
 import com.ttn.ecommerceApplication.ecommerceApplication.repository.CustomerRepository;
 import com.ttn.ecommerceApplication.ecommerceApplication.utilities.GetCurrentUser;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.io.IOException;
 import java.util.List;
 
@@ -29,6 +36,9 @@ public class CustomerController
      GetCurrentUser getCurrentUser;
 
      @Autowired
+     UserDao userDao;
+
+     @Autowired
      CustomerRepository customerRepository;
 
      @Autowired
@@ -37,29 +47,86 @@ public class CustomerController
      @Autowired
      ProductDao productDao;
 
-     @GetMapping("/detailsOfCustomer")
-     public List<Object[]> getDetails()
+
+     @Secured("ROLE_CUSTOMER")
+     @ApiOperation("uri for customer to view his profile")
+     @GetMapping("/viewProfile")
+     public ProfileDTO viewProfile(HttpServletRequest request) throws IOException
      {
-        List<Object[]> objects = customerDao.getCustomerDetails();
-        return objects;
+          return customerDao.viewProfile();
      }
+
+     @Secured("ROLE_CUSTOMER")
+     @ApiOperation("uri for customer to view his profile image")
+     @GetMapping("/viewProfileImage")
+     public ResponseEntity<Object> viewProfileImage(HttpServletRequest request) throws IOException {
+          String username = getCurrentUser.getUser();
+          Customer customer = customerRepository.findByUsername(username);
+          String filename = customer.getId().toString();
+          return uploadDao.downloadImage(filename,request);
+     }
+
+     @Secured("ROLE_CUSTOMER")
+     @ApiOperation("uri for customer to view his addressed")
+     @GetMapping("/getAddresses")
+     public List<AddressDTO> getAddresses()
+     {
+          return customerDao.getAddresses();
+     }
+
+     @Secured("ROLE_CUSTOMER")
+     @ApiOperation("uri for customer to update his profile")
+     @PutMapping("/updateProfile")
+     public String updateProfile(@RequestBody ProfileDTO customer)
+     {
+          return customerDao.updateProfile(customer);
+     }
+
+     @Lazy
+     @ApiOperation("uri for customer to update contact details")
+     @Secured("ROLE_CUSTOMER")
+     @PutMapping("/editContact")
+     public String  editContact(@RequestBody Customer customer)
+     {
+          return customerDao.editContact(customer);
+     }
+
+     @Secured("ROLE_CUSTOMER")
+     @ApiOperation("uri for customer to upload his profile image")
+     @PostMapping("/uploadProfilePic")
+     public ResponseEntity<Object> uploadFile(@RequestParam("file") MultipartFile file) throws IOException
+     {
+          String username = getCurrentUser.getUser();
+          Customer customer = customerRepository.findByUsername(username);
+          return uploadDao.uploadSingleImage(file,customer);
+     }
+
+     @Secured("ROLE_CUSTOMER")
+     @ApiOperation("uri for customer to add a new address")
+     @PutMapping("/addNewAddress")
+     public String addNewAddress(@Valid @RequestBody Address address) {
+
+          return userDao.addNewAddress(address);
+     }
+
+     @Secured("ROLE_CUSTOMER")
+     @ApiOperation("uri for customer to delete his address")
+     @DeleteMapping("/deleteAddress/{id}")
+     public String deleteAddress(@PathVariable Long id)
+     {
+          return userDao.deleteAddress(id);
+     }
+
+
+
+     @ApiOperation("uri for customer to get a seller account")
      @PutMapping("/getSellerAccount")
      public String  getAnSellerAccount(@RequestBody Seller seller)
      {
         return customerDao.getAnSellerAccount(seller);
      }
-     @Lazy
-     @PutMapping("/editContact")
-     public String  editContact(@RequestBody Customer customer)
-     {
-        return customerDao.editContact(customer);
-     }
 
-     @GetMapping("/getAddresses")
-     public List<AddressDTO> getAddresses()
-     {
-       return customerDao.getAddresses();
-     }
+
 
      @PostMapping("/returnRequested/{orderStatusId}")
      public String returnRequested(@PathVariable Long orderStatusId)
@@ -71,34 +138,10 @@ public class CustomerController
         return customerDao.cancelOrder(orderStatusId);
      }
 
-     @GetMapping("/viewProfile")
-     public ProfileDTO viewProfile(HttpServletRequest request) throws IOException
-     {
-          return customerDao.viewProfile();
-     }
 
-     @PostMapping("/uploadProfilePic")
-     public ResponseEntity<Object> uploadFile(@RequestParam("file") MultipartFile file) throws IOException
-     {
-          String username = getCurrentUser.getUser();
-          Customer customer = customerRepository.findByUsername(username);
-          return uploadDao.uploadSingleImage(file,customer);
-     }
 
-     @GetMapping("/viewProfileImage")
-     public ResponseEntity<Object> viewProfileImage(HttpServletRequest request) throws IOException {
-          String username = getCurrentUser.getUser();
-          Customer customer = customerRepository.findByUsername(username);
-          String filename = customer.getId().toString();
-          System.out.println(filename);
-          return uploadDao.downloadImage(filename,request);
-     }
 
-     @PutMapping("/updateProfile")
-     public String updateProfile(@RequestBody ProfileDTO customer)
-     {
-        return customerDao.updateProfile(customer);
-     }
+
 
      @GetMapping("/viewProduct/{product_id}")
      public List<Object[]> viewProduct(@PathVariable Long product_id)

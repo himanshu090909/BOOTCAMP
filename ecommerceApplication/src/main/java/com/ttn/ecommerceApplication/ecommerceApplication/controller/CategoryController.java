@@ -1,5 +1,4 @@
 package com.ttn.ecommerceApplication.ecommerceApplication.controller;
-
 import com.ttn.ecommerceApplication.ecommerceApplication.dao.CategoryDao;
 import com.ttn.ecommerceApplication.ecommerceApplication.dao.CategoryMetadataFieldDao;
 import com.ttn.ecommerceApplication.ecommerceApplication.dao.ProductDao;
@@ -9,18 +8,16 @@ import com.ttn.ecommerceApplication.ecommerceApplication.entities.Category;
 import com.ttn.ecommerceApplication.ecommerceApplication.entities.CategoryMetadataField;
 import com.ttn.ecommerceApplication.ecommerceApplication.entities.CategoryMetadataFieldValues;
 import com.ttn.ecommerceApplication.ecommerceApplication.repository.*;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
-
 import javax.validation.Valid;
-import javax.validation.constraints.Positive;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 public class CategoryController {
@@ -48,19 +45,153 @@ public class CategoryController {
     @Autowired
     ProductVariationRepository productVariationRepository;
 
+    //admin apis
+
+    @ApiOperation("uri for adding metadata fields")
+    @PostMapping("/addCategoryMetadataField")
+    public String addCategoryMetadataField(@Valid @RequestBody CategoryMetadataField categoryMetadataField) {
+        categoryMetadataFieldRepository.save(categoryMetadataField);
+        return "CategoryMetadataField is successfully created";
+    }
+
+    @ApiOperation("uri for listing all category metadata fields")
+    @GetMapping("/viewCategoryMetadataField")
+    public ResponseEntity<List<CategoryMetadataField>> viewCategoryMetadataField(@RequestParam(name = "pageNo", required = true, defaultValue = "0") Integer pageNo,
+                                                                                 @RequestParam(name = "pageSize", required = true, defaultValue = "10") Integer pageSize,
+                                                                                 @RequestParam(name = "sortBy", defaultValue = "id") String sortBy) {
+        List<CategoryMetadataField> list = categoryMetadataFieldDao.viewCategoryMetadataField(pageNo, pageSize, sortBy);
+        return new ResponseEntity<List<CategoryMetadataField>>(list, new HttpHeaders(), HttpStatus.OK);
+    }
+
+
+    @ApiOperation("uri for admin to add a new subcategory")
+    @PostMapping("/addNewCategory/{parent_category_id}")
+    public String addNewSubCategory(@Valid @PathVariable(name = "parent_category_id") Long parent_category_id, @RequestBody Category category) {
+        categoryDao.addNewSubCategory(parent_category_id, category);
+        return "subcategory added successfully";
+    }
+
+    @ApiOperation(("uri for admin to add a main category"))
+    @PostMapping("/addNewCategory")
+    public ResponseEntity addMainCategory(@Valid @RequestBody Category category)
+    {
+        return categoryDao.addMainCategory(category);
+    }
+
+    @ApiOperation("uri for admin to view a single category")
+    @GetMapping("/viewACategory/{id}")
+    public List<ViewCategoriesDTO> viewCategory(@PathVariable Long id)
+    {
+        return categoryDao.viewACategory(id);
+    }
+
+    @Secured("ROLE_ADMIN")
+    @ApiOperation("uri for admin to view all categories")
+    @GetMapping("/viewAllCategories")
+    public List<ViewCategoriesDTO> getAllCategories(@RequestParam(name = "pageNo", required = true, defaultValue = "0") Integer pageNo,
+                                                    @RequestParam(name = "pageSize", required = true, defaultValue = "10") Integer pageSize,
+                                                    @RequestParam(name = "sortBy", defaultValue = "id") String sortBy)
+    {
+        return categoryDao.viewAllCategories(pageNo, pageSize, sortBy);
+    }
+
+    @ApiOperation("uri for admin to update category details")
+    @PutMapping("/updateCategory/{categoryId}")
+    public String updateCategory(@Valid @RequestBody Category category, @PathVariable(name = "categoryId") Long categoryId) {
+        categoryDao.updateCategory(category, categoryId);
+        return "Category successfully updated";
+    }
+
+    @ApiOperation("uri for seller to add metadata field values for a particular category and metadata field ")
+    @PostMapping("/addMetadataValues/{categoryId}/{metadataId}")
+    public void addMetadataValues(@Valid @RequestBody CategoryMetadataFieldValues categoryMetadataFieldValues,
+                                  @PathVariable(value = "categoryId") Long categoryId,
+                                  @PathVariable(value = "metadataId") Long metadataId) {
+        categoryDao.addMetadataValues(categoryMetadataFieldValues, categoryId, metadataId);
+
+    }
+
+    @ApiOperation("uri for seller to update metadata field values")
+    @PutMapping("/updateMetadataValues/{categoryId}/{metadataId}")
+    public void updateMetadataValues(@Valid @RequestBody CategoryMetadataFieldValues categoryMetadataFieldValues,
+                                     @PathVariable(value = "categoryId") Long categoryId,
+                                     @PathVariable(value = "metadataId") Long metadataId) {
+
+        categoryDao.updateMetadataValues(categoryMetadataFieldValues, categoryId, metadataId);
+
+    }
+
+
+
+
+    //for seller
+
+
+    @GetMapping("/viewCategoriesForSeller")
+    @ApiOperation("uri for seller to view all categories")
+    public List<ViewCategoriesDTO> viewCategoriesDTOS()
+    {
+        return categoryDao.viewAllCategoriesForSeller();
+    }
+
+
+
+
+    //customer
 
     @GetMapping("/viewCategoriesForCustomer")
+    @ApiOperation("uri for customer to view all categories")
     public List<Object[]> getMainCategoriesForCustomer()
     {
         return categoryDao.getAllCategory();
     }
 
+    @ApiOperation("uri for customer to view a single category")
     @GetMapping("/viewCategoriesForCustomer/{id}")
     public List<Object[]> getSubCategory(@PathVariable(name = "id") Long id)
     {
         List<Object[]> list = categoryDao.getAllSubCategory(id);
         return list;
     }
+
+    @ApiOperation("uri for customer to get filtering details of a category")
+    @GetMapping("/filtering/{id}")
+    public FilteringDTO a(@PathVariable Long id)
+    {
+        return categoryDao.getFilteringDetails(id);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -122,62 +253,17 @@ public class CategoryController {
 
 
 
-
-
-    @PostMapping("/addNewCategory/{parent_category_id}")
-    public String addNewSubCategory(@Valid @PathVariable(name = "parent_category_id") Long parent_category_id, @RequestBody Category category) {
-        categoryDao.addNewSubCategory(parent_category_id, category);
-        return "subcategory added successfully";
-    }
-
-    @PostMapping("/addNewCategory")
-    public ResponseEntity addMainCategory(@Valid @RequestBody Category category)
-    {
-        return categoryDao.addMainCategory(category);
-    }
-
     @GetMapping("/getSubcategories")
     public List<Object[]> getSubcategories() {
         List<Object[]> objects = categoryDao.getSubcategory();
         return objects;
     }
 
-    @GetMapping("/filtering/{id}")
-    public FilteringDTO a(@PathVariable Long id)
-    {
-       return categoryDao.getFilteringDetails(id);
-    }
-
-    @GetMapping("/viewACategory/{id}")
-    public List<Object[]> viewCategory(@PathVariable Long id)
-    {
-        return categoryDao.viewACategory(id);
-    }
-
-    @GetMapping("/viewCategoriesForSeller")
-    public List<ViewCategoriesDTO> viewCategoriesDTOS()
-    {
-        return categoryDao.viewAllCategoriesForSeller();
-    }
 
 
 
 
 
-
-    @PostMapping("/addCategoryMetadataField")
-    public String addCategoryMetadataField(@Valid @RequestBody CategoryMetadataField categoryMetadataField) {
-        categoryMetadataFieldRepository.save(categoryMetadataField);
-        return "CategoryMetadataField is successfully created";
-    }
-
-    @GetMapping("/viewCategoryMetadataField")
-    public ResponseEntity<List<CategoryMetadataField>> viewCategoryMetadataField(@RequestParam(name = "pageNo", required = true, defaultValue = "0") Integer pageNo,
-                                                                                 @RequestParam(name = "pageSize", required = true, defaultValue = "10") Integer pageSize,
-                                                                                 @RequestParam(name = "sortBy", defaultValue = "id") String sortBy) {
-        List<CategoryMetadataField> list = categoryMetadataFieldDao.viewCategoryMetadataField(pageNo, pageSize, sortBy);
-        return new ResponseEntity<List<CategoryMetadataField>>(list, new HttpHeaders(), HttpStatus.OK);
-    }
 
     @DeleteMapping("/deleteCategoryMetadataField/{id}")
     public String deleteCategoryMetadataField(@PathVariable(value = "id") Long id) {
@@ -185,29 +271,10 @@ public class CategoryController {
         return "CategoryMetadataField is successfully deleted";
     }
 
-    @PutMapping("/updateCategory/{categoryId}")
-    public String updateCategory(@Valid @RequestBody Category category, @PathVariable(name = "categoryId") Long categoryId) {
-        categoryDao.updateCategory(category, categoryId);
-        return "Category successfully updated";
-    }
 
 
-    @PostMapping("/addMetadataValues/{categoryId}/{metadataId}")
-    public void addMetadataValues(@Valid @RequestBody CategoryMetadataFieldValues categoryMetadataFieldValues,
-                                  @PathVariable(value = "categoryId") Long categoryId,
-                                  @PathVariable(value = "metadataId") Long metadataId) {
-        categoryDao.addMetadataValues(categoryMetadataFieldValues, categoryId, metadataId);
 
-    }
 
-    @PutMapping("/updateMetadataValues/{categoryId}/{metadataId}")
-    public void updateMetadataValues(@Valid @RequestBody CategoryMetadataFieldValues categoryMetadataFieldValues,
-                                     @PathVariable(value = "categoryId") Long categoryId,
-                                     @PathVariable(value = "metadataId") Long metadataId) {
-
-        categoryDao.updateMetadataValues(categoryMetadataFieldValues, categoryId, metadataId);
-
-    }
 
 
 

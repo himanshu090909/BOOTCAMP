@@ -32,7 +32,7 @@ public class NotificationService {
     NotificationService notificationService;
 
     @Async
-    public void sendNotificaitoin(User user) throws MailException {
+    public void sendNotification(User user) throws MailException {
         System.out.println("Sending email...");
         SimpleMailMessage mail = new SimpleMailMessage();
         mail.setTo(user.getUsername());
@@ -47,16 +47,12 @@ public class NotificationService {
     @Async
     public void sendToAdmin(User user,String text) throws MailException
     {
-
-        System.out.println("hii");
-        System.out.println("Sending email...");
         SimpleMailMessage mail = new SimpleMailMessage();
         mail.setTo(user.getUsername());
         mail.setFrom("hs631443@gmail.com");
         mail.setSubject("Please activate the product");
         mail.setText(text);
         javaMailSender.send(mail);
-        System.out.println("Email Sent!");
     }
 
     public  void sendToSeller(User seller, String subject, String text)throws MailException
@@ -64,11 +60,10 @@ public class NotificationService {
         System.out.println("Sending email...");
         SimpleMailMessage mail = new SimpleMailMessage();
         mail.setTo(seller.getUsername());
-        mail.setFrom("bhatipinki056@gmail.com");
+        mail.setFrom("hs631443@gmail.com");
         mail.setSubject(subject);
         mail.setText(text);
         javaMailSender.send(mail);
-        System.out.println("Email Sent!");
     }
 
 

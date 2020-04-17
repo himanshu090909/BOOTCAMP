@@ -7,17 +7,24 @@ import com.ttn.ecommerceApplication.ecommerceApplication.exceptionHandling.NotFo
 import com.ttn.ecommerceApplication.ecommerceApplication.exceptionHandling.NullException;
 import com.ttn.ecommerceApplication.ecommerceApplication.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 
 @Service
-public class CategoryDaoImpl implements CategoryDao
-{
+public class CategoryDaoImpl implements CategoryDao {
 
     @Autowired
     CategoryRepository categoryRepository;
+
+    @Autowired
+    MessageSource messageSource;
 
     @Autowired
     SellerRepository sellerRepository;
@@ -32,60 +39,21 @@ public class CategoryDaoImpl implements CategoryDao
     ProductRepository productRepository;
 
 
+
     @Override
-    public List<Object[]> getAllCategory()
+    public void addNewSubCategory(Long parentCategory_id, Category category)
     {
-
-        List<Object[]> list = categoryRepository.getMainCategory();
-        if (list.isEmpty())
-        {
-            throw new NullException("no categories available");
-        }
-        return list;
-    }
-
-    @Override
-    public List<Object[]> getAllSubCategory(Long id)
-    {
-        Optional<Category> category = categoryRepository.findById(id);
-        if (category.isPresent())
-        {
-            if (categoryRepository.checkIfLeaf(id)==1)
-            return categoryRepository.getSubCategoryOfCategory(id);
-            else
-            {
-                throw new NullException("category is a leaf node");
-            }
-        }
-        else
-        {
-            throw new NotFoundException("category with this id is not present");
-        }
-    }
-
-    @Override
-    public void save(Category category) {
-
-    }
-
-    @Override
-    public void addNewSubCategory(Long parentCategory_id,Category category)
-    {
+        Long[] l = {};
         int result = categoryRepository.checkIfLeaf(parentCategory_id);
-        if (result==1)
-        {
+        if (result == 1) {
             Optional<Category> category1 = categoryRepository.findById(parentCategory_id);
             if (category1.isPresent()) {
                 category.setCategory(category1.get());
                 categoryRepository.save(category);
+            } else {
+                throw new NotFoundException(messageSource.getMessage("notfound.txt",l,LocaleContextHolder.getLocale()));
             }
-            else
-            {
-                throw new NotFoundException("category with this id is not present");
-            }
-        }
-        else
-        {
+        } else {
             throw new NullPointerException("parent category you selected is already a leaf node");
         }
     }
@@ -93,20 +61,16 @@ public class CategoryDaoImpl implements CategoryDao
     @Override
     public ResponseEntity addMainCategory(Category category)
     {
+        Long[] l = {};
         categoryRepository.save(category);
-        return ResponseEntity.ok().body("category added");
+        return ResponseEntity.ok().body(messageSource.getMessage("success.txt",l, LocaleContextHolder.getLocale()));
     }
 
     @Override
     public List<Object[]> getSubcategory() {
-            List<Object[]> objects = sellerRepository.getSubcategory();
-            return objects;
-        }
-
-
-
-
-
+        List<Object[]> objects = sellerRepository.getSubcategory();
+        return objects;
+    }
 
 
     public FilteringDTO getFilteringDetails(Long category_id) {
@@ -144,52 +108,77 @@ public class CategoryDaoImpl implements CategoryDao
             filteringDTO.setMinimumPrice(d[0]);
 
 
-        }
-        else
-        {
-            throw new NotFoundException("category with this id is not present");
+        } else {
+            Long[] l =  {};
+            throw new NotFoundException(messageSource.getMessage("notfound.txt",l,LocaleContextHolder.getLocale()));
         }
         return filteringDTO;
 
     }
 
 
-    public List<Object[]> viewACategory(Long category_id)
-    {
+    public List<ViewCategoriesDTO> viewACategory(Long category_id) {
         Optional<Category> category = categoryRepository.findById(category_id);
-        List<Object[]> list = new ArrayList<>();
-        if (category.isPresent())
-        {
-         list.add(categoryRepository.getNameOfCategory(category_id));
-         Long cid = category_id;
-         while (categoryRepository.getIdOfParent(cid)!=null)
-         {
-             list.add(categoryRepository.getNameOfCategory(categoryRepository.getIdOfParent(cid)));
-             cid = categoryRepository.getIdOfParent(cid);
-         }
-            Collections.reverse(list);
-         if (categoryRepository.checkIfLeaf(category_id)==0)
-         {
-             List<Long> longList = categoryMetadataFieldValuesRepository.getMetadataId(category_id);
-             for (Long l : longList)
-             {
-                 List<Object[]> list1 = categoryMetadataFieldRepository.getMetadataField(l);
-                 list.addAll(list1);
-             }
-             List<Object[]> list1 = categoryMetadataFieldValuesRepository.getValues(category_id);
-             list.addAll(list1);
+        List<ViewCategoriesDTO> list = new ArrayList<>();
+        if (category.isPresent()) {
+            if (categoryRepository.checkIfLeaf(category_id) == 0) {
+                List<String> fields = new ArrayList<>();
+                List<String> values = new ArrayList<>();
 
-         }
-         else
-         {
-             list.addAll(categoryRepository.getSubCategoryOfCategory(category_id));
-         }
-         return list;
+                ViewCategoriesDTO viewCategoriesDTO = new ViewCategoriesDTO();
+                viewCategoriesDTO.setName(category.get().getName());
 
-        }
-        else
-        {
-            throw new NotFoundException("category with this id is not present");
+                List<Long> longList = categoryMetadataFieldValuesRepository.getMetadataId(category_id);
+                for (Long l : longList) {
+                    Optional<CategoryMetadataField> categoryMetadataField = categoryMetadataFieldRepository.findById(l);
+                    fields.add(categoryMetadataField.get().getName());
+                    values.add(categoryMetadataFieldValuesRepository.getFieldValuesForCompositeKey(category_id, l));
+                }
+                viewCategoriesDTO.setFieldName(fields);
+                viewCategoriesDTO.setValues(values);
+                list.add(viewCategoriesDTO);
+            } else {
+                ViewCategoriesDTO viewCategoriesDTO = new ViewCategoriesDTO();
+                viewCategoriesDTO.setName(category.get().getName());
+                list.add(viewCategoriesDTO);
+                List<Long> longList = categoryRepository.getIdsOfSubcategories(category_id);
+
+                if (!longList.isEmpty()) {
+
+                    for (Long l : longList) {
+                        Optional<Category> category1 = categoryRepository.findById(l);
+                        if (categoryRepository.checkIfLeaf(category1.get().getId()) == 0) {
+                            List<String> fields = new ArrayList<>();
+                            List<String> values = new ArrayList<>();
+
+                            ViewCategoriesDTO viewCategoriesDTO1 = new ViewCategoriesDTO();
+                            viewCategoriesDTO1.setName(category1.get().getName());
+
+                            List<Long> longList1 = categoryMetadataFieldValuesRepository.getMetadataId(category1.get().getId());
+                            for (Long l1 : longList1) {
+                                Optional<CategoryMetadataField> categoryMetadataField = categoryMetadataFieldRepository.findById(l1);
+                                fields.add(categoryMetadataField.get().getName());
+                                values.add(categoryMetadataFieldValuesRepository.getFieldValuesForCompositeKey(category1.get().getId(), l1));
+                            }
+                            viewCategoriesDTO1.setFieldName(fields);
+                            viewCategoriesDTO1.setValues(values);
+                            list.add(viewCategoriesDTO1);
+                        } else {
+                            ViewCategoriesDTO viewCategoriesDTO1 = new ViewCategoriesDTO();
+                            viewCategoriesDTO1.setName(category1.get().getName());
+                            list.add(viewCategoriesDTO1);
+                        }
+                    }
+
+                }
+
+
+
+            }
+            return list;
+        } else {
+            Long[] l = {};
+            throw new NotFoundException(messageSource.getMessage("notfound.txt",l,LocaleContextHolder.getLocale()));
         }
     }
 
@@ -202,7 +191,8 @@ public class CategoryDaoImpl implements CategoryDao
             categoryRepository.save(category1);
 
         } else {
-            throw new NotFoundException("This category ID is wrong as no entry is present for this ID");
+            Long[] l = {};
+            throw new NotFoundException(messageSource.getMessage("notfound.txt",l,LocaleContextHolder.getLocale()));
 
         }
     }
@@ -211,7 +201,8 @@ public class CategoryDaoImpl implements CategoryDao
     @Override
     public void addMetadataValues(CategoryMetadataFieldValues categoryMetadataFieldValues, Long categoryId, Long metadataId) {
 
-        if (categoryRepository.findById(categoryId).isPresent()&&categoryRepository.checkIfLeaf(categoryId)==0) {
+        Long[] lo = {};
+        if (categoryRepository.findById(categoryId).isPresent() && categoryRepository.checkIfLeaf(categoryId) == 0) {
             if (categoryMetadataFieldRepository.findById(metadataId).isPresent()) {
                 CategoryMetadataFieldValuesId categoryMetadataFieldValuesId = new CategoryMetadataFieldValuesId();
                 categoryMetadataFieldValuesId.setCid(categoryRepository.findById(categoryId).get().getId());
@@ -221,18 +212,17 @@ public class CategoryDaoImpl implements CategoryDao
                 categoryMetadataFieldValues.setCategory(categoryRepository.findById(categoryId).get());
                 String[] valuesArray = categoryMetadataFieldValues.getFieldValues().split(",");
                 Set<String> s = new HashSet<>(Arrays.asList(valuesArray));
-                if (s.size()==valuesArray.length&&s.size()>=1&&valuesArray[0]!="")
-                categoryMetadataFieldValues.setFieldValues(categoryMetadataFieldValues.getFieldValues());
+                if (s.size() == valuesArray.length && s.size() >= 1 && valuesArray[0] != "")
+                    categoryMetadataFieldValues.setFieldValues(categoryMetadataFieldValues.getFieldValues());
                 else
-                    throw new NullException("values are not unique");
+                    throw new NullException(messageSource.getMessage("unique.txt",lo,LocaleContextHolder.getLocale()));
                 categoryMetadataFieldValues.setCategoryMetadataField(categoryMetadataFieldRepository.findById(metadataId).get());
                 categoryMetadataFieldValuesRepository.save(categoryMetadataFieldValues);
             } else {
-                throw new NotFoundException("This metadata ID is wrong because no " +
-                        "metadata is present for this ID");
+                throw new NotFoundException(messageSource.getMessage("metadata.txt",lo,LocaleContextHolder.getLocale()));
             }
         } else {
-            throw new NotFoundException("Category ID is wrong as no data is present for this ID");
+            throw new NotFoundException(messageSource.getMessage("notfound.txt",lo,LocaleContextHolder.getLocale()));
         }
 
 
@@ -241,74 +231,145 @@ public class CategoryDaoImpl implements CategoryDao
     @Override
     public void updateMetadataValues(CategoryMetadataFieldValues categoryMetadataFieldValues, Long categoryId, Long metadataId) {
 
-        if (categoryRepository.findById(categoryId).isPresent())
-        {
-            if (categoryMetadataFieldRepository.findById(metadataId).isPresent())
-            {
+        Long[] l = {};
+
+        if (categoryRepository.findById(categoryId).isPresent()) {
+            if (categoryMetadataFieldRepository.findById(metadataId).isPresent()) {
                 if (categoryMetadataFieldValuesRepository.getFieldValues(categoryId, metadataId) != null) {
                     CategoryMetadataFieldValues categoryMetadataFieldValues1 = categoryMetadataFieldValuesRepository.getFieldValues(categoryId, metadataId);
                     categoryMetadataFieldValues1.setFieldValues(categoryMetadataFieldValues.getFieldValues());
                     categoryMetadataFieldValuesRepository.save(categoryMetadataFieldValues1);
                 } else {
-                    throw new NotFoundException("This combination of category and metadata " +
-                            "is wrong as no entry is present for this combination");
+                    throw new NotFoundException(messageSource.getMessage("combinationError.txt",l,LocaleContextHolder.getLocale()));
                 }
+            } else {
+                throw new NotFoundException(messageSource.getMessage("wrongMetadata.txt",l,LocaleContextHolder.getLocale()));
             }
-            else {
-                throw new NotFoundException("This metadata ID is wrong");
-            }
+        } else {
+            throw new NotFoundException(messageSource.getMessage("notfound.txt",l,LocaleContextHolder.getLocale()));
         }
-
-        else {
-            throw new NotFoundException("This Category Id is wrong");
-        }
-
 
 
     }
 
-    public List<ViewCategoriesDTO> viewAllCategoriesForSeller()
+    public List<ViewCategoriesDTO> viewAllCategoriesForSeller() {
+        List<Object[]> list = sellerRepository.getSubcategory();
+        List<ViewCategoriesDTO> list1 = new ArrayList<>();
+        for (Object[] objects : list) {
+            ViewCategoriesDTO viewCategoriesDTO = new ViewCategoriesDTO();
+            viewCategoriesDTO.setName(objects[0].toString());
+            Long categoryId = categoryRepository.getIdOfParentCategory(objects[0].toString());
+            Optional<Category> category = categoryRepository.findById(categoryId);
+            Set<CategoryMetadataFieldValues> set = category.get().getCategoryMetadataFieldValues();
+            List<String> fields = new ArrayList<>();
+            for (CategoryMetadataFieldValues categoryMetadataFieldValues : set) {
+                fields.add(categoryMetadataFieldValues.getFieldValues());
+                viewCategoriesDTO.setValues(fields);
+            }
+            List<Long> longList = categoryMetadataFieldValuesRepository.getMetadataId(category.get().getId());
+            List<String> fields1 = new ArrayList<>();
+            for (Long l : longList) {
+                Optional<CategoryMetadataField> categoryMetadataField = categoryMetadataFieldRepository.findById(l);
+                fields1.add(categoryMetadataField.get().getName());
+                viewCategoriesDTO.setFieldName(fields1);
+            }
+            list1.add(viewCategoriesDTO);
+
+        }
+        return list1;
+    }
+
+
+    public List<ViewCategoriesDTO> viewAllCategories(Integer pageNo, Integer pageSize, String sortBy)
     {
-         List<Object[]> list =  sellerRepository.getSubcategory();
-         List<ViewCategoriesDTO> list1 = new ArrayList<>();
-         for (Object[] objects:list)
-         {
-             ViewCategoriesDTO viewCategoriesDTO = new ViewCategoriesDTO();
-             viewCategoriesDTO.setName(objects[0].toString());
-             Long categoryId = categoryRepository.getIdOfParentCategory(objects[0].toString());
-             Optional<Category> category = categoryRepository.findById(categoryId);
-             Set<CategoryMetadataFieldValues> set = category.get().getCategoryMetadataFieldValues();
-             List<String> fields = new ArrayList<>();
-             for (CategoryMetadataFieldValues categoryMetadataFieldValues:set)
-             {
-                 fields.add(categoryMetadataFieldValues.getFieldValues());
-                 viewCategoriesDTO.setValues(fields);
-             }
-             List<Long> longList = categoryMetadataFieldValuesRepository.getMetadataId(category.get().getId());
-             List<String > fields1 = new ArrayList<>();
-             for (Long l : longList)
-             {
-                 Optional<CategoryMetadataField> categoryMetadataField = categoryMetadataFieldRepository.findById(l);
-                 fields1.add(categoryMetadataField.get().getName());
-                 viewCategoriesDTO.setFieldName(fields1);
-             }
-             list1.add(viewCategoriesDTO);
+        Pageable paging = PageRequest.of(pageNo, pageSize, Sort.by(Sort.Order.asc(sortBy)));
+        List<Long> longList = categoryRepository.getIdsOfCategory(paging);
+        List<ViewCategoriesDTO> list = new ArrayList<>();
+        for (Long l : longList) {
+            Optional<Category> category = categoryRepository.findById(l);
+            if (category.isPresent()) {
+                if (categoryRepository.checkIfLeaf(category.get().getId()) == 0) {
+                    List<String> fields = new ArrayList<>();
+                    List<String> values = new ArrayList<>();
 
-         }
-         return list1;
+                    ViewCategoriesDTO viewCategoriesDTO1 = new ViewCategoriesDTO();
+                    viewCategoriesDTO1.setName(category.get().getName());
+
+                    List<Long> longList1 = categoryMetadataFieldValuesRepository.getMetadataId(category.get().getId());
+                    for (Long l1 : longList1) {
+                        Optional<CategoryMetadataField> categoryMetadataField = categoryMetadataFieldRepository.findById(l1);
+                        fields.add(categoryMetadataField.get().getName());
+                        values.add(categoryMetadataFieldValuesRepository.getFieldValuesForCompositeKey(category.get().getId(), l1));
+                    }
+                    viewCategoriesDTO1.setFieldName(fields);
+                    viewCategoriesDTO1.setValues(values);
+                    list.add(viewCategoriesDTO1);
+
+                } else {
+                    ViewCategoriesDTO viewCategoriesDTO = new ViewCategoriesDTO();
+                    viewCategoriesDTO.setName(category.get().getName());
+                    list.add(viewCategoriesDTO);
+                }
+
+            } else {
+                Long[] l1 = {};
+                throw new NotFoundException(messageSource.getMessage("notfound.txt",l1,LocaleContextHolder.getLocale()));
+            }
+        }
+        return list;
     }
 
 
+    @Override
+    public List<Object[]> getAllCategory() {
 
+        List<Object[]> list = categoryRepository.getMainCategory();
+        if (list.isEmpty()) {
+            throw new NullException("no categories available");
+        }
+        return list;
+    }
 
+    @Override
+    public List<Object[]> getAllSubCategory(Long id) {
+        Optional<Category> category = categoryRepository.findById(id);
+        if (category.isPresent()) {
+            if (categoryRepository.checkIfLeaf(id) == 1)
+                return categoryRepository.getSubCategoryOfCategory(id);
+            else {
+                throw new NullException("category is a leaf node");
+            }
+        } else {
+            throw new NotFoundException("category with this id is not present");
+        }
+    }
 
-
-
-
-
-
-
+    @Override
+    public void save(Category category) {
 
     }
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

@@ -1,19 +1,24 @@
 package com.ttn.ecommerceApplication.ecommerceApplication.controller;
 
 import com.ttn.ecommerceApplication.ecommerceApplication.dao.SellerDao;
+import com.ttn.ecommerceApplication.ecommerceApplication.dao.UploadDao;
 import com.ttn.ecommerceApplication.ecommerceApplication.dto.SellerDTO;
 import com.ttn.ecommerceApplication.ecommerceApplication.dto.SellerProfileDTO;
 import com.ttn.ecommerceApplication.ecommerceApplication.entities.Customer;
+import com.ttn.ecommerceApplication.ecommerceApplication.entities.ProductVariation;
 import com.ttn.ecommerceApplication.ecommerceApplication.entities.Seller;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import org.hibernate.internal.build.AllowPrintStacktrace;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -22,18 +27,54 @@ public class SellerController
     @Autowired
     SellerDao sellerDao;
 
-    @GetMapping("/detailsOfSeller")
-    public List<Object[]> getDetails()
+    @Autowired
+    UploadDao uploadDao;
+
+    @Secured("ROLE_SELLER")
+    @ApiOperation("uri for seller to view his profile")
+    @GetMapping("/viewProfileForSeller")
+    public SellerProfileDTO viewProfile()
     {
-        List<Object[]> objects = sellerDao.getSellerDetails();
-        return objects;
+        return sellerDao.viewProfile();
     }
 
+    @Secured("ROLE_SELLER")
+    @ApiOperation("uri for seller to update his profile")
+    @PutMapping("/updateMyProfile")
+    public ResponseEntity updateMyProfile(@RequestBody SellerProfileDTO sellerProfileDTO)
+    {
+        return sellerDao.editMyProfile(sellerProfileDTO);
+    }
+
+    @Secured("ROLE_SELLER")
+    @ApiOperation("uri for customer to upload pics for productVariation")
+    @PostMapping("/uploadMultipleImagesForProductVariation/{id}")
+    public ResponseEntity<Object> uploadFiles(@PathVariable Long id,@RequestParam("files") MultipartFile[] files, ProductVariation productVariation) throws IOException
+    {
+        return uploadDao.uploadMultipleFiles(files,productVariation);
+    }
+
+    @ApiOperation("uri for seller to get a customer account")
     @PutMapping("/getCustomerAccount")
     public String getAnCustomerAccount(@RequestBody Customer customer)
     {
         return sellerDao.getAnCustomerAccount(customer);
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     @Lazy
     @PutMapping("/editSellerDetails")
@@ -41,17 +82,6 @@ public class SellerController
         return sellerDao.editSellerDetails(seller);
     }
 
-    @GetMapping("/viewProfileForSeller")
-    public SellerProfileDTO viewProfile()
-    {
-        return sellerDao.viewProfile();
-    }
-
-    @PutMapping("/updateMyProfile")
-    public ResponseEntity updateMyProfile(@RequestBody SellerProfileDTO sellerProfileDTO)
-    {
-        return sellerDao.editMyProfile(sellerProfileDTO);
-    }
 
 
 }

@@ -20,11 +20,7 @@ public class UploadController
     {
         return uploadDao.uploadSingleImage(file,customer);
     }
-    @PostMapping("/uploadsm")
-    public ResponseEntity<Object> uploadFiles(@RequestParam("files") MultipartFile[] files) throws IOException
-    {
-        return uploadDao.uploadMultipleFiles(files);
-    }
+
     @GetMapping("/download/{fileName:.+}")
     public ResponseEntity downloadFileFromLocal(@PathVariable String fileName, HttpServletRequest request) throws IOException
     {

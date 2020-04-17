@@ -21,7 +21,7 @@ public interface CategoryDao
 
     public ResponseEntity addMainCategory(Category category);
 
-    public List<Object[]> viewACategory(Long category_id);
+    public List<ViewCategoriesDTO> viewACategory(Long category_id);
 
 
     public List<Object[]> getSubcategory();
@@ -36,6 +36,8 @@ public interface CategoryDao
     public void updateMetadataValues(CategoryMetadataFieldValues categoryMetadataFieldValues, Long categoryId, Long metadataId);
 
     public List<ViewCategoriesDTO> viewAllCategoriesForSeller();
+
+    public List<ViewCategoriesDTO> viewAllCategories(Integer pageNo, Integer pageSize, String sortBy);
 
 
 

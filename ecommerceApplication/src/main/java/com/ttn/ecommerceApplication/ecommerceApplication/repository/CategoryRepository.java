@@ -3,6 +3,7 @@ package com.ttn.ecommerceApplication.ecommerceApplication.repository;
 import com.ttn.ecommerceApplication.ecommerceApplication.entities.Category;
 import org.graalvm.compiler.lir.alloc.lsra.LinearScan;
 import org.hibernate.annotations.Parent;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -39,5 +40,11 @@ public interface CategoryRepository extends CrudRepository<Category,Long>
 
     @Query(value = "select name from category where id=:id",nativeQuery = true)
     Object[] getNameOfCategory(@Param("id") Long id);
+
+    @Query(value = "select id from category where parent_id=:parent_id",nativeQuery = true)
+    List<Long> getIdsOfSubcategories(@Param("parent_id") Long parent_id);
+
+    @Query(value = "select id from category",nativeQuery = true)
+    List<Long> getIdsOfCategory(Pageable pageable);
 
 }

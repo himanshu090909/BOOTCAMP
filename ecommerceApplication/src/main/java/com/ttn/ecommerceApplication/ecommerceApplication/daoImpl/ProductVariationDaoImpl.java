@@ -2,6 +2,7 @@ package com.ttn.ecommerceApplication.ecommerceApplication.daoImpl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ttn.ecommerceApplication.ecommerceApplication.dao.ProductVariationDao;
+import com.ttn.ecommerceApplication.ecommerceApplication.dto.ProductVariationDTO;
 import com.ttn.ecommerceApplication.ecommerceApplication.entities.CategoryMetadataField;
 import com.ttn.ecommerceApplication.ecommerceApplication.entities.Product;
 import com.ttn.ecommerceApplication.ecommerceApplication.entities.ProductVariation;
@@ -10,7 +11,11 @@ import com.ttn.ecommerceApplication.ecommerceApplication.exceptionHandling.NotFo
 import com.ttn.ecommerceApplication.ecommerceApplication.exceptionHandling.NullException;
 import com.ttn.ecommerceApplication.ecommerceApplication.repository.*;
 import com.ttn.ecommerceApplication.ecommerceApplication.utilities.GetCurrentUser;
+import com.ttn.ecommerceApplication.ecommerceApplication.utilities.HashMapConverter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -214,37 +219,45 @@ public class ProductVariationDaoImpl implements ProductVariationDao {
 
 
 
-    public List<Object[]> getSingleProductVariation(Long productVariationId)
-    {
+    public ProductVariationDTO getSingleProductVariation(Long productVariationId) throws JsonProcessingException {
         String username = getCurrentUser.getUser();
         Seller seller = sellerRepository.findByUsername(username);
-        Long id = productVariationRepository.getProductId(productVariationId);
-        if (id==null)
+        Optional<ProductVariation> productVariation = productVariationRepository.findById(productVariationId);
+        if (productVariation.isPresent())
         {
-            throw new NullException("this product Variation is not associated with any product");
-        }
-        Optional<Product> productOptional = productRepository.findById(id);
-        if (productVariationRepository.findById(productVariationId).isPresent()&&productOptional.isPresent())
-        {
-            Product product = productOptional.get();
-
-            if ((product.getSeller().getUsername()).equals(seller.getUsername())) {
-                if (product.getisActive()==true)
+            Product product = productVariation.get().getProduct();
+            if (product.getSeller().getUsername().equals(seller.getUsername())&&product!=null)
+            {
+                ProductVariationDTO productVariationDTO = new ProductVariationDTO();
+                productVariationDTO.setProductname(product.getProductname());
+                productVariationDTO.setBrand(product.getBrand());
+                productVariationDTO.setCancellable(product.getisCancellable());
+                productVariationDTO.setActive(product.getisActive());
+                productVariationDTO.setDescription(product.getDescription());
+                productVariationDTO.setReturnable(product.getisReturnable());
+                Map<String ,Object> map = objectMapper.readValue(productVariation.get().getInfoJson(), HashMap.class);
+                List<String > field = new ArrayList<>();
+                List<String > values = new ArrayList<>();
+                for (Map.Entry m : map.entrySet())
                 {
-                    return productVariationRepository.getSingleProductVariation(productVariationId);
+                    field.add(m.getKey().toString());
+                    values.add(m.getValue().toString());
                 }
-                else {
-                    throw new NotFoundException("This product variation is not active");
-                }
+                System.out.println(field);
+                System.out.println(values);
+                productVariationDTO.setFields(field);
+                productVariationDTO.setValues(values);
+                productVariationDTO.setPrice(productVariation.get().getPrice());
+                productVariationDTO.setCurrentActiveStatus(productVariation.get().getisActive());
+                productVariationDTO.setQuantityAvailable(productVariation.get().getQuantity_available());
+                return productVariationDTO;
 
             }
             else
             {
-                throw  new NotFoundException("You cannot view this product variation");
+                throw  new NotFoundException("You cannot view this product variation or product is not present");
             }
-
         }
-
         else {
             throw new NullException("This product variation do not exist");
         }
@@ -252,17 +265,24 @@ public class ProductVariationDaoImpl implements ProductVariationDao {
 
     }
 
-    public List<Object[]> getAllProductVariations(Long productId)
-    {
+
+
+    public List<ProductVariationDTO> getAllProductVariations(Long productId) throws JsonProcessingException {
+
         String seller= getCurrentUser.getUser();
         Seller seller1= sellerRepository.findByUsername(seller);
-
         Optional<Product> productOptional= productRepository.findById(productId);
+        List<ProductVariationDTO> list = new ArrayList<>();
         if (productOptional.isPresent())
         { Product product = productOptional.get();
-            if ((product.getSeller().getUsername()).equals(seller1.getUsername())) {
-                List<Object[]> productVariations = productVariationRepository.getProductVariations(productId);
-                return productVariations;
+            if ((product.getSeller().getUsername()).equals(seller1.getUsername()))
+            {
+                Set<ProductVariation> productVariations = product.getProductVariations();
+                for (ProductVariation productVariation : productVariations)
+                {
+                    list.add(getSingleProductVariation(productVariation.getId()));
+                }
+                return list;
             }
             else {
                 throw new NotFoundException("You cannot view the product variation of this product ");

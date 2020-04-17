@@ -69,7 +69,7 @@ public class RegistrationDaoImpl implements RegistrationDao
             userRepository.save(customer1);
             if ( userRepository.existsById(customer1.getId()))
             {
-                notificationService.sendNotificaitoin(customer1);
+                notificationService.sendNotification(customer1);
             }
             return "success";
         }
@@ -80,7 +80,8 @@ public class RegistrationDaoImpl implements RegistrationDao
 
     }
 
-    public String createSeller(SellerDTO seller)
+    @Async
+    public ResponseEntity createSeller(SellerDTO seller)
     {
         if (seller.getPassword().equals(seller.getConfirmPassword())) {
             Seller seller1 = modelMapper.map(seller, Seller.class);
@@ -89,19 +90,16 @@ public class RegistrationDaoImpl implements RegistrationDao
             seller1.addRoles(new Role("ROLE_SELLER"));
             seller1.setActive(false);
             seller1.setCreatedBy(seller.getUsername());
-            Address address = new Address();
-            address.setCity(seller.getCity());
-            address.setCountry(seller.getCountry());
-            address.setState(seller.getState());
-            address.setZipcode(seller.getZipcode());
-            address.setAddressLine(seller.getAddressLine());
+            Address address = modelMapper.map(seller,Address.class);
             address.setLabel("office");
             Set<Address>  addresses = new HashSet<>();
             address.setUser(seller1);
             addresses.add(address);
             seller1.setAddresses(addresses);
             userRepository.save(seller1);
-            if (userRepository.existsById(seller1.getId())) {
+            if (userRepository.existsById(seller1.getId()))
+            {
+
                 SimpleMailMessage mail = new SimpleMailMessage();
                 mail.setTo(seller.getUsername());
                 mail.setFrom("hs631443@gmail.com");
@@ -109,7 +107,7 @@ public class RegistrationDaoImpl implements RegistrationDao
                 mail.setText("you account has been created you can access it once admin verifies it");
                 javaMailSender.send(mail);
             }
-            return "success";
+            return ResponseEntity.ok().body("successfully registered");
 
         }
         else {
@@ -135,7 +133,7 @@ public class RegistrationDaoImpl implements RegistrationDao
                     }
                 }
                 if (user.isEnabled()==false&&user.isActive()==false)
-                notificationService.sendNotificaitoin(user);
+                notificationService.sendNotification(user);
                 else
                  throw new NullException("account is already active");
                 return ResponseEntity.ok().body("activation token sent to the given email address");

@@ -32,6 +32,10 @@ public class ProductController
     @Autowired
     CategoryRepository categoryRepository;
 
+
+    //apis for seller
+
+    @Secured("ROLE_SELLER")
     @ApiOperation("This URI is for Seller to add a new product to a category")
     @PostMapping("/addProduct/{category}")
     public void addNewProduct(@Valid @RequestBody ProductDTO product, @PathVariable(name = "category") Long category) {
@@ -39,7 +43,8 @@ public class ProductController
 
     }
 
-    @ApiOperation("This URI is for seller to get details of his products only those products will be shown of which selle is an owner")
+    @Secured("ROLE_SELLER")
+    @ApiOperation("This URI is for seller to get details of his products only those products will be shown of which seller is an owner")
     @GetMapping("/getProducts")
     public List<ViewProductDTO> getProductDetails(@RequestParam(name = "pageNo", required = true, defaultValue = "0") Integer pageNo,
                                                   @RequestParam(name = "pageSize", required = true, defaultValue = "10") Integer pageSize,
@@ -48,6 +53,45 @@ public class ProductController
        return productDao.getProductDetails(pageNo, pageSize, sortBy);
     }
 
+    @Secured("ROLE_SELLER")
+    @ApiOperation("This URI is for seller to view a single product he owns ")
+    @GetMapping("/viewSingleProduct/{productId}")
+    public ViewProductDTO viewSingleProduct(@PathVariable Long productId)
+    {
+        return productDao.viewSingleProduct(productId);
+    }
+
+
+    @Secured("ROLE_SELLER")
+    @ApiOperation("This api deletes a product and all its product variations")
+    @DeleteMapping("/deleteAProduct/{id}")
+    public void dp(@PathVariable Long id)
+    {
+        productDao.deleteProduct(id);
+    }
+
+
+    @Secured("ROLE_SELLER")
+    @ApiOperation("This api is used when editing a product details")
+    @PutMapping("/editProduct/{id}")
+    public void editProduct(@RequestBody ProductDTO product, @PathVariable Long id) throws IllegalAccessException {
+        productDao.editProduct(product,id);
+    }
+
+
+
+
+
+
+    //apis for customer
+
+    @Secured("ROLE_CUSTOMER")
+    @ApiOperation("This api is for customer to view a single product")
+    @GetMapping("/viewSingleProductForCustomer/{productId}")
+    public ViewProductForCustomerDTO viewSingleProductForCustomer(@PathVariable Long productId)
+    {
+        return productDao.viewSingleProductForCustomer(productId);
+    }
 
     @Secured("ROLE_CUSTOMER")
     @ApiOperation("This api gives details of products of a particular category for a customer")
@@ -59,6 +103,23 @@ public class ProductController
         return productDao.getProductDetailsForCustomer(category_id,pageNo, pageSize, sortBy);
     }
 
+    @Secured("ROLE_CUSTOMER")
+    @ApiOperation("this usi is for getting similar product based on category and brand")
+    @GetMapping("/getSimilarProducts/{id}")
+    public List<ViewProductForCustomerDTO> getSimilarProducts(@PathVariable Long id,@RequestParam(name = "pageNo", required = true, defaultValue = "0") Integer pageNo,
+                                                              @RequestParam(name = "pageSize", required = true, defaultValue = "10") Integer pageSize,
+                                                              @RequestParam(name = "sortBy", defaultValue = "ID") String sortBy)
+    {
+        return productDao.getSimilarProducts(id,pageNo, pageSize, sortBy);
+    }
+
+
+
+
+
+
+    //apis for admin
+
     @Secured("ROLE_ADMIN")
     @ApiOperation("This api returns all the active products in database")
     @GetMapping("/getProductsForAdmin")
@@ -69,35 +130,6 @@ public class ProductController
         return productDao.getProductDetailsForAdmin(pageNo, pageSize, sortBy);
     }
 
-    @Secured("ROLE_SELLER")
-    @ApiOperation("This api deletes a product and all its product variations")
-    @DeleteMapping("deleteAProduct/{id}")
-    public void dp(@PathVariable Long id)
-    {
-        productDao.deleteProduct(id);
-    }
-
-
-    @ApiOperation("This api is used when editing a product details")
-    @PutMapping("/editProduct/{id}")
-    public void editProduct(@RequestBody ProductDTO product, @PathVariable Long id) throws IllegalAccessException {
-        productDao.editProduct(product,id);
-    }
-
-    @ApiOperation("This URI is for seller to view a single product he owns ")
-    @GetMapping("/viewSingleProduct/{productId}")
-    public ViewProductDTO viewSingleProduct(@PathVariable Long productId)
-    {
-        return productDao.viewSingleProduct(productId);
-    }
-
-    @Secured("ROLE_CUSTOMER")
-    @ApiOperation("This api is for customer to view a single product")
-    @GetMapping("/viewSingleProductForCustomer/{productId}")
-    public ViewProductForCustomerDTO viewSingleProductForCustomer(@PathVariable Long productId)
-    {
-        return productDao.viewSingleProductForCustomer(productId);
-    }
 
     @Secured("ROLE_ADMIN")
     @ApiOperation("This api is for admin to view single product")
@@ -107,8 +139,7 @@ public class ProductController
         return productDao.viewSingleProductForAdmin(productId);
     }
 
-    //check these apis if running
-
+    @Secured("ROLE_ADMIN")
     @ApiOperation("This URI is for Admin to  deactivates a product and all its product variation")
     @PutMapping("/deactivateProduct/{productId}")
     public String deactivateProduct(@PathVariable Long productId) {
@@ -116,7 +147,7 @@ public class ProductController
         return "Success";
     }
 
-    //correct
+    @Secured("ROLE_ADMIN")
     @ApiOperation("This URI is for Admin to activates a product")
     @PutMapping("/activateProduct/{productId}")
     public String activateProduct(@PathVariable Long productId) {
@@ -124,15 +155,6 @@ public class ProductController
         return "Success";
     }
 
-    @Secured("ROLE_CUSTOMER")
-    @ApiOperation("this usi is for getting similar product based on category and brand")
-    @GetMapping("/getSimilarProducts/{id}")
-    public List<ViewProductForCustomerDTO> getSimilarProducts(@PathVariable Long id,@RequestParam(name = "pageNo", required = true, defaultValue = "0") Integer pageNo,
-                                                              @RequestParam(name = "pageSize", required = true, defaultValue = "10") Integer pageSize,
-                                                              @RequestParam(name = "sortBy", defaultValue = "ID") String sortBy)
-    {
-        return productDao.getSimilarProducts(id,pageNo, pageSize, sortBy);
-    }
 
 
 

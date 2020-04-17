@@ -7,6 +7,7 @@ import com.ttn.ecommerceApplication.ecommerceApplication.exceptionHandling.UserN
 import com.ttn.ecommerceApplication.ecommerceApplication.repository.ProductRepository;
 import com.ttn.ecommerceApplication.ecommerceApplication.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -20,13 +21,12 @@ import java.util.Optional;
 public interface AdminDao
 {
 
-    public void activateCustomerAndSeller(Long id);
-    public String  deActivateCustomerAndSeller(Long id);
-    public String lockUser(Long id);
-    public String unlockUser(Long id);
-    public List<Object[]> getAllProducts();
-    public List<RegisteredCustomersDTO> getAllRegisteredCustomers(Integer pageNo, Integer pageSize, String sortBy);
+    List<RegisteredCustomersDTO> getAllRegisteredCustomers(Integer pageNo, Integer pageSize, String sortBy);
+    List<RegisteredSellersDTO> getAllRegisteredSellers(Integer pageNo, Integer pageSize, String sortBy);
+    ResponseEntity activateCustomerAndSeller(Long id);
+    ResponseEntity  deActivateCustomerAndSeller(Long id);
+    ResponseEntity lockUser(Long id);
+    ResponseEntity unlockUser(Long id);
 
-    public List<RegisteredSellersDTO> getAllRegisteredSellers(Integer pageNo, Integer pageSize, String sortBy);
 
 }

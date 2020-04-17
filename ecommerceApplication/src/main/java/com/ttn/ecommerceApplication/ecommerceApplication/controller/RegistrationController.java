@@ -7,6 +7,8 @@ import com.ttn.ecommerceApplication.ecommerceApplication.utilities.TokenDao;
 import com.ttn.ecommerceApplication.ecommerceApplication.entities.User;
 import com.ttn.ecommerceApplication.ecommerceApplication.repository.RoleRepository;
 import com.ttn.ecommerceApplication.ecommerceApplication.repository.UserRepository;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -46,34 +48,22 @@ public class RegistrationController {
     @Autowired
     private NotificationService notificationService;
 
-    @GetMapping("/")
-    public String index() {
-        return "index";
-    }
-
-    @GetMapping("/findall")
-    public Iterable<User> y() {
-        return userRepository.findAll();
-    }
-
     @Lazy
+    @ApiOperation("Uri for customer registration")
     @PostMapping("/registerAsCustomer")
     public String createCustomer(@Valid @RequestBody CustomerDTO user) throws InterruptedException
     {
         return registrationDao.createCustomer(user);
     }
 
-    @PostMapping("/verify/{u}")
-    public void verifyUser(@PathVariable(name = "u") String u)
+    @ApiOperation("uri for activating user after which user can login into application")
+    @PutMapping("/activateCustomer/{token}")
+    public ResponseEntity verifyUser(@PathVariable(name = "token") String token)
     {
-        tokenDao.verifyToken(u);
+        return tokenDao.verifytokenEnteredByCustomer(token);
     }
 
-    @PostMapping("/registerAsSeller")
-    public String createSeller(@Valid @RequestBody SellerDTO user) throws InterruptedException {
-        return registrationDao.createSeller(user);
-    }
-
+    @ApiOperation("uri for resending activation link for customer")
     @PostMapping("/resendActivationLink/{mailId}")
     public ResponseEntity resendActivationLink(@PathVariable(name = "mailId") String mailId)
     {
@@ -81,6 +71,15 @@ public class RegistrationController {
     }
 
 
+    @ApiOperation("Uri for seller Registration")
+    @PostMapping("/registerAsSeller")
+    public ResponseEntity createSeller(@Valid @RequestBody SellerDTO user) throws InterruptedException {
+        return registrationDao.createSeller(user);
+    }
+
+
+
+    @ApiOperation("uri for log out")
     @GetMapping("/doLogout")
     public String logout(HttpServletRequest request)
     {

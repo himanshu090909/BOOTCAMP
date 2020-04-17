@@ -14,8 +14,11 @@ public interface UploadDao
 
     public ResponseEntity<Object> uploadSingleImageForProductVariation(MultipartFile multipartFile, ProductVariation productVariation) throws IOException;
 
-    public ResponseEntity<Object> uploadMultipleFiles(MultipartFile[] multipartFiles) throws IOException;
+    public ResponseEntity<Object> uploadMultipleFiles(MultipartFile[] multipartFiles,ProductVariation productVariation) throws IOException;
 
     public ResponseEntity downloadImage(String filename, HttpServletRequest request) throws IOException;
+
+    public ResponseEntity downloadImageOfProductVariation(String filename, HttpServletRequest request) throws IOException;
+
 
 }

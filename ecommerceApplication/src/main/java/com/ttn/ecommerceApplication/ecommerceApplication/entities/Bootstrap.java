@@ -359,13 +359,20 @@ public class Bootstrap implements ApplicationRunner {
         productVariation.setInfoAttributes(attributes);
         String  info = objectMapper.writeValueAsString(attributes);
         productVariation.setInfoJson(info);
-        System.out.println(objectMapper.readValue(info,HashMap.class));
         productVariationSet.add(productVariation);
         product.setProductVariations(productVariationSet);
 
         ProductVariation productVariation1 = new ProductVariation();
         productVariation1.setPrice(1500d);
         productVariation1.setQuantity_available(3);
+        Map<String,Object> attributes1 = new HashMap<>();
+        attributes.put("size","M");
+        attributes.put("color","Blue");
+        productVariation1.setInfoAttributes(attributes1);
+        String  info1 = objectMapper.writeValueAsString(attributes);
+        productVariation1.setInfoJson(info1);
+
+
         productVariation1.setProduct(product);
         productVariationSet.add(productVariation1);
         /*product.setProductVariations(productVariationSet);*/

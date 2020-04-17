@@ -7,6 +7,7 @@ import com.ttn.ecommerceApplication.ecommerceApplication.repository.UserReposito
 import com.ttn.ecommerceApplication.ecommerceApplication.utilities.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -38,7 +39,7 @@ public class TokenDao {
         }}
 
 
-    public void verifyToken(String u) {
+    public ResponseEntity verifytokenEnteredByCustomer(String u) {
         Token token1 = null;
         for (Token token : tokenRepository.findAll()) {
             if (token.getRandomToken().equals(u)) {
@@ -51,17 +52,18 @@ public class TokenDao {
         } else {
             if (token1.isExpired())
             {
-                notificationService.sendNotificaitoin(userRepository.findByUsername(token1.getName()));
+                notificationService.sendNotification(userRepository.findByUsername(token1.getName()));
                 tokenRepository.delete(token1);
+                return ResponseEntity.ok().body("your token has been expired a new token has been sent on your mail");
             } else
                 {
                 System.out.println("saving");
                 User user2 = userRepository.findByUsername(token1.getName());
                 user2.setEnabled(true);
                 user2.setActive(true);
-                System.out.println(user2.getUsername() + " " + user2.isEnabled());
                 userRepository.save(user2);
                 tokenRepository.delete(token1);
+                return ResponseEntity.ok().body("your account is active you  can login now");
             }
         }
     }

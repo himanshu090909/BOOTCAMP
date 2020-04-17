@@ -3,15 +3,12 @@ package com.ttn.ecommerceApplication.ecommerceApplication.controller;
 import com.ttn.ecommerceApplication.ecommerceApplication.dao.UserDao;
 import com.ttn.ecommerceApplication.ecommerceApplication.dto.AddressDTO;
 import com.ttn.ecommerceApplication.ecommerceApplication.dto.UserDTO;
-import com.ttn.ecommerceApplication.ecommerceApplication.entities.Address;
-import com.ttn.ecommerceApplication.ecommerceApplication.entities.User;
 import com.ttn.ecommerceApplication.ecommerceApplication.repository.CustomerRepository;
 import com.ttn.ecommerceApplication.ecommerceApplication.repository.UserRepository;
 import com.ttn.ecommerceApplication.ecommerceApplication.utilities.GetCurrentUser;
-import net.bytebuddy.implementation.auxiliary.AuxiliaryType;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,51 +35,25 @@ public class UserController {
     @Autowired
     CustomerRepository customerRepository;
 
-  /*  @PutMapping("/updateAddress")
-    public void update(@RequestBody Address address)
-    {
-        String username = getCurrentDetails.getUser();
-        User user=userRepository.findByUsername(username);
-        user.addAddress(address);
-        userRepository.save(user);
-    }*/
-/*
-    @Transactional
-    @PutMapping("/updateProfile/{id}")
-    @ResponseBody
-    public ResponseEntity<Object> updateProfile(@RequestBody Customer customer, @PathVariable(name = "id") int id)
-    {
-
-        Optional<Customer> optionalUser = customerRepository.findById(id);
-
-       Customer customer1=  optionalUser.get();
-       customer1.setFirstName(customer.getFirstName());
-       customer1.setLastName(customer.getLastName());
-       customer1.setMiddleName(customer.getMiddleName());
-       customer1.setEmail(customer.getEmail());
-       customer1.setPassword(customer.getPassword());
-       customer1.setLastName(customer.getLastName());
-        customer1.setContact(customer.getContact());
-       userRepository.save(customer1);
-       URI location= ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("/{id")
-                .buildAndExpand(customer1.getId())
-                .toUri();
-
-        return ResponseEntity.created(location).build();
-    }*/
-    @DeleteMapping("/deleteUser")
-    public String deleteUser() {
-
-        return userDao.deleteUser();
+    @ApiOperation("uri for user to update his password")
+    @PutMapping("/editPassword")
+    public String editPassword(@RequestBody UserDTO user) {
+        return userDao.editPassword(user);
     }
 
-    @PutMapping("/addNewAddress")
-    public String addNewAddress(@Valid @RequestBody Address address) {
-
-        return userDao.addNewAddress(address);
+    @ApiOperation("uri for user to update an address")
+    @PutMapping("/updateAddress/{addressId}")
+    public String  update(@Valid @RequestBody AddressDTO address, @PathVariable Long addressId) {
+        return userDao.update(address, addressId);
     }
+
+
+
+
+
+
+
+
 
     @Lazy
     @PutMapping("/editUsername")
@@ -104,21 +75,11 @@ public class UserController {
         return userDao.verifyNewEmail(token,user);
     }
 
-    @PutMapping("/editPassword")
-    public String editPassword(@RequestBody UserDTO user) {
-        return userDao.editPassword(user);
+    @DeleteMapping("/deleteUser")
+    public String deleteUser() {
+
+        return userDao.deleteUser();
     }
 
-    @PutMapping("/updateAddress/{addressId}")
-    public String  update(@Valid @RequestBody AddressDTO address, @PathVariable Long addressId) {
-        return userDao.update(address, addressId);
-    }
-
-    @Secured("ROLE_CUSTOMER")
-    @DeleteMapping("/deleteAddress/{id}")
-    public String deleteAddress(@PathVariable Long id)
-    {
-        return userDao.deleteAddress(id);
-    }
 
 }
