@@ -27,6 +27,7 @@ dependencies {
 	compile group: 'io.springfox', name: 'springfox-swagger2', version: '2.9.2'
 
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+	compile group: 'org.springframework.security', name: 'spring-security-config', version: '5.3.1.RELEASE'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.security.oauth.boot:spring-security-oauth2-autoconfigure:2.2.5.RELEASE'
