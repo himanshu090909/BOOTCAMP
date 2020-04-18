@@ -110,7 +110,7 @@ public class CategoryDaoImpl implements CategoryDao {
 
         } else {
             Long[] l =  {};
-            throw new NotFoundException(messageSource.getMessage("notfound.txt",l,LocaleContextHolder.getLocale()));
+            throw new NotFoundException(messageSource.getMessage("message15.txt",l,LocaleContextHolder.getLocale()));
         }
         return filteringDTO;
 
@@ -203,26 +203,34 @@ public class CategoryDaoImpl implements CategoryDao {
 
         Long[] lo = {};
         if (categoryRepository.findById(categoryId).isPresent() && categoryRepository.checkIfLeaf(categoryId) == 0) {
-            if (categoryMetadataFieldRepository.findById(metadataId).isPresent()) {
-                CategoryMetadataFieldValuesId categoryMetadataFieldValuesId = new CategoryMetadataFieldValuesId();
-                categoryMetadataFieldValuesId.setCid(categoryRepository.findById(categoryId).get().getId());
-                categoryMetadataFieldValuesId.setMid(categoryMetadataFieldRepository.findById(metadataId).get().getId());
+            if (categoryMetadataFieldRepository.findById(metadataId).isPresent())
+            {
+                String checkIfAlreadyPresent = categoryMetadataFieldValuesRepository.getFieldValuesForCompositeKey(categoryId,metadataId);
+                if (checkIfAlreadyPresent==null) {
+                    CategoryMetadataFieldValuesId categoryMetadataFieldValuesId = new CategoryMetadataFieldValuesId();
+                    categoryMetadataFieldValuesId.setCid(categoryRepository.findById(categoryId).get().getId());
+                    categoryMetadataFieldValuesId.setMid(categoryMetadataFieldRepository.findById(metadataId).get().getId());
 
-                categoryMetadataFieldValues.setCategoryMetadataFieldValuesId(categoryMetadataFieldValuesId);
-                categoryMetadataFieldValues.setCategory(categoryRepository.findById(categoryId).get());
-                String[] valuesArray = categoryMetadataFieldValues.getFieldValues().split(",");
-                Set<String> s = new HashSet<>(Arrays.asList(valuesArray));
-                if (s.size() == valuesArray.length && s.size() >= 1 && valuesArray[0] != "")
-                    categoryMetadataFieldValues.setFieldValues(categoryMetadataFieldValues.getFieldValues());
+                    categoryMetadataFieldValues.setCategoryMetadataFieldValuesId(categoryMetadataFieldValuesId);
+                    categoryMetadataFieldValues.setCategory(categoryRepository.findById(categoryId).get());
+                    String[] valuesArray = categoryMetadataFieldValues.getFieldValues().split(",");
+                    Set<String> s = new HashSet<>(Arrays.asList(valuesArray));
+                    if (s.size() == valuesArray.length && s.size() >= 1 && valuesArray[0] != "")
+                        categoryMetadataFieldValues.setFieldValues(categoryMetadataFieldValues.getFieldValues());
+                    else
+                        throw new NullException(messageSource.getMessage("unique.txt", lo, LocaleContextHolder.getLocale()));
+                    categoryMetadataFieldValues.setCategoryMetadataField(categoryMetadataFieldRepository.findById(metadataId).get());
+                    categoryMetadataFieldValuesRepository.save(categoryMetadataFieldValues);
+                }
                 else
-                    throw new NullException(messageSource.getMessage("unique.txt",lo,LocaleContextHolder.getLocale()));
-                categoryMetadataFieldValues.setCategoryMetadataField(categoryMetadataFieldRepository.findById(metadataId).get());
-                categoryMetadataFieldValuesRepository.save(categoryMetadataFieldValues);
+                {
+                    throw new NullException("values are already present for this category id and metadata id");
+                }
             } else {
                 throw new NotFoundException(messageSource.getMessage("metadata.txt",lo,LocaleContextHolder.getLocale()));
             }
         } else {
-            throw new NotFoundException(messageSource.getMessage("notfound.txt",lo,LocaleContextHolder.getLocale()));
+            throw new NotFoundException(messageSource.getMessage("message14.txt",lo,LocaleContextHolder.getLocale()));
         }
 
 

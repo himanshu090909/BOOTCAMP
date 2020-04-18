@@ -27,7 +27,9 @@ import java.lang.reflect.Field;
 import java.util.*;
 
 @Service
-public class ProductDaoImpl implements ProductDao {
+public class ProductDaoImpl implements ProductDao
+{
+    Long[] l={};
 
     @Autowired
     ProductRepository productRepository;
@@ -75,19 +77,19 @@ public class ProductDaoImpl implements ProductDao {
     @Override
     public void addNewProduct(ProductDTO product, Long categoryId)
     {
-        int result = categoryRepository.checkIfLeaf(categoryId);
-        if (result==1)
+        Optional<Category> category = categoryRepository.findById(categoryId);
+        if (category.isPresent()&&categoryRepository.checkIfLeaf(categoryId)==0)
         {
             if (product.getProductname().equals(categoryRepository.findById(categoryId).get().getName())||product.getProductname().equals(product.getBrand()))
             {
-                throw new NullException("name of category,product and brand cannot be same");
+                throw new NullException(messageSource.getMessage("message16.txt",l,LocaleContextHolder.getLocale()));
             }
             Product product1 = modelMapper.map(product,Product.class);
             addProduct(product1,categoryId);
         }
         else
         {
-            throw new NotFoundException("category is not a leaf category");
+            throw new NotFoundException(messageSource.getMessage("message15.txt",l,LocaleContextHolder.getLocale()));
         }
         Long productId =productRepository.findProduct(product.getProductname());
         Long id = userRepository.findAdmin();

@@ -1,14 +1,10 @@
 package com.ttn.ecommerceApplication.ecommerceApplication.entities;
-
 import com.ttn.ecommerceApplication.ecommerceApplication.repository.UserAttemptsRepository;
 import com.ttn.ecommerceApplication.ecommerceApplication.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.security.authentication.event.AuthenticationFailureBadCredentialsEvent;
-import org.springframework.security.authentication.event.AuthenticationSuccessEvent;
 import org.springframework.stereotype.Component;
-
-import java.util.LinkedHashMap;
 
 @Component
 public class CustomEventListener
@@ -47,15 +43,14 @@ public class CustomEventListener
             User user = userRepository.findByUsername(username);
             userAttempts1.setEmail(user.getUsername());
             userAttempts1.setAttempts(1);
-            userAttemptsRepository.save(userAttempts1);
         }
     }
 
-    @EventListener
+   /* @EventListener
     public void AuthenticationPass(AuthenticationSuccessEvent event)
     {
         LinkedHashMap<String ,String > hashMap = (LinkedHashMap<String, String>) event.getAuthentication().getDetails();
-        Iterable<UserAttempts> userAttempts = userAttemptsRepository.findAll();
+   *//*     Iterable<UserAttempts> userAttempts = userAttemptsRepository.findAll();
        try {
 
            for (UserAttempts userAttempts1 : userAttempts)
@@ -71,7 +66,12 @@ public class CustomEventListener
        {
 
        }
-    }
+    }*/
+
+
+
+
+
 
 
 
