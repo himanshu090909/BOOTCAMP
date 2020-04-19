@@ -56,7 +56,7 @@ public class NotificationService {
     }
 
     @Async
-    public  void sendToSeller(User seller, String subject, String text)throws MailException
+    public void sendToSeller(User seller, String subject, String text)throws MailException
     {
         System.out.println("Sending email...");
         SimpleMailMessage mail = new SimpleMailMessage();

@@ -2,6 +2,7 @@ package com.ttn.ecommerceApplication.ecommerceApplication.daoImpl;
 
 import com.ttn.ecommerceApplication.ecommerceApplication.dao.UserDao;
 import com.ttn.ecommerceApplication.ecommerceApplication.dto.AddressDTO;
+import com.ttn.ecommerceApplication.ecommerceApplication.dto.PasswordDTO;
 import com.ttn.ecommerceApplication.ecommerceApplication.dto.UserDTO;
 import com.ttn.ecommerceApplication.ecommerceApplication.entities.*;
 import com.ttn.ecommerceApplication.ecommerceApplication.exceptionHandling.*;
@@ -12,7 +13,9 @@ import com.ttn.ecommerceApplication.ecommerceApplication.utilities.GetCurrentUse
 import com.ttn.ecommerceApplication.ecommerceApplication.utilities.NotificationService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -26,6 +29,7 @@ import java.util.*;
 public class UserDaoImpl implements UserDao
 {
     public int count;
+    Long[] l = {};
 
     @Autowired
     UserRepository userRepository;
@@ -51,6 +55,9 @@ public class UserDaoImpl implements UserDao
     NotificationService notificationService;
 
     @Autowired
+    MessageSource messageSource;
+
+    @Autowired
     PasswordEncoder passwordEncoder;
 
     @Autowired
@@ -59,34 +66,43 @@ public class UserDaoImpl implements UserDao
     @Autowired
     UploadDaoImpl uploadDao;
 
-    public String update(AddressDTO address, Long addressId) {
+    public void update(AddressDTO address, Long addressId) {
         String username = getCurrentUser.getUser();
         User user = userRepository.findByUsername(username);
         Set<Address> addresses = user.getAddresses();
-        int count = 0;
-        for (Address address1 : addresses) {
-            if (address1.getId() == addressId) {
-                if (address.getAddressLine()!=null)
-                    address1.setAddressLine(address.getAddressLine());
-                if (address.getCity()!=null)
-                    address1.setCity(address.getCity());
-                if (address.getCountry()!=null)
-                    address1.setCountry(address.getCountry());
-                if (address.getState()!=null)
-                    address1.setState(address.getState());
-                if (address.getZipcode()!=null)
-                    address1.setZipcode(address.getZipcode());
-                address1.setUser(user);
-                address1.setId(addressId);
-                address1.setModifiedBy(username);
-                addressRepository.save(address1);
-                count++;
+        Optional<Address> address1 = addressRepository.findById(addressId);
+        int count=0;
+        if (address1.isPresent())
+        {
+            for (Address address2 : addresses) {
+                if (address1.get().getId() == address2.getId()) {
+                    if (address.getAddressLine() != null)
+                        address2.setAddressLine(address.getAddressLine());
+                    if (address.getCity() != null)
+                        address2.setCity(address.getCity());
+                    if (address.getCountry() != null)
+                        address2.setCountry(address.getCountry());
+                    if (address.getState() != null)
+                        address2.setState(address.getState());
+                    if (address.getZipcode() != null)
+                        address2.setZipcode(address.getZipcode());
+                    address2.setUser(user);
+                    address2.setId(addressId);
+                    address2.setModifiedBy(username);
+                    addressRepository.save(address2);
+                    count++;
+                }
+            }
+            if (count==0)
+            {
+                throw new NullException("you cannot update this address");
             }
         }
-        if (count == 0) {
-            throw new NotFoundException("address id is not valid");
+        else
+        {
+            throw new NotFoundException(messageSource.getMessage("notfound.txt",l, LocaleContextHolder.getLocale()));
         }
-        return "success";
+
     }
 
     public String deleteUser() {
@@ -107,7 +123,8 @@ public class UserDaoImpl implements UserDao
         return "success";
     }
 
-    public String editUsername(UserDTO user) {
+    public String editUsername(UserDTO user)
+    {
         User user1 = userRepository.findByUsername(user.getUsername());
         if (user1 == null) {
             String username = getCurrentUser.getUser();
@@ -116,41 +133,52 @@ public class UserDaoImpl implements UserDao
             user2.setModifiedBy(username);
             userRepository.save(user2);
             return "Success";
-        } else {
+        }
+        else
+            {
             throw new AlreadyExists("username is occupied,try with a different username");
         }
     }
 
+    //to do
     @Lazy
-    public String editEmail(UserDTO user) {
+    public String editEmail(UserDTO user)
+    {
         User user1 = modelMapper.map(user, User.class);
-        String username = getCurrentUser.getUser();
-        user1.setUsername(username);
+        user1.setUsername(user.getUsername());
         notificationService.sendNotification(user1);
         return "success";
     }
 
     @Lazy
-    public String verifyNewEmail(String token, UserDTO user) {
+    public String verifyNewEmail(String token,UserDTO user)
+    {
         Token token1 = null;
-        for (Token token2 : tokenRepository.findAll()) {
-            if (token2.getRandomToken().equals(token)) {
+        for (Token token2 : tokenRepository.findAll())
+        {
+            if (token2.getRandomToken().equals(token))
+            {
                 token1 = token2;
             }
         }
-        if (token1 == null) {
+        if (token1 == null)
+        {
             throw new TokenNotFoundException("token is invalid");
-        } else {
-            if (token1.isExpired()) {
+        } else
+            {
+            if (token1.isExpired())
+            {
                 User user1 = modelMapper.map(user, User.class);
                 String username = getCurrentUser.getUser();
                 user1.setUsername(username);
                 notificationService.sendNotification(user1);
                 tokenRepository.delete(token1);
                 throw new TokenNotFoundException("token is expired check mail for new token");
-            } else {
+            } else
+                {
                 System.out.println("saving");
-                User user2 = userRepository.findByUsername(token1.getName());
+                String username = getCurrentUser.getUser();
+                User user2 = userRepository.findByUsername(username);
                 user2.setUsername(user.getUsername());
                 user2.setModifiedBy(user2.getUsername());
                 userRepository.save(user2);
@@ -160,7 +188,7 @@ public class UserDaoImpl implements UserDao
         }
     }
 
-    public String editPassword(UserDTO user) {
+    public String editPassword(PasswordDTO user) {
         String username = getCurrentUser.getUser();
         User user1 = userRepository.findByUsername(username);
         if (user.getPassword() != null && user.getConfirmPassword() != null) {
@@ -168,13 +196,8 @@ public class UserDaoImpl implements UserDao
                 user1.setPassword(passwordEncoder.encode(user.getPassword()));
                 user1.setModifiedBy(username);
                 userRepository.save(user1);
-                SimpleMailMessage mail = new SimpleMailMessage();
-                mail.setTo(user1.getUsername());
-                mail.setFrom("hs631443@gmail.com");
-                mail.setSubject("password changed status");
-                mail.setText("your password has been successfully changed");
-                javaMailSender.send(mail);
-            } else {
+                notificationService.sendToSeller(user1, "password changed status", "your password has been successfully changed");
+            }else {
                 throw new PasswordAndConfirmPasswordMismatchException("password and confirm password does not match");
             }
         } else {

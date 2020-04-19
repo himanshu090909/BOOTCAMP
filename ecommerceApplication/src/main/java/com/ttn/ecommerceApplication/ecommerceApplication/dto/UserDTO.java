@@ -32,6 +32,7 @@ public class UserDTO {
     @ValidPassword
     private String password;
 
+    @Column(nullable = false)
     private String confirmPassword;
 
 

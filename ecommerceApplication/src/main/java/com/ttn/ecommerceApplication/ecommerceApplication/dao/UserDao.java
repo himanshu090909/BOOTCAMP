@@ -1,6 +1,7 @@
 package com.ttn.ecommerceApplication.ecommerceApplication.dao;
 import com.ttn.ecommerceApplication.ecommerceApplication.daoImpl.UploadDaoImpl;
 import com.ttn.ecommerceApplication.ecommerceApplication.dto.AddressDTO;
+import com.ttn.ecommerceApplication.ecommerceApplication.dto.PasswordDTO;
 import com.ttn.ecommerceApplication.ecommerceApplication.dto.UserDTO;
 import com.ttn.ecommerceApplication.ecommerceApplication.entities.*;
 import com.ttn.ecommerceApplication.ecommerceApplication.daoImpl.GrantAuthorityImpl;
@@ -24,13 +25,13 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
 public interface UserDao {
-    public String update(AddressDTO address, Long addressId);
+    public void update(AddressDTO address, Long addressId);
     public String deleteUser();
     public String addNewAddress(Address address);
     public String editUsername(UserDTO user);
     public String editEmail(UserDTO user);
     public String verifyNewEmail(String token,UserDTO user);
-    public String editPassword(UserDTO user);
+    public String editPassword(PasswordDTO user);
     public String deleteAddress(Long id);
     public AppUser loadUserByUsername(String username);
 }

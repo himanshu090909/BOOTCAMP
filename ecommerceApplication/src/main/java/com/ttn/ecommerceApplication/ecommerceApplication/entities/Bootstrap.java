@@ -74,7 +74,7 @@ public class Bootstrap implements ApplicationRunner {
         user1.setActive(true);
         user1.setContactNo("09711247133");
         user1.setPassword(passwordEncoder.encode("customer"));
-        user1.setUsername("customer@gmail.com");
+        user1.setUsername("himanshubhansali96@gmail.com");
         Role role5 = new Role();
         role5.setRole("ROLE_CUSTOMER");
         userSet.add(user1);
@@ -84,7 +84,7 @@ public class Bootstrap implements ApplicationRunner {
         Address address5 = new Address();
         address5.setCity("delhi");
         address5.setCountry("india");
-        address5.setLabel("office");
+        address5.setLabel("home");
         address5.setZipcode("110095");
         address5.setState("delhi");
         address5.setAddressLine("jhilmil colony");
@@ -302,7 +302,7 @@ public class Bootstrap implements ApplicationRunner {
         address1.setZipcode("110010");
         address1.setCountry("India");
         address1.setCity("delhi");
-        address1.setLabel("HOME");
+        address1.setLabel("office");
         addressSet.add(address1);
         address1.setUser(seller);
         seller.setAddresses(addressSet);

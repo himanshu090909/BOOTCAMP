@@ -165,7 +165,6 @@ public class UploadDaoImpl implements UploadDao
                         e.printStackTrace();
                     }
                     contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
-                    System.out.println(contentType);
                 }
             }
         }

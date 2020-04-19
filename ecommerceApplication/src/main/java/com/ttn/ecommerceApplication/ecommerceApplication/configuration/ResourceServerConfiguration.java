@@ -78,7 +78,7 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
                 .antMatchers("/emptyCart").hasAnyRole("CUSTOMER")
                 .antMatchers("/OrderOneProductFromCart/{cartId}/{paymentMethod}/{AddressId}").hasAnyRole("CUSTOMER")
                 .antMatchers("/OrderWholeCart/{AddressId}").hasAnyRole("CUSTOMER")
-                .antMatchers("/editEmail/{token}").hasAnyRole("CUSTOMER")
+                .antMatchers("/editEmail/{token}").hasAnyRole("CUSTOMER,SELLER,ADMIN")
                 .antMatchers("/viewProduct/{product_id}").hasAnyRole("CUSTOMER")
                 .antMatchers("/viewAllProductsForCustomer/{category_id}").hasAnyRole("CUSTOMER")
                 .antMatchers("/viewSimilarProduct/{product_id}").hasAnyRole("CUSTOMER")
@@ -127,7 +127,7 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
                 .antMatchers("/registerAsSeller").anonymous()
                 .antMatchers("/activateCustomer/{token}").anonymous()
                 .antMatchers("/forgotPassword/{email_id}").anonymous()
-                .antMatchers("/setPassword/{token}/{password}").anonymous()
+                .antMatchers("/setPassword/{token}").anonymous()
                 .antMatchers("/resendActivationLink/{mailId}").anonymous()
 
 

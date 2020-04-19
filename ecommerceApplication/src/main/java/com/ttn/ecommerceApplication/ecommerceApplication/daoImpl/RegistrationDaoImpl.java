@@ -80,7 +80,6 @@ public class RegistrationDaoImpl implements RegistrationDao
 
     }
 
-    @Async
     public ResponseEntity createSeller(SellerDTO seller)
     {
         if (seller.getPassword().equals(seller.getConfirmPassword())) {
@@ -99,13 +98,8 @@ public class RegistrationDaoImpl implements RegistrationDao
             userRepository.save(seller1);
             if (userRepository.existsById(seller1.getId()))
             {
+                notificationService.sendToSeller(seller1,"Regarding account activation","you account has been created you can access it once admin verifies it");
 
-                SimpleMailMessage mail = new SimpleMailMessage();
-                mail.setTo(seller.getUsername());
-                mail.setFrom("hs631443@gmail.com");
-                mail.setSubject("Regarding account activation");
-                mail.setText("you account has been created you can access it once admin verifies it");
-                javaMailSender.send(mail);
             }
             return ResponseEntity.ok().body("successfully registered");
 
@@ -139,7 +133,4 @@ public class RegistrationDaoImpl implements RegistrationDao
                 return ResponseEntity.ok().body("activation token sent to the given email address");
             }
          }
-
-
-
 }

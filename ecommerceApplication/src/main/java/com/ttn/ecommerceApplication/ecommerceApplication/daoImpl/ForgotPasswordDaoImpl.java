@@ -1,5 +1,6 @@
 package com.ttn.ecommerceApplication.ecommerceApplication.daoImpl;
 import com.ttn.ecommerceApplication.ecommerceApplication.dao.ForgotPasswordDao;
+import com.ttn.ecommerceApplication.ecommerceApplication.dto.PasswordDTO;
 import com.ttn.ecommerceApplication.ecommerceApplication.entities.Token;
 import com.ttn.ecommerceApplication.ecommerceApplication.entities.User;
 import com.ttn.ecommerceApplication.ecommerceApplication.exceptionHandling.NotFoundException;
@@ -64,7 +65,7 @@ public class ForgotPasswordDaoImpl implements ForgotPasswordDao
         }
     }
 
-    public ResponseEntity setPassword(String token_on_mail, String password)
+    public ResponseEntity setPassword(String token_on_mail, PasswordDTO passwordDTO)
     {
         Long[] l = {};
         Token token1 = null;
@@ -83,7 +84,7 @@ public class ForgotPasswordDaoImpl implements ForgotPasswordDao
             }
             else {
                 User user2 = userRepository.findByUsername(token1.getName());
-                user2.setPassword(new BCryptPasswordEncoder().encode(password));
+                user2.setPassword(new BCryptPasswordEncoder().encode(passwordDTO.getPassword()));
                 userRepository.save(user2);
                 tokenRepository.delete(token1);
                 return ResponseEntity.ok().body("password has been successfully changed");

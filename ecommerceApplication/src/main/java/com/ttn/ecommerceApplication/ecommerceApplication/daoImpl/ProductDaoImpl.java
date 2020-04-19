@@ -521,37 +521,26 @@ public class ProductDaoImpl implements ProductDao
         productRepository.save(product1);
     }
 
-    /*public FullDetailDTO getAllDetailsOfProduct(Long productId) throws JsonProcessingException {
+    public FullDetailDTO getAllDetailsOfProduct(Long productId) {
         Optional<Product> product = productRepository.findById(productId);
-        if (product.isPresent())
-        {
-            if (product.get().isActive()==true&&product.get().getProductVariations().isEmpty()==false)
-            {
+        if (product.isPresent()) {
                 FullDetailDTO fullDetailDTO = new FullDetailDTO();
-                fullDetailDTO.setProductDTO(viewSingleProduct(productId));
-              *//*  fullDetailDTO.setProductVariationDTO(productVariationDao.getAllProductVariations(productId));
-              *//*  fullDetailDTO.setSellerName(product.get().getSeller().getCompanyName());
-               *//* Set<Address> address = product.get().getSeller().getAddresses();
+                /*fullDetailDTO.setProductDTO(viewSingleProduct(productId));
+               fullDetailDTO.setProductVariationDTO(productVariationDao.getAllProductVariations(productId));
+                fullDetailDTO.setSellerName(product.get().getSeller().getCompanyName());
+               Set<Address> address = product.get().getSeller().getAddresses();
                 List<AddressDTO> addressDTO = new ArrayList<>();
-                for (Address address1 : address)
-                {
-                    AddressDTO addressDTO1 = modelMapper.map(address1,AddressDTO.class);
+                for (Address address1 : address) {
+                    AddressDTO addressDTO1 = modelMapper.map(address1, AddressDTO.class);
                     addressDTO.add(addressDTO1);
                 }
-                fullDetailDTO.setAddressDTO(addressDTO);*//*
-                return fullDetailDTO;
+                fullDetailDTO.setAddressDTO(addressDTO);
+                */return fullDetailDTO;
 
-            }
-            else
-            {
-                throw new NullException("not active");
-            }
-
-        }
-        else
-        {
+        } else {
             throw new NotFoundException("not found");
-        }*/
+        }
+    }
     }
 
 

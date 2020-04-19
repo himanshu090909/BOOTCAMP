@@ -103,7 +103,6 @@ public class AdminDaoImpl implements AdminDao
     public ResponseEntity activateCustomerAndSeller(Long id)
     {
         User user1 = null;
-        String message;
         Optional<User> user = userRepository.findById(id);
 
         if (user.isPresent())
@@ -119,7 +118,7 @@ public class AdminDaoImpl implements AdminDao
                 user1.setActive(true);
                 userRepository.save(user1);
                 notificationService.sendToSeller(user1,"Regarding account activation","your account has been activated by admin you can now login");
-                return ResponseEntity.ok().body("your account has been activated");
+                return ResponseEntity.ok().body("account has been activated");
             }
         }
         else

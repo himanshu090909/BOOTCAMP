@@ -2,7 +2,6 @@ package com.ttn.ecommerceApplication.ecommerceApplication.repository;
 
 import com.ttn.ecommerceApplication.ecommerceApplication.entities.CategoryMetadataFieldValues;
 import com.ttn.ecommerceApplication.ecommerceApplication.entities.CategoryMetadataFieldValuesId;
-import org.graalvm.compiler.lir.alloc.lsra.LinearScan;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;

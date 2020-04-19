@@ -2,6 +2,7 @@ package com.ttn.ecommerceApplication.ecommerceApplication.controller;
 
 import com.ttn.ecommerceApplication.ecommerceApplication.dao.UserDao;
 import com.ttn.ecommerceApplication.ecommerceApplication.dto.AddressDTO;
+import com.ttn.ecommerceApplication.ecommerceApplication.dto.PasswordDTO;
 import com.ttn.ecommerceApplication.ecommerceApplication.dto.UserDTO;
 import com.ttn.ecommerceApplication.ecommerceApplication.repository.CustomerRepository;
 import com.ttn.ecommerceApplication.ecommerceApplication.repository.UserRepository;
@@ -37,23 +38,15 @@ public class UserController {
 
     @ApiOperation("uri for user to update his password")
     @PutMapping("/editPassword")
-    public String editPassword(@RequestBody UserDTO user) {
+    public String editPassword(@Valid @RequestBody PasswordDTO user) {
         return userDao.editPassword(user);
     }
 
     @ApiOperation("uri for user to update an address")
     @PutMapping("/updateAddress/{addressId}")
-    public String  update(@Valid @RequestBody AddressDTO address, @PathVariable Long addressId) {
-        return userDao.update(address, addressId);
+    public void   update(@Valid @RequestBody AddressDTO address, @PathVariable Long addressId) {
+         userDao.update(address, addressId);
     }
-
-
-
-
-
-
-
-
 
     @Lazy
     @PutMapping("/editUsername")

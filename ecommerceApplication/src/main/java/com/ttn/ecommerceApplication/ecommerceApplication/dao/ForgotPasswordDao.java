@@ -1,4 +1,5 @@
 package com.ttn.ecommerceApplication.ecommerceApplication.dao;
+import com.ttn.ecommerceApplication.ecommerceApplication.dto.PasswordDTO;
 import com.ttn.ecommerceApplication.ecommerceApplication.entities.Token;
 import com.ttn.ecommerceApplication.ecommerceApplication.entities.User;
 import com.ttn.ecommerceApplication.ecommerceApplication.repository.TokenRepository;
@@ -17,5 +18,5 @@ import org.springframework.stereotype.Repository;
 public interface ForgotPasswordDao
 {
     public ResponseEntity forgotPassword(String email_id);
-    public ResponseEntity setPassword(String token_on_mail, String password);
+    public ResponseEntity setPassword(String token_on_mail, PasswordDTO passwordDTO);
 }

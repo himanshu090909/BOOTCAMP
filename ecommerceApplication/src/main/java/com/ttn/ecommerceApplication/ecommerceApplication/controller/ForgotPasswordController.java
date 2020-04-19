@@ -1,13 +1,12 @@
 package com.ttn.ecommerceApplication.ecommerceApplication.controller;
 
 import com.ttn.ecommerceApplication.ecommerceApplication.dao.ForgotPasswordDao;
+import com.ttn.ecommerceApplication.ecommerceApplication.dto.PasswordDTO;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -24,9 +23,11 @@ public class ForgotPasswordController
         return forgotPassword.forgotPassword(email_id);
     }
 
+
+    //to do
     @ApiOperation("uri for setting new password on entering token")
-    @PutMapping("/setPassword/{token}/{password}")
-    public ResponseEntity setForgotPassword(@Valid @PathVariable(name = "token") String token,@PathVariable(name = "password") String password)
+    @PutMapping("/setPassword/{token}")
+    public ResponseEntity setForgotPassword(@PathVariable(name = "token") String token,@Valid  @RequestBody PasswordDTO password)
     {
         return  forgotPassword.setPassword(token,password);
     }

@@ -38,8 +38,6 @@ public class CategoryDaoImpl implements CategoryDao {
     @Autowired
     ProductRepository productRepository;
 
-
-
     @Override
     public void addNewSubCategory(Long parentCategory_id, Category category)
     {

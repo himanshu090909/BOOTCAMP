@@ -132,12 +132,11 @@ public class CustomerController
         return customerDao.getAnSellerAccount(seller);
      }
 
-    /* @Secured("ROLE_CUSTOMER")
-     @GetMapping("/getAllDetails/{id}")
-     public FullDetailDTO getAllDetails(@PathVariable Long productId) throws JsonProcessingException {
+     @Secured("ROLE_CUSTOMER")
+     @GetMapping("/getAllDetailsOfProducts/{id}")
+     public FullDetailDTO getAllDetails(@PathVariable Long productId){
           return productDaoImpl.getAllDetailsOfProduct(productId);
      }
-*/
 
 
 
