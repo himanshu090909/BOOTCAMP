@@ -21,6 +21,16 @@ public class Cart
 
     private boolean isWishlistItem;
 
+    @ManyToOne
+    @JoinColumn(name = "product_variation_id")
+    private ProductVariation productVariation;
+
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn
+    private Customer customer;
+
+
     @Column(name = "createdDate")
     @CreatedDate
     private LocalDateTime createdOn;
@@ -66,15 +76,6 @@ public class Cart
     public void setModifiedBy(String modifiedBy) {
         this.modifiedBy = modifiedBy;
     }
-
-    @ManyToOne
-    @JoinColumn(name = "product_variation_id")
-    private ProductVariation productVariation;
-
-
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn
-    private Customer customer;
 
     public Long getId() {
         return id;

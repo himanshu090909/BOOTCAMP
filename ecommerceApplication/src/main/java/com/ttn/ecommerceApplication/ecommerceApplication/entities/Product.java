@@ -24,7 +24,23 @@ public class Product
      private String productname;
      private String description;
 
+    private boolean isCancellable;
+
+    private boolean isReturnable;
+    private String brand;
+
      private boolean isActive;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "CATEGORY_ID")
+    private Category category1;
+
+    @OneToMany(mappedBy = "product",cascade = CascadeType.ALL)
+    private Set<ProductVariation> productVariations;
+
+    @OneToMany(mappedBy = "product",cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    private Set<ProductReview> productReviews;
+
 
     @Column(name = "createdDate")
     @CreatedDate
@@ -74,15 +90,6 @@ public class Product
         this.modifiedBy = modifiedBy;
     }
 
-    @ManyToOne(cascade = CascadeType.ALL)
-     @JoinColumn(name = "CATEGORY_ID")
-     private Category category1;
-
-     @OneToMany(mappedBy = "product",cascade = CascadeType.ALL)
-     private Set<ProductVariation> productVariations;
-
-    @OneToMany(mappedBy = "product",cascade = CascadeType.ALL,fetch = FetchType.EAGER)
-    private Set<ProductReview> productReviews;
 
     public Category getCategory1() {
         return category1;
@@ -107,10 +114,7 @@ public class Product
      public Product() {
      }
 
-     private boolean isCancellable;
 
-     private boolean isReturnable;
-     private String brand;
 
 
 

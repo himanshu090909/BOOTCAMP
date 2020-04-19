@@ -26,6 +26,19 @@ public class ProductVariation
 
     boolean isActive;
 
+    @Positive
+    @Column(nullable = false)
+    Integer quantity_available;
+    @Positive
+    @Column(nullable = false)
+    Double price;
+
+    private String infoJson;
+
+    @Convert(converter = HashMapConverter.class)
+    private Map<String,Object> infoAttributes;
+
+
     @Column(name = "createdDate")
     @CreatedDate
     private LocalDateTime createdOn;
@@ -99,17 +112,6 @@ public class ProductVariation
     }
 
 
-    @Positive
-    @Column(nullable = false)
-    Integer quantity_available;
-    @Positive
-    @Column(nullable = false)
-    Double price;
-
-    private String infoJson;
-
-    @Convert(converter = HashMapConverter.class)
-    private Map<String,Object> infoAttributes;
 
     public String getInfoJson() {
         return infoJson;
