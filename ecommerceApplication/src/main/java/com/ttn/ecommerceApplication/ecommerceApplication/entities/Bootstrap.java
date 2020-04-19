@@ -44,7 +44,7 @@ public class Bootstrap implements ApplicationRunner {
         user.setEnabled(true);
         user.setActive(true);
         user.setContactNo("09711247133");
-        user.setPassword(passwordEncoder.encode("admin"));
+        user.setPassword(passwordEncoder.encode("Admins@1"));
         user.setUsername("admin@gmail.com");
         Role role = new Role();
         role.setRole("ROLE_ADMIN");
@@ -73,7 +73,7 @@ public class Bootstrap implements ApplicationRunner {
         user1.setEnabled(true);
         user1.setActive(true);
         user1.setContactNo("09711247133");
-        user1.setPassword(passwordEncoder.encode("customer"));
+        user1.setPassword(passwordEncoder.encode("Customer@1"));
         user1.setUsername("himanshubhansali96@gmail.com");
         Role role5 = new Role();
         role5.setRole("ROLE_CUSTOMER");
@@ -293,7 +293,7 @@ public class Bootstrap implements ApplicationRunner {
         seller.setGstNo("27AAACS8577K2ZO");
         seller.setCompanyContactNo("+919843928645");
         seller.setCompanyName("Tommy Hilfiger");
-        seller.setPassword(passwordEncoder.encode("admins"));
+        seller.setPassword(passwordEncoder.encode("Admins@2"));
         seller.setUsername("admins@gmail.com");
         Set<Address> addressSet= new HashSet<>();
         Address address1= new Address();
