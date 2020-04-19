@@ -69,7 +69,7 @@ public class CustomerController
      public ResponseEntity<Object> viewProfileImage(HttpServletRequest request) throws IOException {
           String username = getCurrentUser.getUser();
           Customer customer = customerRepository.findByUsername(username);
-          String filename = customer.getId().toString();
+          String filename = customer.getId().toString()+"_";
           return uploadDao.downloadImage(filename,request);
      }
 

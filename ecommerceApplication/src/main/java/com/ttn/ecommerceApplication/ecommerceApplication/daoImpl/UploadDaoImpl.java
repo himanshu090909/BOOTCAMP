@@ -135,12 +135,14 @@ public class UploadDaoImpl implements UploadDao
             if (dir.isDirectory()) {
                 File[] files = dir.listFiles();
                 for (File file1 : files) {
-                    String value = customer.getId().toString();
+                    String value = customer.getId().toString()+"_";
                     if (file1.getName().startsWith(value)) {
                         Files.delete(Paths.get(file1.getPath()));
                     }
                 }
-                Files.move(path, path.resolveSibling(customer.getId() + "." + ext.get()));
+
+                String value = customer.getId().toString()+"_";
+                Files.move(path, path.resolveSibling(value+"." + ext.get()));
             }
 
         } else {
