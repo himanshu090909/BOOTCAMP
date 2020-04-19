@@ -282,10 +282,6 @@ public class Bootstrap implements ApplicationRunner {
 
 
         Role role1 = new Role("ROLE_SELLER");
-            /*Role role2= new Role("ROLE_SELLER");
-            Role role1= new Role("ROLE_SELLER");
-            Role role1= new Role("ROLE_SELLER");*/
-
         seller.setProducts(products);
 
         seller.setFirstName("Priti");
@@ -364,6 +360,7 @@ public class Bootstrap implements ApplicationRunner {
 
         ProductVariation productVariation1 = new ProductVariation();
         productVariation1.setPrice(1500d);
+        productVariation1.setActive(true);
         productVariation1.setQuantity_available(3);
         Map<String,Object> attributes1 = new HashMap<>();
         attributes.put("size","M");
@@ -379,6 +376,7 @@ public class Bootstrap implements ApplicationRunner {
 
         ProductVariation productVariation2 = new ProductVariation();
         productVariation2.setPrice(1000d);
+        productVariation2.setActive(true);
         productVariation2.setQuantity_available(10);
         productVariation2.setProduct(product1);
         productVariationSet.add(productVariation2);
@@ -389,12 +387,14 @@ public class Bootstrap implements ApplicationRunner {
         productVariation3.setPrice(700d);
         productVariation3.setQuantity_available(20);
         productVariation3.setProduct(product1);
+        productVariation3.setActive(true);
         productVariationSet.add(productVariation3);
         product1.setProductVariations(productVariationSet);
 
 
         ProductVariation productVariation4 = new ProductVariation();
         productVariation4.setPrice(1500d);
+        productVariation4.setActive(true);
         productVariation4.setQuantity_available(3);
         productVariation4.setProduct(product2);
         productVariationSet.add(productVariation4);
@@ -404,6 +404,7 @@ public class Bootstrap implements ApplicationRunner {
         ProductVariation productVariation5 = new ProductVariation();
         productVariation5.setPrice(1475d);
         productVariation5.setQuantity_available(5);
+        productVariation5.setActive(true);
         productVariation5.setProduct(product2);
         productVariationSet.add(productVariation5);
         product2.setProductVariations(productVariationSet);
@@ -411,6 +412,7 @@ public class Bootstrap implements ApplicationRunner {
 
         ProductVariation productVariation6 = new ProductVariation();
         productVariation6.setPrice(1700d);
+        productVariation6.setActive(true);
         productVariation6.setQuantity_available(10);
         productVariation6.setProduct(product3);
         productVariationSet.add(productVariation6);
@@ -452,6 +454,182 @@ public class Bootstrap implements ApplicationRunner {
         product8.setProductVariations(productVariationSet);
 
 
+
+
+
+        //new data
+
+        Category category9 = new Category("Electronics");
+
+        Set<Category> categories1 = new HashSet<>();
+
+        Category category10 = new Category("Mobile");
+        Category category11 = new Category("Laptop");
+        //Mobile
+        Category category12= new Category("SmartPhones");
+        Category category13 = new Category("NormalPhones");
+        //Laptop
+        Category category15 = new Category("GamingLaptop");
+        Category category16 = new Category("NormalLaptop");
+
+        //add to set of categories
+        categories1.add(category9);
+        categories1.add(category10);
+        categories1.add(category12);
+        categories1.add(category13);
+        categories1.add(category15);
+        categories1.add(category16);
+        categories1.add(category11);
+
+        category10.setCategory(category9);
+        category11.setCategory(category9);
+        category12.setCategory(category10);
+        category13.setCategory(category10);
+        category15.setCategory(category11);
+        category16.setCategory(category11);
+
+
+        category9.setCategories(categories1);
+        category10.setCategories(categories1);
+        category11.setCategories(categories1);
+
+        Set<Product> products1 = new HashSet<>();
+
+        Product product13 = new Product("one plus smartphone", "one plus");
+        product13.setDescription("nice phone");
+        product13.setActive(true);
+        product13.setCancellable(true);
+        product13.setReturnable(true);
+
+        Product product14 = new Product("mi smartphone ", "Mi");
+        product14.setDescription("mi phones");
+        product14.setActive(false);
+        product14.setCancellable(true);
+        product14.setReturnable(true);
+
+        Product product15 = new Product("nokia phones", "nokia");
+        product15.setDescription("description about nokia phones");
+        product15.setActive(true);
+        product15.setCancellable(true);
+        product15.setReturnable(true);
+
+        Product product16 = new Product("hp gaming laptops", "hp");
+        product16.setDescription("description");
+        product16.setActive(true);
+        product16.setCancellable(true);
+        product16.setReturnable(true);
+
+        Product product17 = new Product("apple laptops", "Apple");
+        product17.setDescription("description");
+        product17.setActive(true);
+        product17.setCancellable(true);
+        product17.setReturnable(true);
+
+        Product product18 = new Product("asus gaming laptops", "ASUS");
+        product18.setDescription("asus gaming laptops are leading in the market");
+        product18.setActive(true);
+        product18.setCancellable(true);
+        product18.setReturnable(true);
+
+        Product product19 = new Product("lenovo laptops", "Lenovo");
+        product19.setDescription("description");
+        product19.setActive(true);
+        product19.setCancellable(true);
+        product19.setReturnable(true);
+
+        product13.setCategory1(category12);
+        product14.setCategory1(category12);
+        product15.setCategory1(category13);
+        product16.setCategory1(category15);
+        product17.setCategory1(category15);
+        product18.setCategory1(category15);
+        product19.setCategory1(category16);
+
+        products1.add(product13);
+        products1.add(product14);
+        products1.add(product15);
+        products1.add(product16);
+        products1.add(product17);
+        products1.add(product18);
+        products1.add(product19);
+
+        category9.setProducts(products1);
+
+        product13.setSeller(seller);
+        product14.setSeller(seller1);
+        product15.setSeller(seller2);
+        product16.setSeller(seller);
+        product17.setSeller(seller3);
+        product18.setSeller(seller2);
+        product19.setSeller(seller1);
+
+        seller.setProducts(products1);
+
+        ProductVariation productVariation20 = new ProductVariation();
+        Set<ProductVariation> productVariationSet1 = new HashSet<>();
+        productVariation20.setPrice(1234d);
+        productVariation20.setQuantity_available(3);
+        productVariation20.setProduct(product13);
+        productVariation20.setActive(true);
+        Map<String,Object> attributes2 = new HashMap<>();
+        attributes2.put("MEMORY","16GB");
+        attributes2.put("COLOR","black");
+        productVariation20.setInfoAttributes(attributes2);
+        String  info2 = objectMapper.writeValueAsString(attributes2);
+        productVariation20.setInfoJson(info2);
+        productVariationSet1.add(productVariation20);
+        product13.setProductVariations(productVariationSet1);
+
+
+        ProductVariation productVariation21 = new ProductVariation();
+        Set<ProductVariation> productVariationSet2 = new HashSet<>();
+        productVariation21.setPrice(12364d);
+        productVariation21.setQuantity_available(7);
+        productVariation21.setProduct(product14);
+        productVariation21.setActive(true);
+        Map<String,Object> attributes3 = new HashMap<>();
+        attributes3.put("MEMORY","16GB");
+        attributes3.put("COLOR","black");
+        productVariation21.setInfoAttributes(attributes3);
+        String  info3 = objectMapper.writeValueAsString(attributes3);
+        productVariation21.setInfoJson(info3);
+        productVariationSet2.add(productVariation21);
+        product14.setProductVariations(productVariationSet2);
+
+        ProductVariation productVariation22 = new ProductVariation();
+        Set<ProductVariation> productVariationSet3 = new HashSet<>();
+        productVariation22.setPrice(12364d);
+        productVariation22.setQuantity_available(7);
+        productVariation22.setProduct(product15);
+        productVariation22.setActive(true);
+        Map<String,Object> attributes4 = new HashMap<>();
+        attributes4.put("MEMORY","8GB");
+        attributes4.put("COLOR","black");
+        productVariation22.setInfoAttributes(attributes4);
+        String  info4 = objectMapper.writeValueAsString(attributes4);
+        productVariation22.setInfoJson(info4);
+        productVariationSet3.add(productVariation22);
+        product15.setProductVariations(productVariationSet3);
+
+        ProductVariation productVariation23 = new ProductVariation();
+        Set<ProductVariation> productVariationSet4 = new HashSet<>();
+        productVariation23.setPrice(2364d);
+        productVariation23.setQuantity_available(17);
+        productVariation23.setProduct(product15);
+        productVariation23.setActive(true);
+        Map<String,Object> attributes5 = new HashMap<>();
+        attributes5.put("MEMORY","8GB");
+        attributes5.put("COLOR","black");
+        attributes5.put("GRAPHIC CARD","1");
+        productVariation23.setInfoAttributes(attributes5);
+        String  info5 = objectMapper.writeValueAsString(attributes5);
+        productVariation23.setInfoJson(info5);
+        productVariationSet4.add(productVariation23);
+        product15.setProductVariations(productVariationSet4);
+
+
+
+
         productRepository.save(product);
         productRepository.save(product1);
         productRepository.save(product2);
@@ -465,6 +643,25 @@ public class Bootstrap implements ApplicationRunner {
         productRepository.save(product10);
         productRepository.save(product11);
         productRepository.save(product12);
+
+        productRepository.save(product13);
+        productRepository.save(product14);
+        productRepository.save(product15);
+        productRepository.save(product16);
+        productRepository.save(product17);
+        productRepository.save(product18);
+        productRepository.save(product19);
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -498,6 +695,10 @@ public class Bootstrap implements ApplicationRunner {
         categoryMetadataFieldValuesId1.setCid(category4.getId());
         categoryMetadataFieldValuesId1.setMid(categoryMetadataField1.getId());
 
+        CategoryMetadataFieldValuesId categoryMetadataFieldValuesId5= new CategoryMetadataFieldValuesId();
+        categoryMetadataFieldValuesId5.setCid(category12.getId());
+        categoryMetadataFieldValuesId5.setMid(categoryMetadataField1.getId());
+
 
         CategoryMetadataFieldValues categoryMetadataFieldValues2= new CategoryMetadataFieldValues();
         categoryMetadataFieldValues2.setFieldValues("BLACK,BLUE");
@@ -505,11 +706,58 @@ public class Bootstrap implements ApplicationRunner {
         categoryMetadataFieldValues2.setCategoryMetadataField(categoryMetadataField1);
         categoryMetadataFieldValues2.setCategory(category4);
 
+
+        CategoryMetadataFieldValues categoryMetadataFieldValues6= new CategoryMetadataFieldValues();
+        categoryMetadataFieldValues6.setFieldValues("BLACK,BLUE");
+        categoryMetadataFieldValues6.setCategoryMetadataFieldValuesId(categoryMetadataFieldValuesId5);
+        categoryMetadataFieldValues6.setCategoryMetadataField(categoryMetadataField1);
+        categoryMetadataFieldValues6.setCategory(category12);
+
+
         Set<CategoryMetadataFieldValues> categoryMetadataFieldValues3 = new HashSet<>();
         categoryMetadataFieldValues3.add(categoryMetadataFieldValues2);
         category4.setCategoryMetadataFieldValues(categoryMetadataFieldValues3);
 
+        Set<CategoryMetadataFieldValues> categoryMetadataFieldValues7 = new HashSet<>();
+        categoryMetadataFieldValues7.add(categoryMetadataFieldValues6);
+        category12.setCategoryMetadataFieldValues(categoryMetadataFieldValues7);
+
+
         categoryMetadataFieldValuesRepository.save(categoryMetadataFieldValues2);
+        categoryMetadataFieldValuesRepository.save(categoryMetadataFieldValues6);
+
+
+        CategoryMetadataField categoryMetadataField2 = new CategoryMetadataField();
+        categoryMetadataField2.setName("MEMORY");
+        categoryMetadataFieldRepository.save(categoryMetadataField2);
+
+        CategoryMetadataFieldValuesId categoryMetadataFieldValuesId2= new CategoryMetadataFieldValuesId();
+        categoryMetadataFieldValuesId2.setCid(category12.getId());
+        categoryMetadataFieldValuesId2.setMid(categoryMetadataField2.getId());
+
+
+        CategoryMetadataFieldValues categoryMetadataFieldValues4= new CategoryMetadataFieldValues();
+        categoryMetadataFieldValues4.setFieldValues("16GB,32GB");
+        categoryMetadataFieldValues4.setCategoryMetadataFieldValuesId(categoryMetadataFieldValuesId2);
+        categoryMetadataFieldValues4.setCategoryMetadataField(categoryMetadataField);
+        categoryMetadataFieldValues4.setCategory(category12);
+
+        Set<CategoryMetadataFieldValues> categoryMetadataFieldValues5 = new HashSet<>();
+        categoryMetadataFieldValues5.add(categoryMetadataFieldValues4);
+        category4.setCategoryMetadataFieldValues(categoryMetadataFieldValues5);
+
+        categoryMetadataFieldValuesRepository.save(categoryMetadataFieldValues4);
+
+
+
+
+
+
+
+
+
+
+
 
 
 
