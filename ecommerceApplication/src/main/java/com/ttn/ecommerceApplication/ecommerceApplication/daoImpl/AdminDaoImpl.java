@@ -9,9 +9,11 @@ import com.ttn.ecommerceApplication.ecommerceApplication.entities.User;
 import com.ttn.ecommerceApplication.ecommerceApplication.exceptionHandling.UserNotFoundException;
 import com.ttn.ecommerceApplication.ecommerceApplication.repository.ProductRepository;
 import com.ttn.ecommerceApplication.ecommerceApplication.repository.UserRepository;
+import com.ttn.ecommerceApplication.ecommerceApplication.utilities.NotificationService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Page;
@@ -40,6 +42,10 @@ public class AdminDaoImpl implements AdminDao
 
     @Autowired
     UserRepository userRepository;
+
+    @Lazy
+    @Autowired
+    NotificationService notificationService;
 
     @Autowired
     ProductRepository productRepository;
@@ -94,11 +100,6 @@ public class AdminDaoImpl implements AdminDao
     }
 
 
-
-
-
-
-    @Async
     public ResponseEntity activateCustomerAndSeller(Long id)
     {
         User user1 = null;
@@ -116,15 +117,8 @@ public class AdminDaoImpl implements AdminDao
             {
                 user1.setEnabled(true);
                 user1.setActive(true);
-                System.out.println("Sending email for account activation");
-                SimpleMailMessage mail = new SimpleMailMessage();
-                mail.setTo(user1.getUsername());
-                mail.setFrom("hs631443@gmail.com");
-                mail.setSubject("Regarding account activation");
-                mail.setText("your account has been activated by admin you can now login");
-                javaMailSender.send(mail);
                 userRepository.save(user1);
-                System.out.println("Email Sent!");
+                notificationService.sendToSeller(user1,"Regarding account activation","your account has been activated by admin you can now login");
                 return ResponseEntity.ok().body("your account has been activated");
             }
         }
@@ -136,11 +130,9 @@ public class AdminDaoImpl implements AdminDao
 
     }
 
-    @Async
     public ResponseEntity  deActivateCustomerAndSeller(Long id)
     {
         User user1 = null;
-        String message = null;
         Optional<User> user = userRepository.findById(id);
         if (user.isPresent())
         {
@@ -154,14 +146,7 @@ public class AdminDaoImpl implements AdminDao
                 user1.setEnabled(false);
                 user1.setActive(false);
                 userRepository.save(user1);
-                System.out.println("Sending email...");
-                SimpleMailMessage mail = new SimpleMailMessage();
-                mail.setTo(user1.getUsername());
-                mail.setFrom("hs631443@gmail.com");
-                mail.setSubject("Regarding account deactivation");
-                mail.setText("your account has been deactivated by admin you can not login now");
-                javaMailSender.send(mail);
-                System.out.println("Email Sent!");
+                notificationService.sendToSeller(user1,"Regarding account deactivation","your account has been deactivated by admin you can not login now");
                 return ResponseEntity.ok().body("account has been successfully deactivated");
             }
         }
@@ -174,7 +159,6 @@ public class AdminDaoImpl implements AdminDao
 
     }
 
-    @Async
     public ResponseEntity lockUser(Long id)
     {
         User user1 = null;
@@ -190,14 +174,7 @@ public class AdminDaoImpl implements AdminDao
             {
                 user1.setAccountNonLocked(false);
                 userRepository.save(user1);
-                System.out.println("Sending email...");
-                SimpleMailMessage mail = new SimpleMailMessage();
-                mail.setTo(user1.getUsername());
-                mail.setFrom("hs631443@gmail.com");
-                mail.setSubject("Regarding account status");
-                mail.setText("your account has been locked by admin you can not login now");
-                javaMailSender.send(mail);
-                System.out.println("Email Sent!");
+                notificationService.sendToSeller(user1,"regarding account","your account has been locked by admin");
                 return ResponseEntity.ok().body("account has been locked");
             }
         }
@@ -210,7 +187,6 @@ public class AdminDaoImpl implements AdminDao
 
     }
 
-    @Async
     public ResponseEntity unlockUser(Long id)
     {
         User user1 = null;
@@ -226,14 +202,7 @@ public class AdminDaoImpl implements AdminDao
             {
                 user1.setAccountNonLocked(true);
                 userRepository.save(user1);
-                System.out.println("Sending email...");
-                SimpleMailMessage mail = new SimpleMailMessage();
-                mail.setTo(user1.getUsername());
-                mail.setFrom("hs631443@gmail.com");
-                mail.setSubject("Regarding account status");
-                mail.setText("your account has been unlocked by admin you can login now");
-                javaMailSender.send(mail);
-                System.out.println("Email Sent!");
+               notificationService.sendToSeller(user1,"regarding account","your account has been unlocked by admin");
                 return ResponseEntity.ok().body("account has been unlocked");
             }
         }

@@ -15,6 +15,7 @@ public interface ProductVariationDao
     public void addNewProductVariation(ProductVariation productVariation, Long productId) throws JsonProcessingException;
     public ProductVariationDTO getSingleProductVariation(Long productVariationId) throws JsonProcessingException;
     public List<ProductVariationDTO> getAllProductVariations(Long productId) throws JsonProcessingException;
+    public List<String> allImagesOfAProductVariation(Long productVariationId);
 
 
 

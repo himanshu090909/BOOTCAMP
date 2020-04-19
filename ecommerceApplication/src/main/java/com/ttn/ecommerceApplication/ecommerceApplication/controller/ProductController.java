@@ -149,7 +149,7 @@ public class ProductController
 
     @Secured("ROLE_ADMIN")
     @ApiOperation("This URI is for Admin to activates a product")
-    @PutMapping("/activateProduct/{productId}")
+    @PutMapping("/  activateProduct/{productId}")
     public String activateProduct(@PathVariable Long productId) {
         productDao.activateProduct(productId);
         return "Success";

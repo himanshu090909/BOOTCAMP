@@ -28,14 +28,6 @@ public class AppUserDetailsService implements UserDetailsService {
         String encryptedPassword = passwordEncoder.encode("pass");
         System.out.println(passwordEncoder.encode("admi"));
         System.out.println(user.getPassword());
-        user.setCount(user.getCount()+1);
-        userRepository.save(user);
-        if (user.getCount()>3)
-        {
-            System.out.println("setting false");
-            user.setAccountNonLocked(false);
-            userRepository.save(user);
-        }
         System.out.println("Trying to authenticate user ::" + username);
         System.out.println("Encrypted Password ::"+encryptedPassword);
         UserDetails userDetails = userDao.loadUserByUsername(username);

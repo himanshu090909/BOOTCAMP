@@ -3,7 +3,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ttn.ecommerceApplication.ecommerceApplication.dao.ProductVariationDao;
 import com.ttn.ecommerceApplication.ecommerceApplication.dto.ProductVariationDTO;
-import com.ttn.ecommerceApplication.ecommerceApplication.entities.CategoryMetadataField;
 import com.ttn.ecommerceApplication.ecommerceApplication.entities.Product;
 import com.ttn.ecommerceApplication.ecommerceApplication.entities.ProductVariation;
 import com.ttn.ecommerceApplication.ecommerceApplication.entities.Seller;
@@ -11,17 +10,18 @@ import com.ttn.ecommerceApplication.ecommerceApplication.exceptionHandling.NotFo
 import com.ttn.ecommerceApplication.ecommerceApplication.exceptionHandling.NullException;
 import com.ttn.ecommerceApplication.ecommerceApplication.repository.*;
 import com.ttn.ecommerceApplication.ecommerceApplication.utilities.GetCurrentUser;
-import com.ttn.ecommerceApplication.ecommerceApplication.utilities.HashMapConverter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.util.*;
 
 @Service
-public class ProductVariationDaoImpl implements ProductVariationDao {
+public class ProductVariationDaoImpl implements ProductVariationDao
+{
+    Long[] l = {};
 
     @Autowired
     ProductVariationRepository productVariationRepository;
@@ -31,6 +31,9 @@ public class ProductVariationDaoImpl implements ProductVariationDao {
 
     @Autowired
     ObjectMapper objectMapper;
+
+    @Autowired
+    MessageSource messageSource;
 
     @Autowired
     GetCurrentUser getCurrentUser;
@@ -43,26 +46,6 @@ public class ProductVariationDaoImpl implements ProductVariationDao {
 
     @Autowired
     CategoryMetadataFieldRepository categoryMetadataFieldRepository;
-
-    @Override
-    public void makeProductVariationNotAvailable(ProductVariation productVariation) {
-        if (productVariation.getQuantity_available() == 0) {
-            productVariation.setActive(false);
-        }
-    }
-
-    @Override
-    public void updateQuantity(Long productVariationId, int quantity) {
-        Optional<ProductVariation> productVariationOptional = productVariationRepository.findById(productVariationId);
-        ProductVariation productVariation = productVariationOptional.get();
-        int quantity_Available = productVariation.getQuantity_available();
-        int quantityAvailable = quantity_Available - quantity;
-        if (quantityAvailable < 0) {
-            throw new NullPointerException("only " + quantity_Available + " are in stock please select in this range");
-        }
-        productVariation.setQuantity_available(quantityAvailable);
-        productVariationRepository.save(productVariation);
-    }
 
     public void editProductVariation(ProductVariation productVariation, Long productVariationId) throws JsonProcessingException {
         String username = getCurrentUser.getUser();
@@ -117,21 +100,21 @@ public class ProductVariationDaoImpl implements ProductVariationDao {
                     }
 
                     else{
-                        throw new NotFoundException("Field values are not provided correctly");
+                        throw new NotFoundException(messageSource.getMessage("message21.txt",l,LocaleContextHolder.getLocale()));
                     }
 
                 } else {
-                    throw  new  NullException("You don't have this product to sell");
+                    throw  new  NullException(messageSource.getMessage("message22.txt",l,LocaleContextHolder.getLocale()));
                 }
             }
             else {
-                throw new NullException("This product is not active");
+                throw new NullException(messageSource.getMessage("message20.txt",l,LocaleContextHolder.getLocale()));
             }
         }
 
         else
         {
-            throw  new NullException("This product variation ID is wrong");
+            throw  new NullException(messageSource.getMessage("message18.txt",l,LocaleContextHolder.getLocale()));
         }
 
     }
@@ -139,21 +122,25 @@ public class ProductVariationDaoImpl implements ProductVariationDao {
 
     @Override
     public String removeProductVariation(Long productVariationId) {
-        String username = getCurrentUser.getUser();
-        Seller seller = sellerRepository.findByUsername(username);
-        Long id = productVariationRepository.getProductId(productVariationId);
-        Optional<Product> productOptional = productRepository.findById(id);
-        Product product = productOptional.get();
-        if ((product.getSeller().getUsername()).equals(seller.getUsername())) {
-            productVariationRepository.deleteProductVariation(productVariationId);
-            return "variation has been successfully removed";
-        } else {
-            System.out.println("8");
-            throw new NullException("you can't delete this product");
+        Optional<ProductVariation> productVariation = productVariationRepository.findById(productVariationId);
+        if (productVariation.isPresent()) {
+            String username = getCurrentUser.getUser();
+            Seller seller = sellerRepository.findByUsername(username);
+            Product product = productVariation.get().getProduct();
+            if ((product.getSeller().getUsername()).equals(seller.getUsername())) {
+                productVariationRepository.deleteProductVariation(productVariationId);
+                return "variation has been successfully removed";
+            }
+            else {
+                throw new NullException(messageSource.getMessage("message19.txt",l,LocaleContextHolder.getLocale()));
 
+            }
+        }
+        else
+        {
+            throw new NotFoundException(messageSource.getMessage("notfound.txt",l,LocaleContextHolder.getLocale()));
         }
     }
-
 
     public void addNewProductVariation(ProductVariation productVariation, Long productId) throws JsonProcessingException {
         Optional<Product> product = productRepository.findById(productId);
@@ -243,8 +230,6 @@ public class ProductVariationDaoImpl implements ProductVariationDao {
                     field.add(m.getKey().toString());
                     values.add(m.getValue().toString());
                 }
-                System.out.println(field);
-                System.out.println(values);
                 productVariationDTO.setFields(field);
                 productVariationDTO.setValues(values);
                 productVariationDTO.setPrice(productVariation.get().getPrice());
@@ -255,17 +240,14 @@ public class ProductVariationDaoImpl implements ProductVariationDao {
             }
             else
             {
-                throw  new NotFoundException("You cannot view this product variation or product is not present");
+                throw  new NotFoundException(messageSource.getMessage("message17.txt",l, LocaleContextHolder.getLocale()));
             }
         }
         else {
-            throw new NullException("This product variation do not exist");
+            throw new NullException(messageSource.getMessage("message18.txt",l,LocaleContextHolder.getLocale()));
         }
 
-
     }
-
-
 
     public List<ProductVariationDTO> getAllProductVariations(Long productId) throws JsonProcessingException {
 
@@ -285,18 +267,67 @@ public class ProductVariationDaoImpl implements ProductVariationDao {
                 return list;
             }
             else {
-                throw new NotFoundException("You cannot view the product variation of this product ");
+                throw  new NotFoundException(messageSource.getMessage("message17.txt",l, LocaleContextHolder.getLocale()));
             }
         }
 
         else {
-            throw new NotFoundException("This product ID is wrong");
+            throw new NullException(messageSource.getMessage("message18.txt",l,LocaleContextHolder.getLocale()));
         }
 
     }
 
 
 
+
+
+    @Override
+    public void makeProductVariationNotAvailable(ProductVariation productVariation) {
+        if (productVariation.getQuantity_available() == 0) {
+            productVariation.setActive(false);
+        }
     }
+
+    @Override
+    public void updateQuantity(Long productVariationId, int quantity) {
+        Optional<ProductVariation> productVariationOptional = productVariationRepository.findById(productVariationId);
+        ProductVariation productVariation = productVariationOptional.get();
+        int quantity_Available = productVariation.getQuantity_available();
+        int quantityAvailable = quantity_Available - quantity;
+        if (quantityAvailable < 0) {
+            throw new NullPointerException("only " + quantity_Available + " are in stock please select in this range");
+        }
+        productVariation.setQuantity_available(quantityAvailable);
+        productVariationRepository.save(productVariation);
+    }
+
+    public List<String> allImagesOfAProductVariation(Long productVariationId)
+    {
+        Optional<ProductVariation> productVariation = productVariationRepository.findById(productVariationId);
+        if (productVariation.isPresent())
+        {
+            String firstPath = System.getProperty("user.dir");
+            String fileBasePath = firstPath+"/src/main/resources/productVariation/";
+            List<String > list = new ArrayList<>();
+                File dir = new File(fileBasePath);
+                if (dir.isDirectory())
+                {
+                    File[] files = dir.listFiles();
+                    for (File file1 : files) {
+                        String value = productVariationId.toString()+"_";
+                        if (file1.getName().startsWith(value)) {
+                            list.add("http://localhost:8080/viewProductVariationImage/"+file1.getName());
+                        }
+                    }
+                }
+                return list;
+            }
+
+        else
+        {
+            throw new NotFoundException(messageSource.getMessage("notfound.txt",l,LocaleContextHolder.getLocale()));
+        }
+    }
+}
 
 

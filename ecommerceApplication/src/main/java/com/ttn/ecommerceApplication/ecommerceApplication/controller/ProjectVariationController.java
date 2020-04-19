@@ -11,6 +11,7 @@ import com.ttn.ecommerceApplication.ecommerceApplication.repository.ProductRepos
 import com.ttn.ecommerceApplication.ecommerceApplication.repository.ProductVariationRepository;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
@@ -70,57 +71,28 @@ public class ProjectVariationController
         productVariationDao.editProductVariation(productVariation,productVariationId);
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    @GetMapping("/getProductVariation/{u}")
-    public List<Object[]> getProductVariation(@PathVariable(name = "u") String u)
-    {
-        Long id = productDao.getid(u);
-        return productVariationRepository.getProductVariation(id);
+    @ApiOperation("uri for viewing image of product variation")
+    @GetMapping("/viewProductVariationImage/{filename}")
+    public ResponseEntity<Object> viewProfileImage(@PathVariable String filename, HttpServletRequest request) throws IOException {
+        return uploadDao.downloadImageOfProductVariation(filename,request);
     }
 
-
-
-
-
+    @Secured("ROLE_SELLER")
+    @ApiOperation("uri to delete a product variation")
     @DeleteMapping("/deleteProductVariation/{productVariationId}")
     public String  deleteProductVariation(@PathVariable Long productVariationId) {
         return productVariationDao.removeProductVariation(productVariationId);
     }
 
+    @Secured("ROLE_SELLER")
+    @ApiOperation("uri for customer to upload pics for productVariation")
+    @PostMapping("/uploadMultipleImagesForProductVariation/{id}")
+    public ResponseEntity<Object> uploadFiles(@PathVariable Long id,@RequestParam("files") MultipartFile[] files, ProductVariation productVariation) throws IOException
+    {
+        return uploadDao.uploadMultipleFiles(files,productVariation);
+    }
+
+    @Secured("ROLE_SELLER")
     @PostMapping("/uploadVariationPic/{id}")
     public ResponseEntity<Object> uploadFile(@RequestParam("file") MultipartFile file,@PathVariable Long id) throws IOException
     {
@@ -135,20 +107,11 @@ public class ProjectVariationController
         }
     }
 
-
-
-
     @Secured("ROLE_CUSTOMER")
-    @GetMapping("/viewProductVariationImage/{filename}")
-    public ResponseEntity<Object> viewProfileImage(@PathVariable String filename, HttpServletRequest request) throws IOException {
-        return uploadDao.downloadImageOfProductVariation(filename,request);
+    @GetMapping("/getAllImagesOfAProductVariation/{id}")
+    public List<String> getAllImagesOfAProductVariation(@PathVariable Long id)
+    {
+        return productVariationDao.allImagesOfAProductVariation(id);
     }
-
-
-
-
-
-
-
 
 }

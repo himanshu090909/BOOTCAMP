@@ -46,14 +46,9 @@ public class SellerController
         return sellerDao.editMyProfile(sellerProfileDTO);
     }
 
-    @Secured("ROLE_SELLER")
-    @ApiOperation("uri for customer to upload pics for productVariation")
-    @PostMapping("/uploadMultipleImagesForProductVariation/{id}")
-    public ResponseEntity<Object> uploadFiles(@PathVariable Long id,@RequestParam("files") MultipartFile[] files, ProductVariation productVariation) throws IOException
-    {
-        return uploadDao.uploadMultipleFiles(files,productVariation);
-    }
 
+
+    @Secured("ROLE_SELLER")
     @ApiOperation("uri for seller to get a customer account")
     @PutMapping("/getCustomerAccount")
     public String getAnCustomerAccount(@RequestBody Customer customer)

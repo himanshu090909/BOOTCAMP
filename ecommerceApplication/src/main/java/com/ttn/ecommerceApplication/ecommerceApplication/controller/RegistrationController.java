@@ -92,10 +92,6 @@ public class RegistrationController {
              username = principal.toString();
             System.out.println("username is "+ username);
         }
-        User user = userRepository.findByUsername(username);
-        user.setCount(0);
-        userRepository.save(user);
-
         String authHeader = request.getHeader("Authorization");
         if (authHeader != null) {
             String tokenValue = authHeader.replace("Bearer", "").trim();

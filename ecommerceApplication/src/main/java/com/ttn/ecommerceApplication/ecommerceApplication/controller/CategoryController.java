@@ -71,7 +71,7 @@ public class CategoryController {
         return "subcategory added successfully";
     }
 
-    @ApiOperation(("uri for admin to add a main category"))
+    @ApiOperation("uri for admin to add a main category")
     @PostMapping("/addNewCategory")
     public ResponseEntity addMainCategory(@Valid @RequestBody Category category)
     {
@@ -95,6 +95,7 @@ public class CategoryController {
         return categoryDao.viewAllCategories(pageNo, pageSize, sortBy);
     }
 
+    @Secured("ROLE_ADMIN")
     @ApiOperation("uri for admin to update category details")
     @PutMapping("/updateCategory/{categoryId}")
     public String updateCategory(@Valid @RequestBody Category category, @PathVariable(name = "categoryId") Long categoryId) {
@@ -154,9 +155,10 @@ public class CategoryController {
         return list;
     }
 
+    @Secured("ROLE_CUSTOMER")
     @ApiOperation("uri for customer to get filtering details of a category")
     @GetMapping("/filtering/{id}")
-    public FilteringDTO a(@PathVariable Long id)
+    public FilteringDTO getFilteringDetails(@PathVariable Long id)
     {
         return categoryDao.getFilteringDetails(id);
     }

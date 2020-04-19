@@ -1,10 +1,11 @@
 package com.ttn.ecommerceApplication.ecommerceApplication.daoImpl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ttn.ecommerceApplication.ecommerceApplication.dao.CategoryDao;
 import com.ttn.ecommerceApplication.ecommerceApplication.dao.ProductDao;
-import com.ttn.ecommerceApplication.ecommerceApplication.dto.ProductDTO;
-import com.ttn.ecommerceApplication.ecommerceApplication.dto.ViewProductDTO;
-import com.ttn.ecommerceApplication.ecommerceApplication.dto.ViewProductForCustomerDTO;
+import com.ttn.ecommerceApplication.ecommerceApplication.dao.ProductVariationDao;
+import com.ttn.ecommerceApplication.ecommerceApplication.dao.SellerDao;
+import com.ttn.ecommerceApplication.ecommerceApplication.dto.*;
 import com.ttn.ecommerceApplication.ecommerceApplication.entities.*;
 import com.ttn.ecommerceApplication.ecommerceApplication.exceptionHandling.NotFoundException;
 import com.ttn.ecommerceApplication.ecommerceApplication.exceptionHandling.NullException;
@@ -16,14 +17,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
-import java.lang.reflect.Field;
 import java.util.*;
 
 @Service
@@ -37,6 +37,12 @@ public class ProductDaoImpl implements ProductDao
     @Lazy
     @Autowired
     NotificationService notificationService;
+
+    @Autowired
+    SellerDao sellerDao;
+
+    @Autowired
+    ProductVariationDao productVariationDao;
 
     @Autowired
     UserRepository userRepository;
@@ -67,8 +73,11 @@ public class ProductDaoImpl implements ProductDao
 
     @Override
     public void save(Product product) {
-
     }
+
+
+
+
 
 
 
@@ -98,6 +107,7 @@ public class ProductDaoImpl implements ProductDao
                 product.getDescription()+"\n"+"Product ID: "+productId;
         notificationService.sendToAdmin(user,text);
     }
+
 
 
 
@@ -152,6 +162,10 @@ public class ProductDaoImpl implements ProductDao
 
 
 
+
+
+
+
     //for seller all products
     @Override
     public List<ViewProductDTO> getProductDetails(Integer pageNo, Integer pageSize, String sortBy)
@@ -164,7 +178,6 @@ public class ProductDaoImpl implements ProductDao
         for (Long l : longList)
         {
                 list.add(viewSingleProduct(productRepository.findById(l).get().getID()));
-
         }
       return list;
     }
@@ -195,7 +208,6 @@ public class ProductDaoImpl implements ProductDao
 
 
     }
-
 
     @Override
     public void editProduct(ProductDTO product, Long id) throws IllegalAccessException {
@@ -492,20 +504,6 @@ public class ProductDaoImpl implements ProductDao
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     @Override
     public void addProduct(Product product, Long categoryid) {
         String sellername = getCurrentUser.getUser();
@@ -523,7 +521,39 @@ public class ProductDaoImpl implements ProductDao
         productRepository.save(product1);
     }
 
+    /*public FullDetailDTO getAllDetailsOfProduct(Long productId) throws JsonProcessingException {
+        Optional<Product> product = productRepository.findById(productId);
+        if (product.isPresent())
+        {
+            if (product.get().isActive()==true&&product.get().getProductVariations().isEmpty()==false)
+            {
+                FullDetailDTO fullDetailDTO = new FullDetailDTO();
+                fullDetailDTO.setProductDTO(viewSingleProduct(productId));
+              *//*  fullDetailDTO.setProductVariationDTO(productVariationDao.getAllProductVariations(productId));
+              *//*  fullDetailDTO.setSellerName(product.get().getSeller().getCompanyName());
+               *//* Set<Address> address = product.get().getSeller().getAddresses();
+                List<AddressDTO> addressDTO = new ArrayList<>();
+                for (Address address1 : address)
+                {
+                    AddressDTO addressDTO1 = modelMapper.map(address1,AddressDTO.class);
+                    addressDTO.add(addressDTO1);
+                }
+                fullDetailDTO.setAddressDTO(addressDTO);*//*
+                return fullDetailDTO;
 
-}
+            }
+            else
+            {
+                throw new NullException("not active");
+            }
+
+        }
+        else
+        {
+            throw new NotFoundException("not found");
+        }*/
+    }
+
+
 
 

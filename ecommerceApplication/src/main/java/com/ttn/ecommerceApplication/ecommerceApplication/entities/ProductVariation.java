@@ -102,6 +102,7 @@ public class ProductVariation
     @Positive
     @Column(nullable = false)
     Integer quantity_available;
+    @Positive
     @Column(nullable = false)
     Double price;
 

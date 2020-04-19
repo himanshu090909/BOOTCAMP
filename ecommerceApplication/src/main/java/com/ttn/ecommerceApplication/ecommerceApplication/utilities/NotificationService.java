@@ -55,6 +55,7 @@ public class NotificationService {
         javaMailSender.send(mail);
     }
 
+    @Async
     public  void sendToSeller(User seller, String subject, String text)throws MailException
     {
         System.out.println("Sending email...");
@@ -65,6 +66,8 @@ public class NotificationService {
         mail.setText(text);
         javaMailSender.send(mail);
     }
+
+
 
 
 

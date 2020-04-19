@@ -11,7 +11,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -23,9 +22,10 @@ import java.nio.file.Paths;
 import java.util.Optional;
 
 @Service
-public class UploadDaoImpl implements UploadDao {
-    String firstPath = System.getProperty("user.dir");
+public class UploadDaoImpl implements UploadDao
+{
 
+    String firstPath = System.getProperty("user.dir");
     public Optional<String> getExtensionByStringHandling(String filename) {
         return Optional.ofNullable(filename)
                 .filter(f -> f.contains("."))
@@ -42,7 +42,6 @@ public class UploadDaoImpl implements UploadDao {
     public ResponseEntity downloadImageOfProductVariation(String fileName, HttpServletRequest request) throws IOException {
         String fileBasePath = firstPath + "/src/main/resources/productVariation/";
         return getImmage(fileBasePath,fileName,request);
-
     }
 
     public ResponseEntity<Object> uploadSingleImage(MultipartFile file, Customer customer) throws IOException {
@@ -60,7 +59,6 @@ public class UploadDaoImpl implements UploadDao {
 
     @Override
     public ResponseEntity<Object> uploadSingleImageForProductVariation(MultipartFile file, ProductVariation productVariation) throws IOException {
-
         File convertfile = new File(firstPath + "/src/main/resources/productVariation/images" + file.getOriginalFilename());
         convertfile.createNewFile();
         String fileBasePath = firstPath + "/src/main/resources/productVariation/";
@@ -72,7 +70,6 @@ public class UploadDaoImpl implements UploadDao {
         Optional<String> ext = getExtensionByStringHandling(convertfile.getName());
         int count = 0;
         File dir = new File(fileBasePath);
-
         if (ext.isPresent()) {
             if (dir.isDirectory()) {
                 File[] files = dir.listFiles();
@@ -96,7 +93,6 @@ public class UploadDaoImpl implements UploadDao {
     @Override
     public ResponseEntity<Object> uploadMultipleFiles(MultipartFile[] files,ProductVariation productVariation) throws IOException {
 
-
         for (MultipartFile multipartFile : files) {
             File convertfile = new File(firstPath+"/src/main/resources/productVariation/images" + multipartFile.getOriginalFilename());
             convertfile.createNewFile();
@@ -109,7 +105,6 @@ public class UploadDaoImpl implements UploadDao {
             Optional<String> ext = getExtensionByStringHandling(convertfile.getName());
             int count = 0;
             File dir = new File(fileBasePath);
-
             if (ext.isPresent()) {
                 if (dir.isDirectory()) {
                     File[] files1 = dir.listFiles();
@@ -127,16 +122,16 @@ public class UploadDaoImpl implements UploadDao {
             } else {
                 throw new RuntimeException();
             }
-
         }
         return new ResponseEntity<>("file added", HttpStatus.OK);
     }
 
     public void changeNameOfFile(Customer customer,Optional<String> ext,Path path) throws IOException {
-        String fileBasePath = firstPath + "/src/main/resources/productVariation/";
-
+        String fileBasePath = firstPath + "/src/main/resources/users/";
         File dir = new File(fileBasePath);
-        if (ext.isPresent()) {
+        if (ext.isPresent())
+        {
+            System.out.println(ext.get());
             if (dir.isDirectory()) {
                 File[] files = dir.listFiles();
                 for (File file1 : files) {
@@ -148,13 +143,11 @@ public class UploadDaoImpl implements UploadDao {
                 Files.move(path, path.resolveSibling(customer.getId() + "." + ext.get()));
             }
 
-
         } else {
             throw new RuntimeException();
         }
 
     }
-
 
     public ResponseEntity getImmage(String fileBasePath, String fileName, HttpServletRequest request
     ) throws IOException {
@@ -183,9 +176,4 @@ public class UploadDaoImpl implements UploadDao {
                 .body(resource);
 
     }
-
-
-
-
-
 }

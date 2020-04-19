@@ -1,13 +1,17 @@
 package com.ttn.ecommerceApplication.ecommerceApplication.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ttn.ecommerceApplication.ecommerceApplication.dao.CustomerDao;
 import com.ttn.ecommerceApplication.ecommerceApplication.dao.ProductDao;
 import com.ttn.ecommerceApplication.ecommerceApplication.dao.UploadDao;;
 import com.ttn.ecommerceApplication.ecommerceApplication.dao.UserDao;
+import com.ttn.ecommerceApplication.ecommerceApplication.daoImpl.ProductDaoImpl;
 import com.ttn.ecommerceApplication.ecommerceApplication.dto.AddressDTO;
+import com.ttn.ecommerceApplication.ecommerceApplication.dto.FullDetailDTO;
 import com.ttn.ecommerceApplication.ecommerceApplication.dto.ProfileDTO;
 import com.ttn.ecommerceApplication.ecommerceApplication.entities.Address;
 import com.ttn.ecommerceApplication.ecommerceApplication.entities.Customer;
+import com.ttn.ecommerceApplication.ecommerceApplication.entities.Product;
 import com.ttn.ecommerceApplication.ecommerceApplication.entities.Seller;
 import com.ttn.ecommerceApplication.ecommerceApplication.repository.CustomerRepository;
 import com.ttn.ecommerceApplication.ecommerceApplication.utilities.GetCurrentUser;
@@ -34,6 +38,9 @@ public class CustomerController
 
      @Autowired
      GetCurrentUser getCurrentUser;
+
+     @Autowired
+     ProductDaoImpl productDaoImpl;
 
      @Autowired
      UserDao userDao;
@@ -117,14 +124,39 @@ public class CustomerController
           return userDao.deleteAddress(id);
      }
 
-
-
+     @Secured("ROLE_CUSTOMER")
      @ApiOperation("uri for customer to get a seller account")
      @PutMapping("/getSellerAccount")
      public String  getAnSellerAccount(@RequestBody Seller seller)
      {
         return customerDao.getAnSellerAccount(seller);
      }
+
+    /* @Secured("ROLE_CUSTOMER")
+     @GetMapping("/getAllDetails/{id}")
+     public FullDetailDTO getAllDetails(@PathVariable Long productId) throws JsonProcessingException {
+          return productDaoImpl.getAllDetailsOfProduct(productId);
+     }
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
