@@ -421,12 +421,14 @@ public class Bootstrap implements ApplicationRunner {
         ProductVariation productVariation7 = new ProductVariation();
         productVariation7.setPrice(800d);
         productVariation7.setQuantity_available(30);
+        productVariation7.setActive(true);
         productVariation7.setProduct(product4);
         productVariationSet.add(productVariation7);
         product4.setProductVariations(productVariationSet);
 
         ProductVariation productVariation8 = new ProductVariation();
         productVariation8.setPrice(1900d);
+        productVariation8.setActive(true);
         productVariation8.setQuantity_available(4);
         productVariation8.setProduct(product5);
         productVariationSet.add(productVariation8);
@@ -435,6 +437,7 @@ public class Bootstrap implements ApplicationRunner {
         ProductVariation productVariation9 = new ProductVariation();
         productVariation9.setPrice(1800d);
         productVariation9.setQuantity_available(5);
+        productVariation9.setActive(true);
         productVariation9.setProduct(product6);
         productVariationSet.add(productVariation9);
         product6.setProductVariations(productVariationSet);
@@ -442,12 +445,14 @@ public class Bootstrap implements ApplicationRunner {
         ProductVariation productVariation10 = new ProductVariation();
         productVariation10.setPrice(1185d);
         productVariation10.setQuantity_available(9);
+        productVariation10.setActive(true);
         productVariation10.setProduct(product7);
         productVariationSet.add(productVariation10);
         product7.setProductVariations(productVariationSet);
 
         ProductVariation productVariation11 = new ProductVariation();
         productVariation11.setPrice(1700d);
+        productVariation11.setActive(true);
         productVariation11.setQuantity_available(4);
         productVariation11.setProduct(product8);
         productVariationSet.add(productVariation11);
@@ -456,6 +461,7 @@ public class Bootstrap implements ApplicationRunner {
 
 
 
+/*
 
         //new data
 
@@ -626,6 +632,7 @@ public class Bootstrap implements ApplicationRunner {
         productVariation23.setInfoJson(info5);
         productVariationSet4.add(productVariation23);
         product15.setProductVariations(productVariationSet4);
+*/
 
 
 
@@ -644,7 +651,7 @@ public class Bootstrap implements ApplicationRunner {
         productRepository.save(product11);
         productRepository.save(product12);
 
-        productRepository.save(product13);
+    /*    productRepository.save(product13);
         productRepository.save(product14);
         productRepository.save(product15);
         productRepository.save(product16);
@@ -652,16 +659,7 @@ public class Bootstrap implements ApplicationRunner {
         productRepository.save(product18);
         productRepository.save(product19);
 
-
-
-
-
-
-
-
-
-
-
+*/
 
 
 
@@ -669,9 +667,18 @@ public class Bootstrap implements ApplicationRunner {
         categoryMetadataField.setName("SIZE");
         categoryMetadataFieldRepository.save(categoryMetadataField);
 
+
+        CategoryMetadataField categoryMetadataField1 = new CategoryMetadataField();
+        categoryMetadataField1.setName("COLOR");
+        categoryMetadataFieldRepository.save(categoryMetadataField1);
+
         CategoryMetadataFieldValuesId categoryMetadataFieldValuesId= new CategoryMetadataFieldValuesId();
         categoryMetadataFieldValuesId.setCid(category4.getId());
         categoryMetadataFieldValuesId.setMid(categoryMetadataField.getId());
+
+        CategoryMetadataFieldValuesId categoryMetadataFieldValuesId1= new CategoryMetadataFieldValuesId();
+        categoryMetadataFieldValuesId1.setCid(category4.getId());
+        categoryMetadataFieldValuesId1.setMid(categoryMetadataField1.getId());
 
 
         CategoryMetadataFieldValues categoryMetadataFieldValues= new CategoryMetadataFieldValues();
@@ -680,11 +687,54 @@ public class Bootstrap implements ApplicationRunner {
         categoryMetadataFieldValues.setCategoryMetadataField(categoryMetadataField);
         categoryMetadataFieldValues.setCategory(category4);
 
-        Set<CategoryMetadataFieldValues> categoryMetadataFieldValues1 = new HashSet<>();
-        categoryMetadataFieldValues1.add(categoryMetadataFieldValues);
-        category4.setCategoryMetadataFieldValues(categoryMetadataFieldValues1);
+        CategoryMetadataFieldValues categoryMetadataFieldValues1= new CategoryMetadataFieldValues();
+        categoryMetadataFieldValues1.setFieldValues("BLACK,BLUE");
+        categoryMetadataFieldValues1.setCategoryMetadataFieldValuesId(categoryMetadataFieldValuesId1);
+        categoryMetadataFieldValues1.setCategoryMetadataField(categoryMetadataField1);
+        categoryMetadataFieldValues1.setCategory(category4);
+
+
+        Set<CategoryMetadataFieldValues> categoryMetadataFieldValues2 = new HashSet<>();
+        categoryMetadataFieldValues2.add(categoryMetadataFieldValues);
+        categoryMetadataFieldValues2.add(categoryMetadataFieldValues1);
+        category4.setCategoryMetadataFieldValues(categoryMetadataFieldValues2);
 
         categoryMetadataFieldValuesRepository.save(categoryMetadataFieldValues);
+        categoryMetadataFieldValuesRepository.save(categoryMetadataFieldValues1);
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+        CategoryMetadataField categoryMetadataField = new CategoryMetadataField();
+        categoryMetadataField.setName("SIZE");
+        categoryMetadataFieldRepository.save(categoryMetadataField);
+
+        CategoryMetadataFieldValuesId categoryMetadataFieldValuesId= new CategoryMetadataFieldValuesId();
+        categoryMetadataFieldValuesId.setCid(category4.getId());
+        categoryMetadataFieldValuesId.setMid(categoryMetadataField.getId());
+*/
+
+
+     /*   CategoryMetadataFieldValues categoryMetadataFieldValues= new CategoryMetadataFieldValues();
+        categoryMetadataFieldValues.setFieldValues("L,M,S");
+        categoryMetadataFieldValues.setCategoryMetadataFieldValuesId(categoryMetadataFieldValuesId);
+        categoryMetadataFieldValues.setCategoryMetadataField(categoryMetadataField);
+        categoryMetadataFieldValues.setCategory(category4);
+
+        Set<CategoryMetadataFieldValues> categoryMetadataFieldValues1 = new HashSet<>();
+        categoryMetadataFieldValues1.add(categoryMetadataFieldValues);
+        category4.setCategoryMetadataFieldValues(categoryMetadataFieldValues1);*/
+
+   /*     categoryMetadataFieldValuesRepository.save(categoryMetadataFieldValues);
 
 
         CategoryMetadataField categoryMetadataField1 = new CategoryMetadataField();
@@ -693,36 +743,36 @@ public class Bootstrap implements ApplicationRunner {
 
         CategoryMetadataFieldValuesId categoryMetadataFieldValuesId1= new CategoryMetadataFieldValuesId();
         categoryMetadataFieldValuesId1.setCid(category4.getId());
-        categoryMetadataFieldValuesId1.setMid(categoryMetadataField1.getId());
+        categoryMetadataFieldValuesId1.setMid(categoryMetadataField1.getId());*/
 
-        CategoryMetadataFieldValuesId categoryMetadataFieldValuesId5= new CategoryMetadataFieldValuesId();
+     /*   CategoryMetadataFieldValuesId categoryMetadataFieldValuesId5= new CategoryMetadataFieldValuesId();
         categoryMetadataFieldValuesId5.setCid(category12.getId());
-        categoryMetadataFieldValuesId5.setMid(categoryMetadataField1.getId());
+        categoryMetadataFieldValuesId5.setMid(categoryMetadataField1.getId());*/
 
 
-        CategoryMetadataFieldValues categoryMetadataFieldValues2= new CategoryMetadataFieldValues();
+    /*    CategoryMetadataFieldValues categoryMetadataFieldValues2= new CategoryMetadataFieldValues();
         categoryMetadataFieldValues2.setFieldValues("BLACK,BLUE");
         categoryMetadataFieldValues2.setCategoryMetadataFieldValuesId(categoryMetadataFieldValuesId1);
         categoryMetadataFieldValues2.setCategoryMetadataField(categoryMetadataField1);
-        categoryMetadataFieldValues2.setCategory(category4);
+        categoryMetadataFieldValues2.setCategory(category4);*/
 
 
-        CategoryMetadataFieldValues categoryMetadataFieldValues6= new CategoryMetadataFieldValues();
+     /*   CategoryMetadataFieldValues categoryMetadataFieldValues6= new CategoryMetadataFieldValues();
         categoryMetadataFieldValues6.setFieldValues("BLACK,BLUE");
         categoryMetadataFieldValues6.setCategoryMetadataFieldValuesId(categoryMetadataFieldValuesId5);
         categoryMetadataFieldValues6.setCategoryMetadataField(categoryMetadataField1);
         categoryMetadataFieldValues6.setCategory(category12);
+*/
 
-
-        Set<CategoryMetadataFieldValues> categoryMetadataFieldValues3 = new HashSet<>();
+      /*  Set<CategoryMetadataFieldValues> categoryMetadataFieldValues3 = new HashSet<>();
         categoryMetadataFieldValues3.add(categoryMetadataFieldValues2);
         category4.setCategoryMetadataFieldValues(categoryMetadataFieldValues3);
 
         Set<CategoryMetadataFieldValues> categoryMetadataFieldValues7 = new HashSet<>();
         categoryMetadataFieldValues7.add(categoryMetadataFieldValues6);
-        category12.setCategoryMetadataFieldValues(categoryMetadataFieldValues7);
+        category12.setCategoryMetadataFieldValues(categoryMetadataFieldValues7);*/
 
-
+/*
         categoryMetadataFieldValuesRepository.save(categoryMetadataFieldValues2);
         categoryMetadataFieldValuesRepository.save(categoryMetadataFieldValues6);
 
@@ -733,9 +783,9 @@ public class Bootstrap implements ApplicationRunner {
 
         CategoryMetadataFieldValuesId categoryMetadataFieldValuesId2= new CategoryMetadataFieldValuesId();
         categoryMetadataFieldValuesId2.setCid(category12.getId());
-        categoryMetadataFieldValuesId2.setMid(categoryMetadataField2.getId());
+        categoryMetadataFieldValuesId2.setMid(categoryMetadataField2.getId());*/
 
-
+/*
         CategoryMetadataFieldValues categoryMetadataFieldValues4= new CategoryMetadataFieldValues();
         categoryMetadataFieldValues4.setFieldValues("16GB,32GB");
         categoryMetadataFieldValues4.setCategoryMetadataFieldValuesId(categoryMetadataFieldValuesId2);
@@ -746,7 +796,7 @@ public class Bootstrap implements ApplicationRunner {
         categoryMetadataFieldValues5.add(categoryMetadataFieldValues4);
         category4.setCategoryMetadataFieldValues(categoryMetadataFieldValues5);
 
-        categoryMetadataFieldValuesRepository.save(categoryMetadataFieldValues4);
+        categoryMetadataFieldValuesRepository.save(categoryMetadataFieldValues4);*/
 
 
 
